@@ -1,0 +1,52 @@
+a.brand-logo{
+    padding-left:20px;
+    font-family: 'Righteous', cursive;
+}
+
+.modal{
+    padding:20px;
+}
+
+
+
+.delete{
+
+    top:40px;
+    right: 0px;
+
+
+    width: 40px;
+    text-align: center;
+
+    cursor:  pointer;
+}
+
+.btn-small{
+    margin-left:5px;
+    width:80px;
+}
+
+.collapsible-header{
+    margin-bottom:0;
+}
+.update-form{
+    margin:20px;
+    margin-bottom:50px;
+}
+
+.bold{
+    font-weight: bold;
+}
+
+.garis{
+    border-bottom:1px solid #f2f2f2;
+    margin:10px;
+}
+
+.tabs .indicator{
+    background-color:#004080;
+}
+
+.tabs .tab a:focus, .tabs .tab a:focus.active{
+    background:transparent;
+}

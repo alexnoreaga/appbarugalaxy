@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Galaxy</title>
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Righteous&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+    <nav>
+        <div class="light-blue darken-4 nav-wrapper">
+            <a href="#" class="brand-logo">Galaxy</a>
+            <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+            <ul class="right hide-on-med-and-down">
+                <li class="li-login" style="display:none"><a class="modal-trigger" href="#login-modal">Login</a></li>
+                <li class="li-logout" style="display:none"><a href="#" id="logout">Logout</a></li>
+                <li class="li-daftar-produk" style="display:none"><a class="modal-trigger"
+                        href="#daftar-produk-modal">Daftar Produk</a></li>
+                <li class="li-edit-produk" style="display:none"><a class="" href="#">Edit Produk</a></li>
+
+
+            </ul>
+        </div>
+    </nav>
+
+    <ul class="sidenav" id="mobile-demo">
+        <li class="li-login"><a class="modal-trigger" href="#login-modal">Login</a></li>
+        <li class="li-logout"><a href="#" id="logout">Logout</a></li>
+        <li class="li-daftar-produk"><a class="modal-trigger" href="#daftar-produk-modal">Daftar Produk</a></li>
+        <li class="li-edit-produk" style="display:none"><a class="" href="#">Edit Produk</a></li>
+
+
+
+    </ul>
+
+    <div class="container">
+        <!-- Kolom Pencarian -->
+        <input type="text" id="myInput" placeholder="Cari Produk Disini ..." title="Type in a name"
+            onkeyup="cariProduk()">
+        <select id="pilihmenu" onchange="pilihMenu()">
+            <option value="#" disabled selected>Pilih Kategori</option>
+            <option value="kamera">Kamera</option>
+            <option value="lensa">Lensa</option>
+            <option value="drone">Drone</option>
+            <option value="gimbal">Gimbal / Stabilizer</option>
+            <option value="adapterlensa">Adapter Lensa</option>
+            <option value="baterai">Baterai Kamera</option>
+            <option value="cardcase">Card Case / Dompet Memory Card</option>
+            <option value="charger">Charger Kamera</option>
+            <option value="cleaning">Cleaning Set / Pembersih Kamera</option>
+            <option value="drybox">Dry Box</option>
+            <option value="filteruv">Filter Lensa</option>
+            <option value="kabeldata">Kabel Data</option>
+            <option value="actioncamacc">Kamera Action (Aksesoris)</option>
+            <option value="kertasinstax">Kertas Instax</option>
+            <option value="leathercase">Leather Case / Sarung Kulit</option>
+            <option value="lampuflash">Lampu Flash</option>
+            <option value="lampuvideo">Lampu Video</option>
+            <option value="lenscap">Lens Cap / Tutup Lensa</option>
+            <option value="lenshood">Lens Hood</option>
+            <option value="memorycard">Memory Card</option>
+            <option value="microphone">Microphone Kamera / Smartphone</option>
+            <option value="talistrap">Tali Strap Kamera</option>
+            <option value="taskamera">Tas Kamera</option>
+            <option value="antigores">Temper Glass / Anti Gores</option>
+            <option value="tripod">Tripod</option>
+
+        </select>
+        <label>Kategori</label>
+        <a href="#" class="center btn red tombol-reset" id="load-produk" onclick="refresh()">Reset Kategori</a>
+
+
+        <!-- MODAL PENDAFTARAN PRODUK-->
+        <div class="container">
+            <div id="daftar-produk-modal" class="modal">
+                <form id="daftar-produk">
+                    <div class="input-field col s12">
+                        <select id="pilih-kategori">
+                            <option value="#" disabled selected>Pilih Kategori</option>
+                            <option value="kamera">Kamera</option>
+                            <option value="lensa">Lensa</option>
+                            <option value="drone">Drone</option>
+                            <option value="gimbal">Gimbal / Stabilizer</option>
+                            <option value="adapterlensa">Adapter Lensa</option>
+                            <option value="baterai">Baterai Kamera</option>
+                            <option value="cardcase">Card Case / Dompet Memory Card</option>
+                            <option value="charger">Charger Kamera</option>
+                            <option value="cleaning">Cleaning Set / Pembersih Kamera</option>
+                            <option value="drybox">Dry Box</option>
+                            <option value="filter">Filter Lensa</option>
+                            <option value="kabeldata">Kabel Data</option>
+                            <option value="actioncamacc">Kamera Action (Aksesoris)</option>
+                            <option value="kertasinstax">Kertas Instax</option>
+                            <option value="leathercase">Leather Case / Sarung Kulit</option>
+                            <option value="lampuflash">Lampu Flash</option>
+                            <option value="lampuvideo">Lampu Video</option>
+                            <option value="lenscap">Lens Cap / Tutup Lensa</option>
+                            <option value="lenshood">Lens Hood</option>
+                            <option value="memorycard">Memory Card</option>
+                            <option value="microphone">Microphone Kamera / Smartphone</option>
+                            <option value="talistrap">Tali Strap Kamera</option>
+                            <option value="taskamera">Tas Kamera</option>
+                            <option value="antigores">Temper Glass / Anti Gores</option>
+                            <option value="tripod">Tripod</option>
+                        </select>
+                        <label>Kategori</label>
+                    </div>
+                    <label for="nama-produk">Nama Produk</label>
+                    <input type="text" placeholder="Nama Kamera" id="nama-produk" required>
+                    <br>
+                    <label for="harga-produk">Masukkan Harga</label>
+                    <input type="text" placeholder="Masukkan Harga" id="harga-produk" required>
+                    <br>
+                    <label for="cashback">Cashback</label>
+                    <input type="text" placeholder="Cashback" id="cashback">
+                    <br>
+                    <label for="garansi">Garansi</label>
+                    <input type="text" placeholder="Garansi" id="garansi">
+                    <br>
+                    <label for="free-bonus">Free</label>
+                    <input type="text" placeholder="Free" id="free-bonus">
+                    <br>
+                    <label for="periode-promo">Periode Promo</label>
+                    <input type="text" placeholder="Periode Promo" id="periode-promo">
+                    <br>
+                            <div class="input-field col s12">
+                              <textarea id="keterangan" class="materialize-textarea"></textarea>
+                              <label for="keterangan">Keterangan</label>
+                            </div>
+                            <br>
+                            <div class="input-field col s12">
+                              <textarea id="spesifikasi" class="materialize-textarea"></textarea>
+                              <label for="spesifikasi">Spesifikasi</label>
+                            </div>
+                            <div class="input-field col s12">
+                                <textarea id="isibox" class="materialize-textarea"></textarea>
+                                <label for="isibox">Isi Box</label>
+                              </div>
+                    <button class="right light-blue darken-4 btn waves-effect waves-light" type="submit"
+                        name="action">Daftar Produk
+                        <i class="material-icons right">send</i>
+                    </button>
+
+                </form>
+            </div>
+        </div>
+
+
+        <!-- MODAL LOGIN PENGGUNA-->
+        <div class="container">
+            <div id="login-modal" class="modal">
+                <form id="login-form">
+
+                    <label for="nama-produk">Email</label>
+                    <input type="email" placeholder="Masukkan Email" id="email-login" required>
+                    <br>
+                    <label for="harga-produk">Password</label>
+                    <input type="password" placeholder="Masukkan Harga" id="password-login" required>
+                    <br>
+                    <button class="right light-blue darken-4 btn waves-effect waves-light" type="submit"
+                        name="action">Login
+                        <i class="material-icons right">send</i>
+                    </button>
+
+                </form>
+            </div>
+        </div>
+
+
+
+
+        <ul id="daftar-harga" class="collapsible">
+
+        </ul>
+
+
+        <div class="spesifikasi"></div>
+
+
+        <div class="appendmodal"></div>
+
+    </div>
+
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-firestore.js"></script>
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.8.2/firebase-analytics.js"></script>
+    <script>
+    var firebaseConfig = {
+    apiKey: "AIzaSyDowzz39Kpl_TzxWj2ay-X9tpY-xjGRnfI",
+    authDomain: "galaxyapp-2893d.firebaseapp.com",
+    databaseURL: "https://galaxyapp-2893d.firebaseio.com",
+    projectId: "galaxyapp-2893d",
+    storageBucket: "galaxyapp-2893d.appspot.com",
+    messagingSenderId: "872444378665",
+    appId: "1:872444378665:web:9d9a22ba7c6563afd42638",
+    measurementId: "G-2NJB1DMN7V"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+    </script>
+    <script src="script/app.js"></script>
+ 
+  
+
+
+</body>
+
+</html>

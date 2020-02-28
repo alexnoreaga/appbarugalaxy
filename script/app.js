@@ -9335,7 +9335,7 @@ function renderTripod(doc) {
 
   la.innerHTML = `
              <div class="modal" id="updatemodal${doc.id}">
-                <form id="${doc.id}form">
+                <form class="${doc.id}form">
                  <label for="update-nama-produk">Nama Kamera</label>
                  <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                  <br>
@@ -9497,7 +9497,7 @@ function renderTripod(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('.' + doc.id + 'form');
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {

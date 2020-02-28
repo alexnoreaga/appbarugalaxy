@@ -297,7 +297,7 @@ function renderKamera(doc) {
 
   la.innerHTML = `
        <div class="modal" id="updatemodal${doc.id}">
-          <form id="${doc.id}form">
+          <form id="form${doc.id}">
            <label for="update-nama-produk">Nama Kamera</label>
            <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
            <br>
@@ -847,7 +847,7 @@ function renderKamera(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id );
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -1562,7 +1562,7 @@ function renderLensa(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -2277,7 +2277,7 @@ function renderGimbal(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -2835,7 +2835,7 @@ function renderDrone(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -3154,7 +3154,7 @@ function renderAdapterLensa(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -3473,7 +3473,7 @@ function renderBaterai(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -3791,7 +3791,7 @@ function renderCardCase(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -4108,7 +4108,7 @@ function renderCharger(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -4425,7 +4425,7 @@ function renderCleaning(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -4742,7 +4742,7 @@ function renderDryBox(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -5059,7 +5059,7 @@ function renderFilterUv(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -5376,7 +5376,7 @@ function renderKabelData(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -5693,7 +5693,7 @@ function renderActionCamAcc(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -6010,7 +6010,7 @@ function renderKertasInstax(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -6327,7 +6327,7 @@ function renderLeatherCase(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -6644,7 +6644,7 @@ function renderLampuFlash(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -6961,7 +6961,7 @@ function renderLampuVideo(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -7278,7 +7278,7 @@ function renderLensCap(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -7595,7 +7595,7 @@ function renderLensHood(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -7912,7 +7912,7 @@ function renderMemoryCard(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -8229,7 +8229,7 @@ function renderMicrophone(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -8546,7 +8546,7 @@ function renderTaliStrap(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -8863,7 +8863,7 @@ function renderTasKamera(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -9180,7 +9180,7 @@ function renderAntiGores(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#' + doc.id + 'form');
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -9497,7 +9497,7 @@ function renderTripod(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-   let tombolKlik = document.querySelectorAll(`.form${doc.id}`);
+   let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {

@@ -9497,7 +9497,7 @@ function renderTripod(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-  //  let tombolKlik = document.querySelectorAll(`.form${doc.id}`);
+   let tombolKlik = document.querySelectorAll(`.form${doc.id}`);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {

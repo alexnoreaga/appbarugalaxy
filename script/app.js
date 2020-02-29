@@ -194,7 +194,7 @@ function renderKamera(doc) {
   var free = new Object();
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
-  free['Garansi'] = doc.data().periode;
+  free['Garansi'] = doc.data().garansi;
   free['Info'] = doc.data().keterangan;
 
 
@@ -751,6 +751,11 @@ function renderKamera(doc) {
   DP : ${DpBulat60PShowTime} <br>
   6x : ${cicilan60Pasli}
 `;
+  }else{
+    konten3.innerHTML = `
+    Maaf Produk ${doc.data().nama} belum dapat dikredit <br>
+    
+    `;
   } ////// Khusus Produk diatas 15 juta ENDING ////////////
 
 
@@ -876,10 +881,12 @@ function renderKamera(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
           alert(`Update ${nama} Berhasil`);
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          //instance.close();
+          // alert(`Update ${nama} Berhasil`);
+          // document.style.overflow=visible;
 
         });
       });
@@ -888,7 +895,6 @@ function renderKamera(doc) {
 }
 // RENDER KAMERA DARI DATA BASE ENDING
 
-// RENDER LENSA DARI DATA BASE START
 function renderLensa(doc) {
   let li = document.createElement('li');
   let la = document.createElement('div');
@@ -909,7 +915,7 @@ function renderLensa(doc) {
   var free = new Object();
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
-  free['Garansi'] = doc.data().periode;
+  free['Garansi'] = doc.data().garansi;
   free['Info'] = doc.data().keterangan;
 
 
@@ -965,91 +971,91 @@ function renderLensa(doc) {
 
 
   li.innerHTML = `
-         <div class="collapsible-header">
-            <span class="left col s12">${doc.data().nama}</span>
-         </div>
-         <div class="center-align collapsible-body">
-              <div class="konten1${doc.id}"></div> <!-- INFO HARGA HCI TIDAK BISA DICOPAS -->
-              <div id="cicilan${doc.id}">
-                <div class="konten3${doc.id}"></div> <!-- INFO CICILAN HOMECREDIT YANG BISA DI COPAS -->
-                <div class="konten4${doc.id}"></div> <!-- INFO FREEAN BONUS GABUNG CICILAN -->
-              </div>
-              <br>
-              <a id="copycicilan${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Angsuran</a>
-              <div class="garis"></div>
-              <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-              <br>
-              <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-              <a  class=" btn-small disabled delete" href="#" >Delete</a>
-              <br>
-              <br>
-  
-              <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-              <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-              <!-- Modal Structure -->
-              <div id="modal1${doc.id}" class="modal">
-                <div class="modal-content">
-                  <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                </div>
-                <div class="modal-footer">
-                  <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                </div>
-              </div>
-              
-              <!-- Modal Structure -->
-              <div id="modal2${doc.id}" class="modal">
+       <div class="collapsible-header">
+          <span class="left col s12">${doc.data().nama}</span>
+       </div>
+       <div class="center-align collapsible-body">
+            <div class="konten1${doc.id}"></div> <!-- INFO HARGA HCI TIDAK BISA DICOPAS -->
+            <div id="cicilan${doc.id}">
+              <div class="konten3${doc.id}"></div> <!-- INFO CICILAN HOMECREDIT YANG BISA DI COPAS -->
+              <div class="konten4${doc.id}"></div> <!-- INFO FREEAN BONUS GABUNG CICILAN -->
+            </div>
+            <br>
+            <a id="copycicilan${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Angsuran</a>
+            <div class="garis"></div>
+            <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+            <br>
+            <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+            <a  class=" btn-small disabled delete" href="#" >Delete</a>
+            <br>
+            <br>
+
+            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+            <!-- Modal Structure -->
+            <div id="modal1${doc.id}" class="modal">
               <div class="modal-content">
-                <div class="isibox${doc.id}">${newIsibox}</div>
+                <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
               </div>
               <div class="modal-footer">
-                <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
               </div>
             </div>
-           
-         `;
+            
+            <!-- Modal Structure -->
+            <div id="modal2${doc.id}" class="modal">
+            <div class="modal-content">
+              <div class="isibox${doc.id}">${newIsibox}</div>
+            </div>
+            <div class="modal-footer">
+              <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+            </div>
+          </div>
+         
+       `;
 
 
 
   la.innerHTML = `
-         <div class="modal" id="updatemodal${doc.id}">
-            <form id="${doc.id}form">
-             <label for="update-nama-produk">Nama Kamera</label>
-             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-             <br>
-             <label for="update-harga-produk">Masukkan Harga</label>
-             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-             <br>
-             <label for="update-cashback">Cashback</label>
-             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-             <br>
-             <label for="update-garansi">Garansi</label>
-             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-             <br>
-             <label for="update-free-bonus">Free</label>
-             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-             <br>
-             <label for="periode-promo">Periode Promo</label>
-             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-             <br>
-             <div class="input-field col s12">
-             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-             <label for="keterangan">Keterangan</label>
-           </div>
+       <div class="modal" id="updatemodal${doc.id}">
+          <form id="form${doc.id}">
+           <label for="update-nama-produk">Nama Kamera</label>
+           <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+           <br>
+           <label for="update-harga-produk">Masukkan Harga</label>
+           <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+           <br>
+           <label for="update-cashback">Cashback</label>
+           <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+           <br>
+           <label for="update-garansi">Garansi</label>
+           <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+           <br>
+           <label for="update-free-bonus">Free</label>
+           <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+           <br>
+           <label for="periode-promo">Periode Promo</label>
+           <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
            <br>
            <div class="input-field col s12">
-             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-             <label for="spesifikasi">Spesifikasi</label>
+           <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+           <label for="keterangan">Keterangan</label>
+         </div>
+         <br>
+         <div class="input-field col s12">
+           <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+           <label for="spesifikasi">Spesifikasi</label>
+         </div>
+         <div class="input-field col s12">
+             <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+             <label for="isibox">Isi Box</label>
            </div>
-           <div class="input-field col s12">
-               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-               <label for="isibox">Isi Box</label>
-             </div>
-              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                <i class="material-icons right">send</i>
-              </button>
-             </form>
-          </div>  
-          `;
+            <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+              <i class="material-icons right">send</i>
+            </button>
+           </form>
+        </div>  
+        `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
@@ -1103,10 +1109,10 @@ function renderLensa(doc) {
   });
   let konten1 = document.querySelector('.konten1' + doc.id)
   konten1.innerHTML = `
-      <div>Harga Cash / HCI Normal : <span class="bold">Rp ${hargaHCIST} </span> </div>
-      <div>Harga HCI 6 Bulan : <span class="bold">Rp ${hargaHCI6BlnST}</span> </div>
-      <div class="garis"></div>
-    `;
+    <div>Harga Cash / HCI Normal : <span class="bold">Rp ${hargaHCIST} </span> </div>
+    <div>Harga HCI 6 Bulan : <span class="bold">Rp ${hargaHCI6BlnST}</span> </div>
+    <div class="garis"></div>
+  `;
 
   // MERENDER HARGA CASH YANG BISA DI COPY PASTE
   for (const property in objek) {
@@ -1132,14 +1138,14 @@ function renderLensa(doc) {
       continue;
     }
     // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
+    let idbaru2 = document.querySelector('.konten4' + doc.id);
     if (typeof free[property] == Number) {
       return free[property].toLocaleString(undefined, {
         minimumFractionDigits: 0,
         maximumFractionDigits: 0
       });
     }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
+    idbaru2.innerHTML += `${property} ${objek[property]} <br>`
   }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
@@ -1261,25 +1267,25 @@ function renderLensa(doc) {
 
 
     konten3.innerHTML = `
-      ${doc.data().nama} <br>
-      Promo DP  0 (Cukup bayar biaya admin 200rb) <br>
-      9x : ${cicilan9_0asli} <br>
-      12x : ${cicilan12_0asli} <br>
-      15x : ${cicilan15_0asli} <br>
-      18x : ${cicilan18_0asli} <br>
-      24x : ${cicilan24_0asli} <br>
-      <br>
-      Promo DP : ${DpBulatShowTime} <br>
-      9x : ${cicilan9asli} <br>
-      12x : ${cicilan12asli} <br>
-      15x : ${cicilan15asli} <br>
-      18x : ${cicilan18asli} <br>
-      24x : ${cicilan24asli} <br>
-      <br>
-      Promo Spesial Cicilan 6 Bulan <br>
-      DP : ${DpTerbaru60PShowTime} <br>
-      6x : ${cicilan60Pasli}
-    `;
+    ${doc.data().nama} <br>
+    Promo DP  0 (Cukup bayar biaya admin 200rb) <br>
+    9x : ${cicilan9_0asli} <br>
+    12x : ${cicilan12_0asli} <br>
+    15x : ${cicilan15_0asli} <br>
+    18x : ${cicilan18_0asli} <br>
+    24x : ${cicilan24_0asli} <br>
+    <br>
+    Promo DP : ${DpBulatShowTime} <br>
+    9x : ${cicilan9asli} <br>
+    12x : ${cicilan12asli} <br>
+    15x : ${cicilan15asli} <br>
+    18x : ${cicilan18asli} <br>
+    24x : ${cicilan24asli} <br>
+    <br>
+    Promo Spesial Cicilan 6 Bulan <br>
+    DP : ${DpTerbaru60PShowTime} <br>
+    6x : ${cicilan60Pasli}
+  `;
 
   } ////// Khusus Produk dibawah 4.5 juta ENDING/////////////
   else if (hargaHCI <= 16700000 && hargaHCI >= 1500000) {
@@ -1363,18 +1369,18 @@ function renderLensa(doc) {
     })
     //Cicilan Tenor 6 Bulan Bunga 0%
     konten3.innerHTML = `
-    ${doc.data().nama} <br>
-    Promo DP : ${DpBulatShowTime} <br>
-    9x : ${cicilan9asli} <br>
-    12x : ${cicilan12asli} <br>
-    15x : ${cicilan15asli} <br>
-    18x : ${cicilan18asli} <br>
-    24x : ${cicilan24asli} <br>
-    <br>
-    Promo Spesial Cicilan 6 Bulan <br>
-    DP : ${DpTerbaru60PShowTime} <br>
-    6x : ${cicilan60Pasli}
-  `;
+  ${doc.data().nama} <br>
+  Promo DP : ${DpBulatShowTime} <br>
+  9x : ${cicilan9asli} <br>
+  12x : ${cicilan12asli} <br>
+  15x : ${cicilan15asli} <br>
+  18x : ${cicilan18asli} <br>
+  24x : ${cicilan24asli} <br>
+  <br>
+  Promo Spesial Cicilan 6 Bulan <br>
+  DP : ${DpTerbaru60PShowTime} <br>
+  6x : ${cicilan60Pasli}
+`;
 
   } ////// Khusus Produk dibawah 15 juta ENDING ////////////
 
@@ -1454,18 +1460,23 @@ function renderLensa(doc) {
 
     //Cicilan Tenor 6 Bulan Bunga 0%
     konten3.innerHTML = `
-    ${doc.data().nama} <br>
-    Promo DP : ${DpBulatShowTime} <br>
-    9x : ${cicilan9asli} <br>
-    12x : ${cicilan12asli} <br>
-    15x : ${cicilan15asli} <br>
-    18x : ${cicilan18asli} <br>
-    24x : ${cicilan24asli} <br>
-    <br>
-    Promo Spesial Cicilan 6 Bulan <br>
-    DP : ${DpBulat60PShowTime} <br>
-    6x : ${cicilan60Pasli}
-  `;
+  ${doc.data().nama} <br>
+  Promo DP : ${DpBulatShowTime} <br>
+  9x : ${cicilan9asli} <br>
+  12x : ${cicilan12asli} <br>
+  15x : ${cicilan15asli} <br>
+  18x : ${cicilan18asli} <br>
+  24x : ${cicilan24asli} <br>
+  <br>
+  Promo Spesial Cicilan 6 Bulan <br>
+  DP : ${DpBulat60PShowTime} <br>
+  6x : ${cicilan60Pasli}
+`;
+  }else{
+    konten3.innerHTML = `
+    Maaf Produk ${doc.data().nama} belum dapat dikredit <br>
+    
+    `;
   } ////// Khusus Produk diatas 15 juta ENDING ////////////
 
 
@@ -1562,7 +1573,7 @@ function renderLensa(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#form' + doc.id);
+    let tombolKlik = document.querySelectorAll('#form' + doc.id );
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -1591,9 +1602,9 @@ function renderLensa(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -1601,7 +1612,8 @@ function renderLensa(doc) {
     } // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
   } //  KLIK TO EDIT DI PRODUK SATUAN
 }
-// RENDER LENSA DARI DATA BASE ENDING
+
+// RENDER LENSA DARI DATA BASE START
 
 // RENDER GIMBAL / STABILIZER DARI DATABASE START
 function renderGimbal(doc) {
@@ -2306,9 +2318,9 @@ function renderGimbal(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -2864,9 +2876,9 @@ function renderDrone(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -3183,9 +3195,9 @@ function renderAdapterLensa(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -3502,9 +3514,9 @@ function renderBaterai(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -3820,9 +3832,9 @@ function renderCardCase(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -4137,9 +4149,9 @@ function renderCharger(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -4454,9 +4466,9 @@ function renderCleaning(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -4771,9 +4783,9 @@ function renderDryBox(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -5039,7 +5051,7 @@ function renderFilterUv(doc) {
       // Mendapatkan data target dari ID yang diklik
       let id = e.target.parentElement.parentElement.getAttribute('data-id');
 // UPDATE DIBAWAH INI        
-      db.collection('filteruv').doc(id).delete().then(function () {
+      db.collection('filter').doc(id).delete().then(function () {
         window.location.reload(true);
       });;
     });
@@ -5077,7 +5089,7 @@ function renderFilterUv(doc) {
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
 // UPDATE DIBAWAH INI         
-        db.collection('filteruv').doc(doc.id).update({
+        db.collection('filter').doc(doc.id).update({
           nama: nama,
           harga: harga,
           cashback: cashback,
@@ -5088,9 +5100,9 @@ function renderFilterUv(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -5405,9 +5417,9 @@ function renderKabelData(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -5722,9 +5734,9 @@ function renderActionCamAcc(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -6039,9 +6051,9 @@ function renderKertasInstax(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -6356,9 +6368,9 @@ function renderLeatherCase(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -6673,9 +6685,9 @@ function renderLampuFlash(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -6990,9 +7002,9 @@ function renderLampuVideo(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -7307,9 +7319,9 @@ function renderLensCap(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -7624,9 +7636,9 @@ function renderLensHood(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -7941,9 +7953,9 @@ function renderMemoryCard(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -8258,9 +8270,9 @@ function renderMicrophone(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -8575,9 +8587,9 @@ function renderTaliStrap(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -8892,9 +8904,9 @@ function renderTasKamera(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -9209,9 +9221,9 @@ function renderAntiGores(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -9526,9 +9538,722 @@ function renderTripod(doc) {
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
-          let modal = document.querySelector('#updatemodal' + doc.id);
-          var instance = M.Modal.init(modal);
-          instance.close();
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
+          alert(`Update ${nama} Berhasil`);
+
+        });
+      });
+    } // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
+  } //  KLIK TO EDIT DI PRODUK SATUAN
+}
+
+function renderPrinter(doc) {
+  let li = document.createElement('li');
+  let la = document.createElement('div');
+  let edit = document.createElement('a');
+  edit.href = '#updatemodal' + doc.id;
+  edit.id = 'helo' + doc.id;
+
+  edit.className = "col s2 btn-small disabled edit modal-trigger";
+  edit.style.display = "none";
+  edit.textContent = 'edit';
+  li.className = 'loaded-data';
+  li.setAttribute('data-id', doc.id);
+
+  let hargaInput = doc.data().harga;
+  let numHargaInput = Number(hargaInput);
+
+
+  var free = new Object();
+  free['Free'] = doc.data().free;
+  free['Periode Promo'] = doc.data().periode;
+  free['Garansi'] = doc.data().garansi;
+  free['Info'] = doc.data().keterangan;
+
+
+
+
+  // Mengambil data sebagai objek untuk keperluan CASH
+  var objek = new Object();
+  objek['Printer'] = doc.data().nama;
+  objek['Harga'] = Number(doc.data().harga);
+  objek['Cashback'] = Number(doc.data().cashback);
+  objek['Harga Spesial'] = world();
+  objek['Free'] = doc.data().free;
+  objek['Periode Promo'] = doc.data().periode;
+  objek['Garansi'] = doc.data().garansi;
+  objek['Info'] = doc.data().keterangan;
+
+  // Memunculkan Harga Spesial
+  function world() {
+    if (objek['Cashback'] !== 0) {
+      return objek['Harga'] - objek['Cashback']
+    } else if (objek['Cashback'] == 0) {
+      return objek['Harga Spesial'] = '';
+    } else {
+      return 0 // Memunculkan 0 == Tidak ditampilkan karena sudah dirumuskan dibawah
+    }
+  }
+
+  // MEMPERBAIKI HASIL DARI JIKA HARGA CASHBACK = 0 JADI TAMPILAN YANG DITAYANG CUKUP SATU YAITU Harga
+  if (objek['Harga'] === objek['Harga Spesial']) {
+    objek['Harga Spesial'] = 0
+  }
+  // MEMPERBAIKI HASIL DARI JIKA HARGA CASHBACK = 0 JADI TAMPILAN YANG DITAYANG CUKUP SATU YAITU Harga
+
+
+
+  // MEMBERI TANDA KOMA UNTUK HASIL BILANGAN YANG DI PRINT KELUAR
+  objek['Harga'] = objek['Harga'].toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  objek['Harga Spesial'] = objek['Harga Spesial'].toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  objek['Cashback'] = objek['Cashback'].toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  // MEMBERI TANDA KOMA UNTUK HASIL BILANGAN YANG DI PRINT KELUAR
+
+  let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
+  let newIsibox = doc.data().isibox.split(",").join("<br>");
+
+
+  li.innerHTML = `
+       <div class="collapsible-header">
+          <span class="left col s12">${doc.data().nama}</span>
+       </div>
+       <div class="center-align collapsible-body">
+            <div class="konten1${doc.id}"></div> <!-- INFO HARGA HCI TIDAK BISA DICOPAS -->
+            <div id="cicilan${doc.id}">
+              <div class="konten3${doc.id}"></div> <!-- INFO CICILAN HOMECREDIT YANG BISA DI COPAS -->
+              <div class="konten4${doc.id}"></div> <!-- INFO FREEAN BONUS GABUNG CICILAN -->
+            </div>
+            <br>
+            <a id="copycicilan${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Angsuran</a>
+            <div class="garis"></div>
+            <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+            <br>
+            <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+            <a  class=" btn-small disabled delete" href="#" >Delete</a>
+            <br>
+            <br>
+
+            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+            <!-- Modal Structure -->
+            <div id="modal1${doc.id}" class="modal">
+              <div class="modal-content">
+                <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+              </div>
+              <div class="modal-footer">
+                <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+              </div>
+            </div>
+            
+            <!-- Modal Structure -->
+            <div id="modal2${doc.id}" class="modal">
+            <div class="modal-content">
+              <div class="isibox${doc.id}">${newIsibox}</div>
+            </div>
+            <div class="modal-footer">
+              <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+            </div>
+          </div>
+         
+       `;
+
+
+
+  la.innerHTML = `
+       <div class="modal" id="updatemodal${doc.id}">
+          <form id="form${doc.id}">
+           <label for="update-nama-produk">Nama Kamera</label>
+           <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+           <br>
+           <label for="update-harga-produk">Masukkan Harga</label>
+           <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+           <br>
+           <label for="update-cashback">Cashback</label>
+           <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+           <br>
+           <label for="update-garansi">Garansi</label>
+           <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+           <br>
+           <label for="update-free-bonus">Free</label>
+           <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+           <br>
+           <label for="periode-promo">Periode Promo</label>
+           <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+           <br>
+           <div class="input-field col s12">
+           <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+           <label for="keterangan">Keterangan</label>
+         </div>
+         <br>
+         <div class="input-field col s12">
+           <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+           <label for="spesifikasi">Spesifikasi</label>
+         </div>
+         <div class="input-field col s12">
+             <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+             <label for="isibox">Isi Box</label>
+           </div>
+            <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+              <i class="material-icons right">send</i>
+            </button>
+           </form>
+        </div>  
+        `;
+
+  elementul.appendChild(li);
+  elementul.appendChild(edit);
+  elementul.appendChild(la);
+
+
+
+  var tabs = document.querySelectorAll('.tabs')
+  var tab;
+  for (tab = 0; tab < tabs.length; tab++) {
+    var instance = M.Tabs.init(tabs[tab]);
+  }
+
+
+  var elems = document.querySelectorAll('.modal');
+  var el;
+  for (el = 0; el < elems.length; el++) {
+    var instances = M.Modal.init(elems[el]);
+  }
+
+
+
+
+
+  // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+  let hargaNormal = Number(doc.data().harga);
+  let cashBack = Number(doc.data().cashback);
+  let hargaHCI = hitung();
+
+  function hitung() {
+    if (cashBack !== 0 || cashBack !== '') {
+      return hargaNormal - cashBack;
+    } else {
+      hargaHCI = hargaNormal;
+    }
+  }
+  let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  let biayaSubsidi6Bln = hitung6bln(); // HASIL SUBSIDI DALAM RUPIAH
+  let hargaHCI6Bln = hargaHCI + biayaSubsidi6Bln;
+
+  function hitung6bln() {
+    return hargaHCI * biaya6bln / 100;
+  }
+  let hargaHCI6BlnBulat = Math.ceil(hargaHCI6Bln / 100) * 100; // Dibulat ke 100 Rupiah 
+  let hargaHCI6BlnST = hargaHCI6BlnBulat.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  let konten1 = document.querySelector('.konten1' + doc.id)
+  konten1.innerHTML = `
+    <div>Harga Cash / HCI Normal : <span class="bold">Rp ${hargaHCIST} </span> </div>
+    <div>Harga HCI 6 Bulan : <span class="bold">Rp ${hargaHCI6BlnST}</span> </div>
+    <div class="garis"></div>
+  `;
+
+  // MERENDER HARGA CASH YANG BISA DI COPY PASTE
+  for (const property in objek) {
+    if (`${objek[property]}` == 0) {
+      continue;
+    }
+    // console.log(`${property}: ${objek[property]}`)
+    let idbaru = document.querySelector('.konten2' + doc.id);
+    if (typeof objek[property] == Number) {
+      return objek[property].toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+    }
+    idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  }
+  // MERENDER HARGA CASH YANG BISA DI COPY PASTE ENDING
+
+
+  // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
+  for (const property in free) {
+    if (`${free[property]}` == 0) {
+      continue;
+    }
+    // console.log(`${property}: ${free[property]}`)
+    let idbaru = document.querySelector('.konten4' + doc.id);
+    if (typeof free[property] == Number) {
+      return free[property].toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+    }
+    idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  }
+  // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
+
+
+  ////// Khusus Produk dibawah 4.5 juta START /////////////
+  let konten3 = document.querySelector('.konten3' + doc.id)
+  if (hargaHCI <= 4500000 && hargaHCI >= 1500000) {
+
+    var Dp = 0; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
+
+    var BungaDp0_9 = (hargaHCI * bunga69 / 100); // Bunga dari tenor 9 Bulan
+    var BungaDp0_N = (hargaHCI * bunga1224 / 100); // Bunga dari tenor 12 sampai 24 Bulan
+    var Admin = 5000;
+
+    var cicilan9_0 = (hargaHCI / 9) + BungaDp0_9 + Admin;
+    var cicilan12_0 = (hargaHCI / 12) + BungaDp0_N + Admin;
+    var cicilan15_0 = (hargaHCI / 15) + BungaDp0_N + Admin;
+    var cicilan18_0 = (hargaHCI / 18) + BungaDp0_N + Admin;
+    var cicilan24_0 = (hargaHCI / 24) + BungaDp0_N + Admin;
+
+    // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+    var mathcicilan9 = Math.ceil(cicilan9_0 / 100) * 100;
+    var mathcicilan12 = Math.ceil(cicilan12_0 / 100) * 100;
+    var mathcicilan15 = Math.ceil(cicilan15_0 / 100) * 100;
+    var mathcicilan18 = Math.ceil(cicilan18_0 / 100) * 100;
+    var mathcicilan24 = Math.ceil(cicilan24_0 / 100) * 100;
+
+    //toLocaleString untuk menambahkan koma disetiap 3 digit
+
+    var cicilan9_0asli = mathcicilan9.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+    var cicilan12_0asli = mathcicilan12.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+    var cicilan15_0asli = mathcicilan15.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+    var cicilan18_0asli = mathcicilan18.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+    var cicilan24_0asli = mathcicilan24.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+
+    ////////////////////Cicilan DP Normal//////////////////////////
+    var Dp = (hargaHCI * 10 / 100) + 200000; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
+    var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
+    // DpBulatShowTime hanya untuk tampil dihalaman depan dengan ada koma disetiap 3 digit 0
+    var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    var DpSesungguhnya = DpBulat - 199000;
+    var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
+    var BungaNormal = (HargaSesungguhnya * bunga1224 / 100); // Seharusnya harga asli
+    var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100); // Seharusnya harga asli
+    var Admin = 5000;
+    var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+    var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
+    var cicilan15 = (HargaSesungguhnya / 15) + BungaNormal + Admin;
+    var cicilan18 = (HargaSesungguhnya / 18) + BungaNormal + Admin;
+    var cicilan24 = (HargaSesungguhnya / 24) + BungaNormal + Admin;
+    var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+    var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100;
+    var mathcicilan15 = Math.ceil(cicilan15 / 100) * 100;
+    var mathcicilan18 = Math.ceil(cicilan18 / 100) * 100;
+    var mathcicilan24 = Math.ceil(cicilan24 / 100) * 100;
+    //toLocaleString untuk menambahkan koma disetiap 3 digit
+    var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    var cicilan12asli = mathcicilan12.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    var cicilan15asli = mathcicilan15.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    var cicilan18asli = mathcicilan18.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    var cicilan24asli = mathcicilan24.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    //Cicilan Tenor Normal
+
+
+
+    //Cicilan Tenor 6 Bulan Bunga 0%
+
+    var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+    var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 5.5% admin
+    var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
+    var DpMentah60P = (hargaBulat60P * 10 / 100) + 200000; // mengkonversikan 10% dari harga asli
+    var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
+    var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    var DpSesungguhnya60P = DpTerbaru60P - 199000;
+    var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
+    //var Bunga6099 = (hargaBulat6099 *2.69 / 100);
+    var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+    var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+    var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+
+
+    konten3.innerHTML = `
+    ${doc.data().nama} <br>
+    Promo DP  0 (Cukup bayar biaya admin 200rb) <br>
+    9x : ${cicilan9_0asli} <br>
+    12x : ${cicilan12_0asli} <br>
+    15x : ${cicilan15_0asli} <br>
+    18x : ${cicilan18_0asli} <br>
+    24x : ${cicilan24_0asli} <br>
+    <br>
+    Promo DP : ${DpBulatShowTime} <br>
+    9x : ${cicilan9asli} <br>
+    12x : ${cicilan12asli} <br>
+    15x : ${cicilan15asli} <br>
+    18x : ${cicilan18asli} <br>
+    24x : ${cicilan24asli} <br>
+    <br>
+    Promo Spesial Cicilan 6 Bulan <br>
+    DP : ${DpTerbaru60PShowTime} <br>
+    6x : ${cicilan60Pasli}
+  `;
+
+  } ////// Khusus Produk dibawah 4.5 juta ENDING/////////////
+  else if (hargaHCI <= 16700000 && hargaHCI >= 1500000) {
+
+    ////////////////////Cicilan Tenor Normal//////////////////////////
+    var Dp = (hargaHCI * 10 / 100) + 200000; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
+    var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
+    var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    var DpSesungguhnya = DpBulat - 199000;
+    var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
+    var BungaNormal = (HargaSesungguhnya * bunga1224 / 100); // Seharusnya harga asli
+    var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100); // Seharusnya harga asli
+    var Admin = 5000;
+    var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+    var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
+    var cicilan15 = (HargaSesungguhnya / 15) + BungaNormal + Admin;
+    var cicilan18 = (HargaSesungguhnya / 18) + BungaNormal + Admin;
+    var cicilan24 = (HargaSesungguhnya / 24) + BungaNormal + Admin;
+    var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+    var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100;
+    var mathcicilan15 = Math.ceil(cicilan15 / 100) * 100;
+    var mathcicilan18 = Math.ceil(cicilan18 / 100) * 100;
+    var mathcicilan24 = Math.ceil(cicilan24 / 100) * 100;
+    //toLocaleString untuk menambahkan koma disetiap 3 digit
+    var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    var cicilan12asli = mathcicilan12.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    var cicilan15asli = mathcicilan15.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    var cicilan18asli = mathcicilan18.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    var cicilan24asli = mathcicilan24.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    ////////////////////Cicilan Tenor Normal ENDING//////////////////////////
+
+    //Cicilan Tenor 6 Bulan Bunga 0%
+    var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+    var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
+    // Problem dikolom ini
+    var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
+    var hargaBulat60PShowTime = hargaBulat60P.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    var hargaTerbaru60PP = hargaBulat60P; //untuk mengecek bahwa setelah ditambah 5.5% apakah masih dibawah 15jt jika diatas 15jt maka berjalan rumus IF dibawah
+
+    if (hargaTerbaru60PP > 16700000) {
+      DpMentah60P = (hargaTerbaru60PP - 15000000) + 200000;
+    } else {
+      DpMentah60P = (hargaBulat60P * 10 / 100) + 200000;
+    }
+
+    var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
+
+    var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    var DpSesungguhnya60P = DpTerbaru60P - 199000;
+    var HargaSesungguhnya60P = hargaTerbaru60PP - DpSesungguhnya60P;
+
+    var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+    var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+    var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    //Cicilan Tenor 6 Bulan Bunga 0%
+    konten3.innerHTML = `
+  ${doc.data().nama} <br>
+  Promo DP : ${DpBulatShowTime} <br>
+  9x : ${cicilan9asli} <br>
+  12x : ${cicilan12asli} <br>
+  15x : ${cicilan15asli} <br>
+  18x : ${cicilan18asli} <br>
+  24x : ${cicilan24asli} <br>
+  <br>
+  Promo Spesial Cicilan 6 Bulan <br>
+  DP : ${DpTerbaru60PShowTime} <br>
+  6x : ${cicilan60Pasli}
+`;
+
+  } ////// Khusus Produk dibawah 15 juta ENDING ////////////
+
+  ////// Khusus Produk diatas 15 juta START ////////////
+  else if (hargaHCI > 16700000) {
+    //////TENOR NORMAL START/////////////
+    var hargaMentah = hargaHCI - 15000000; //15jt adalah batas maksimal kredit di HCI
+    var DpRecomend = hargaMentah + 200000; // 1.7jt ada lah 10% dari 15jt (1.5jt) + biaya admin 200rb
+    var DpBulat = Math.ceil(DpRecomend / 50000) * 50000; //membulatkan kelipatan 50rb
+    var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    var DpSesungguhnya = DpBulat - 199000;
+    var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
+    var BungaNormal = (HargaSesungguhnya * bunga1224 / 100);
+    var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100);
+    var Admin = 5000;
+    var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+    var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
+    var cicilan15 = (HargaSesungguhnya / 15) + BungaNormal + Admin;
+    var cicilan18 = (HargaSesungguhnya / 18) + BungaNormal + Admin;
+    var cicilan24 = (HargaSesungguhnya / 24) + BungaNormal + Admin;
+    var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+    var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100;
+    var mathcicilan15 = Math.ceil(cicilan15 / 100) * 100;
+    var mathcicilan18 = Math.ceil(cicilan18 / 100) * 100;
+    var mathcicilan24 = Math.ceil(cicilan24 / 100) * 100;
+    //toLocaleString untuk menambahkan koma disetiap 3 digit
+    var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    var cicilan12asli = mathcicilan12.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    var cicilan15asli = mathcicilan15.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    var cicilan18asli = mathcicilan18.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    var cicilan24asli = mathcicilan24.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+    //////////// TENOR NORMAL ENDING ///////////////////////////////////////////////
+
+
+
+    //Cicilan Tenor 6 Bulan Bunga 0%
+    var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+    var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
+    var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 50rb
+
+    var hargaMentah60P = (hargaBulat60P - 15000000); //15jt adalah batas maksimal kredit di HCI
+    var DpRecomend60P = hargaMentah60P + 200000;
+
+    var DpBulat60P = Math.ceil(DpRecomend60P / 50000) * 50000; //membulatkan kelipatan 50rb
+    var DpBulat60PShowTime = DpBulat60P.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+
+    var DpSesungguhnya60P = DpBulat60P - 199000;
+    var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
+    var Admin = 5000;
+    var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+    var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+    var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+
+    //Cicilan Tenor 6 Bulan Bunga 0%
+    konten3.innerHTML = `
+  ${doc.data().nama} <br>
+  Promo DP : ${DpBulatShowTime} <br>
+  9x : ${cicilan9asli} <br>
+  12x : ${cicilan12asli} <br>
+  15x : ${cicilan15asli} <br>
+  18x : ${cicilan18asli} <br>
+  24x : ${cicilan24asli} <br>
+  <br>
+  Promo Spesial Cicilan 6 Bulan <br>
+  DP : ${DpBulat60PShowTime} <br>
+  6x : ${cicilan60Pasli}
+`;
+  } ////// Khusus Produk diatas 15 juta ENDING ////////////
+
+
+  // TOMBOL COPY CICILAN #1
+  let copyCicilan = document.querySelector('#copycicilan' + doc.id);
+  copyCicilan.addEventListener('click', function (e) {
+    var text = document.querySelector("#cicilan" + doc.id);
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(text);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    //add to clipboard.
+    document.execCommand('copy');
+  });
+  // TOMBOL COPY CICILAN #1 ENDING
+
+
+  // TOMBOL COPY CICILAN #1
+  let copyCash = document.querySelector('#copycash' + doc.id);
+  copyCash.addEventListener('click', function (e) {
+    var text = document.querySelector(".konten2" + doc.id);
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(text);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    //add to clipboard.
+    document.execCommand('copy');
+  });
+  // TOMBOL COPY #1 ENDING
+
+  // TOMBOL COPY SPESIFIKASI #1
+  let copySpec = document.querySelector('#copyspesifikasi' + doc.id);
+  copySpec.addEventListener('click', function (e) {
+    var text = document.querySelector(".spesifikasi" + doc.id);
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(text);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    //add to clipboard.
+    document.execCommand('copy');
+  });
+  // TOMBOL SPESIFIKASI #1 ENDING
+
+  // TOMBOL COPY SPESIFIKASI #1
+  let copyBox = document.querySelector('#copyisibox' + doc.id);
+  copyBox.addEventListener('click', function (e) {
+    var text = document.querySelector(".isibox" + doc.id);
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(text);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    //add to clipboard.
+    document.execCommand('copy');
+  });
+  // TOMBOL SPESIFIKASI #1 ENDING
+
+
+
+  // HAPUS PRODUK DARI DATABASE (BUKAN REAL TIME)
+  let del = document.querySelectorAll('.delete');
+  let x;
+
+  for (x = 0; x < del.length; x++) {
+    del[x].addEventListener('click', (e) => {
+
+
+      e.stopPropagation();
+      // Mendapatkan data target dari ID yang diklik
+      let id = e.target.parentElement.parentElement.getAttribute('data-id');
+
+      db.collection('printer').doc(id).delete().then(function () {
+        window.location.reload(true);
+      });;
+
+    });
+  } // HAPUS PRODUK DARI DATABASE (BUKAN REAL TIME)
+
+  //  KLIK TO EDIT DI PRODUK SATUAN
+  let editt = document.querySelectorAll('#helo' + doc.id);
+  let t;
+  for (t = 0; t < editt.length; t++) {
+    editt[t].addEventListener('click', function (e) {
+
+      e.preventDefault();
+
+      let modal = document.querySelector('#updatemodal' + doc.id);
+      var instance = M.Modal.init(modal)
+      instance.open();
+    });
+    //  KLIK TO EDIT DI PRODUK SATUAN ENDING
+
+
+    let tombolKlik = document.querySelectorAll('#form' + doc.id );
+    let tom;
+    // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
+    for (tom = 0; tom < tombolKlik.length; tom++) {
+      tombolKlik[tom].addEventListener('submit', function (e) {
+        e.preventDefault()
+
+        let nama = document.querySelector('#update-nama-produk' + doc.id).value;
+        let harga = document.querySelector('#update-harga-produk' + doc.id).value;
+        let cashback = document.querySelector('#update-cashback' + doc.id).value;
+        let garansi = document.querySelector('#update-garansi' + doc.id).value;
+        let free = document.querySelector('#update-free-bonus' + doc.id).value;
+        let periode = document.querySelector('#periode-promo' + doc.id).value;
+        let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
+        let isibox = document.querySelector('#isibox' + doc.id).value;
+        console.log(nama);
+
+        db.collection('printer').doc(doc.id).update({
+          nama: nama,
+          harga: harga,
+          cashback: cashback,
+          garansi: garansi,
+          free: free,
+          periode: periode,
+          keterangan: keterangan,
+          spesifikasi: spesifikasi,
+          isibox: isibox
+        }).then(() => {
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
           alert(`Update ${nama} Berhasil`);
 
         });
@@ -9730,7 +10455,7 @@ function pilihMenu() {
       });
     });
     // // Real Time Penarik Data ENDING
-  } else if (pilihKategori == 'filteruv') {
+  } else if (pilihKategori == 'filter') {
     // Real Time Penarik Data
 
     db.collection(pilihKategori).orderBy('nama').onSnapshot(snapshot => {
@@ -10006,6 +10731,25 @@ function pilihMenu() {
         if (change.type == 'added') {
 
           renderTripod(change.doc);
+
+        } else if (change.type == 'removed') {
+          let li = daftarHarga.querySelector('[data-id=' + change.doc.id + ']');
+          daftarHarga.removeChild(li);
+
+        }
+      });
+    });
+    // // Real Time Penarik Data ENDING
+  } else if (pilihKategori == 'printer') {
+    // Real Time Penarik Data
+
+    db.collection(pilihKategori).orderBy('nama').onSnapshot(snapshot => {
+      let changes = snapshot.docChanges();
+
+      changes.forEach(change => {
+        if (change.type == 'added') {
+
+          renderPrinter(change.doc);
 
         } else if (change.type == 'removed') {
           let li = daftarHarga.querySelector('[data-id=' + change.doc.id + ']');

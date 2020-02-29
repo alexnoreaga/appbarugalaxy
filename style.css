@@ -1,3 +1,18 @@
+html{
+    overflow:visible;
+}
+
+nav{
+
+
+    position: fixed;
+   
+}
+
+input#myInput {
+    margin-top: 70px;
+}
+
 a.brand-logo{
     padding-left:20px;
     font-family: 'Righteous', cursive;
@@ -50,3 +65,5 @@ a.brand-logo{
 .tabs .tab a:focus, .tabs .tab a:focus.active{
     background:transparent;
 }
+
+

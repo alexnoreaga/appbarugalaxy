@@ -18,7 +18,7 @@
 <body>
     <nav>
         <div class="light-blue darken-4 nav-wrapper">
-            <a href="#" class="brand-logo">Galaxy</a>
+            <a href="#" class="brand-logo" onclick="refresh()">Galaxy</a>
             <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
             <ul class="right hide-on-med-and-down">
                 <li class="li-login" style="display:none"><a class="modal-trigger" href="#login-modal">Login</a></li>
@@ -41,7 +41,7 @@
 
 
     </ul>
-
+    <div class="spasi"></div>
     <div class="container">
         <!-- Kolom Pencarian -->
         <input type="text" id="myInput" placeholder="Cari Produk Disini ..." title="Type in a name"
@@ -58,7 +58,7 @@
             <option value="charger">Charger Kamera</option>
             <option value="cleaning">Cleaning Set / Pembersih Kamera</option>
             <option value="drybox">Dry Box</option>
-            <option value="filteruv">Filter Lensa</option>
+            <option value="filter">Filter Lensa</option>
             <option value="kabeldata">Kabel Data</option>
             <option value="actioncamacc">Kamera Action (Aksesoris)</option>
             <option value="kertasinstax">Kertas Instax</option>
@@ -69,6 +69,7 @@
             <option value="lenshood">Lens Hood</option>
             <option value="memorycard">Memory Card</option>
             <option value="microphone">Microphone Kamera / Smartphone</option>
+            <option value="printer">Printer</option>
             <option value="talistrap">Tali Strap Kamera</option>
             <option value="taskamera">Tas Kamera</option>
             <option value="antigores">Temper Glass / Anti Gores</option>
@@ -107,6 +108,7 @@
                             <option value="lenshood">Lens Hood</option>
                             <option value="memorycard">Memory Card</option>
                             <option value="microphone">Microphone Kamera / Smartphone</option>
+                            <option value="printer">Printer</option>
                             <option value="talistrap">Tali Strap Kamera</option>
                             <option value="taskamera">Tas Kamera</option>
                             <option value="antigores">Temper Glass / Anti Gores</option>
@@ -118,10 +120,10 @@
                     <input type="text" placeholder="Nama Kamera" id="nama-produk" required>
                     <br>
                     <label for="harga-produk">Masukkan Harga</label>
-                    <input type="text" placeholder="Masukkan Harga" id="harga-produk" required>
+                    <input type="number" placeholder="Masukkan Harga" id="harga-produk" required>
                     <br>
                     <label for="cashback">Cashback</label>
-                    <input type="text" placeholder="Cashback" id="cashback">
+                    <input type="number" placeholder="Cashback" id="cashback">
                     <br>
                     <label for="garansi">Garansi</label>
                     <input type="text" placeholder="Garansi" id="garansi">
@@ -188,6 +190,14 @@
 
         <div class="appendmodal"></div>
 
+        <div class="fixed-action-btn" onclick="refresh()">
+            <a class="btn-floating btn-large red">
+              <i class="large material-icons">home</i>
+            </a>
+          </div>
+      
+
+
     </div>
 
 
@@ -209,6 +219,7 @@
     appId: "1:872444378665:web:9d9a22ba7c6563afd42638",
     measurementId: "G-2NJB1DMN7V"
   };
+  
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   firebase.analytics();

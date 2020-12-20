@@ -428,7 +428,8 @@ function renderKamera(doc) {
   }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
-
+// HITUNGAN LAMA MULAI DARI SINI (DIBAWAH INI)
+/**
   ////// Khusus Produk dibawah 4.5 juta START /////////////
   let konten3 = document.querySelector('.konten3' + doc.id)
   if (hargaHCI <= 4500000 && hargaHCI >= 1500000) {
@@ -758,6 +759,224 @@ function renderKamera(doc) {
     `;
   } ////// Khusus Produk diatas 15 juta ENDING ////////////
 
+ **/ 
+// HITUNGAN LAMA BERAKHIR DiSINI (DIATAS INI)
+
+let konten3 = document.querySelector('.konten3' + doc.id)
+if (hargaHCI <= 5625000 && hargaHCI >= 1000000) {
+  ////////////////////Cicilan DP Normal//////////////////////////
+  var Dp = (hargaHCI * 20 / 100) + 200000; // mengkonversikan 20% dari harga asli ditambah biaya adm 200rb
+  var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
+  // DpBulatShowTime hanya untuk tampil dihalaman depan dengan ada koma disetiap 3 digit 0
+  var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  var DpSesungguhnya = DpBulat - 199000;
+  var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
+  var BungaNormal = (HargaSesungguhnya * bunga1224 / 100); // Seharusnya harga asli
+  var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100); // Seharusnya harga asli
+  var Admin = 5000;
+  var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+
+  var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+
+  //toLocaleString untuk menambahkan koma disetiap 3 digit
+  var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
+  //Cicilan Tenor Normal
+
+  //Cicilan Tenor 6 Bulan Bunga 0%
+
+  var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+  var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 5.5% admin
+  var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
+  var DpMentah60P = (hargaBulat60P * 30 / 100) + 200000; // mengkonversikan 10% dari harga asli
+  var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
+  var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  var DpSesungguhnya60P = DpTerbaru60P - 199000;
+  var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
+  //var Bunga6099 = (hargaBulat6099 *2.69 / 100);
+  var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+  var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+  var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+
+  konten3.innerHTML = `
+  ${doc.data().nama} <br>
+  Promo DP : ${DpBulatShowTime} <br>
+  9x : ${cicilan9asli} <br>
+  <br>
+  Promo Spesial Cicilan 6 Bulan <br>
+  DP : ${DpTerbaru60PShowTime} <br>
+  6x : ${cicilan60Pasli}
+`;
+
+} ////// Khusus Produk dibawah 5.625.000 juta ENDING/////////////
+
+else if (hargaHCI <= 21400000 && hargaHCI > 5625000) {
+
+  ////////////////////Cicilan Tenor Normal//////////////////////////
+  var Dp = (hargaHCI * 30 / 100) + 200000; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
+  var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
+  var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  var DpSesungguhnya = DpBulat - 199000;
+  var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
+  var BungaNormal = (HargaSesungguhnya * bunga1224 / 100); // Seharusnya harga asli
+  var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100); // Seharusnya harga asli
+  var Admin = 5000;
+  var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+
+  var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+
+  //toLocaleString untuk menambahkan koma disetiap 3 digit
+  var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
+  ////////////////////Cicilan Tenor Normal ENDING//////////////////////////
+
+  //Cicilan Tenor 6 Bulan Bunga 0%
+  var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+  var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
+  // Problem dikolom ini
+  var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
+  var hargaBulat60PShowTime = hargaBulat60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  var hargaTerbaru60PP = hargaBulat60P; //untuk mengecek bahwa setelah ditambah 5.5% apakah masih dibawah 15jt jika diatas 15jt maka berjalan rumus IF dibawah
+
+  if (hargaTerbaru60PP > 21400000) {
+    DpMentah60P = (hargaTerbaru60PP - 21400000) + 6420000 + 200000;
+  } else {
+    DpMentah60P = (hargaBulat60P * 30 / 100) + 200000;
+  }
+
+  var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
+
+  var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  var DpSesungguhnya60P = DpTerbaru60P - 199000;
+  var HargaSesungguhnya60P = hargaTerbaru60PP - DpSesungguhnya60P;
+
+  var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+  var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+  var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  //Cicilan Tenor 6 Bulan Bunga 0%
+  konten3.innerHTML = `
+${doc.data().nama} <br>
+Promo DP : ${DpBulatShowTime} <br>
+9x : ${cicilan9asli} <br>
+
+<br>
+Promo Spesial Cicilan 6 Bulan <br>
+DP : ${DpTerbaru60PShowTime} <br>
+6x : ${cicilan60Pasli}
+`;
+
+} ////// Khusus Produk dibawah 21.400.000 juta ENDING ////////////
+ ////// Khusus Produk diatas 15 juta START ////////////
+ else if (hargaHCI > 21400000) {
+  //////TENOR NORMAL START/////////////
+  var hargaMentah = (hargaHCI - 21400000) + 6420000; //15jt adalah batas maksimal kredit di HCI
+  var DpRecomend = hargaMentah + 200000; // 1.7jt ada lah 10% dari 15jt (1.5jt) + biaya admin 200rb
+  var DpBulat = Math.ceil(DpRecomend / 50000) * 50000; //membulatkan kelipatan 50rb
+  var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  var DpSesungguhnya = DpBulat - 199000;
+  var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
+  var BungaNormal = (HargaSesungguhnya * bunga1224 / 100);
+  var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100);
+  var Admin = 5000;
+  var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+
+  var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+
+  //toLocaleString untuk menambahkan koma disetiap 3 digit
+  var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+
+  //////////// TENOR NORMAL ENDING ///////////////////////////////////////////////
+
+  //Cicilan Tenor 6 Bulan Bunga 0%
+  var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+  var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
+  var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 50rb
+
+  var hargaMentah60P = (hargaBulat60P - 21400000)+ 6420000; //15jt adalah batas maksimal kredit di HCI
+  var DpRecomend60P = hargaMentah60P + 200000;
+
+  var DpBulat60P = Math.ceil(DpRecomend60P / 50000) * 50000; //membulatkan kelipatan 50rb
+  var DpBulat60PShowTime = DpBulat60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+
+  var DpSesungguhnya60P = DpBulat60P - 199000;
+  var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
+  var Admin = 5000;
+  var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+  var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+  var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+
+  //Cicilan Tenor 6 Bulan Bunga 0%
+  konten3.innerHTML = `
+${doc.data().nama} <br>
+Promo DP : ${DpBulatShowTime} <br>
+9x : ${cicilan9asli} <br>
+
+<br>
+Promo Spesial Cicilan 6 Bulan <br>
+DP : ${DpBulat60PShowTime} <br>
+6x : ${cicilan60Pasli}
+`;
+}else{
+  konten3.innerHTML = `
+  Maaf Produk ${doc.data().nama} belum dapat dikredit <br>
+  
+  `;
+} ////// Khusus Produk diatas 15 juta ENDING ////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // TOMBOL COPY CICILAN #1
   let copyCicilan = document.querySelector('#copycicilan' + doc.id);
@@ -770,8 +989,12 @@ function renderKamera(doc) {
     selection.addRange(range);
     //add to clipboard.
     document.execCommand('copy');
+    var toastHTML = '<span>Berhasil di Copy</span>';
+    M.toast({html: toastHTML})
+
   });
   // TOMBOL COPY CICILAN #1 ENDING
+
 
 
   // TOMBOL COPY CICILAN #1
@@ -785,6 +1008,7 @@ function renderKamera(doc) {
     selection.addRange(range);
     //add to clipboard.
     document.execCommand('copy');
+    
   });
   // TOMBOL COPY #1 ENDING
 
@@ -1149,7 +1373,7 @@ function renderLensa(doc) {
   }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
-
+/** 
   ////// Khusus Produk dibawah 4.5 juta START /////////////
   let konten3 = document.querySelector('.konten3' + doc.id)
   if (hargaHCI <= 4500000 && hargaHCI >= 1500000) {
@@ -1478,6 +1702,213 @@ function renderLensa(doc) {
     
     `;
   } ////// Khusus Produk diatas 15 juta ENDING ////////////
+*/
+
+let konten3 = document.querySelector('.konten3' + doc.id)
+if (hargaHCI <= 5625000 && hargaHCI >= 1000000) {
+  ////////////////////Cicilan DP Normal//////////////////////////
+  var Dp = (hargaHCI * 20 / 100) + 200000; // mengkonversikan 20% dari harga asli ditambah biaya adm 200rb
+  var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
+  // DpBulatShowTime hanya untuk tampil dihalaman depan dengan ada koma disetiap 3 digit 0
+  var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  var DpSesungguhnya = DpBulat - 199000;
+  var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
+  var BungaNormal = (HargaSesungguhnya * bunga1224 / 100); // Seharusnya harga asli
+  var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100); // Seharusnya harga asli
+  var Admin = 5000;
+  var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+
+  var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+
+  //toLocaleString untuk menambahkan koma disetiap 3 digit
+  var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
+  //Cicilan Tenor Normal
+
+  //Cicilan Tenor 6 Bulan Bunga 0%
+
+  var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+  var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 5.5% admin
+  var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
+  var DpMentah60P = (hargaBulat60P * 30 / 100) + 200000; // mengkonversikan 10% dari harga asli
+  var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
+  var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  var DpSesungguhnya60P = DpTerbaru60P - 199000;
+  var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
+  //var Bunga6099 = (hargaBulat6099 *2.69 / 100);
+  var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+  var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+  var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+
+  konten3.innerHTML = `
+  ${doc.data().nama} <br>
+  Promo DP : ${DpBulatShowTime} <br>
+  9x : ${cicilan9asli} <br>
+  <br>
+  Promo Spesial Cicilan 6 Bulan <br>
+  DP : ${DpTerbaru60PShowTime} <br>
+  6x : ${cicilan60Pasli}
+`;
+
+} ////// Khusus Produk dibawah 5.625.000 juta ENDING/////////////
+
+else if (hargaHCI <= 21400000 && hargaHCI > 5625000) {
+
+  ////////////////////Cicilan Tenor Normal//////////////////////////
+  var Dp = (hargaHCI * 30 / 100) + 200000; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
+  var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
+  var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  var DpSesungguhnya = DpBulat - 199000;
+  var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
+  var BungaNormal = (HargaSesungguhnya * bunga1224 / 100); // Seharusnya harga asli
+  var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100); // Seharusnya harga asli
+  var Admin = 5000;
+  var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+
+  var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+
+  //toLocaleString untuk menambahkan koma disetiap 3 digit
+  var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
+  ////////////////////Cicilan Tenor Normal ENDING//////////////////////////
+
+  //Cicilan Tenor 6 Bulan Bunga 0%
+  var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+  var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
+  // Problem dikolom ini
+  var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
+  var hargaBulat60PShowTime = hargaBulat60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  var hargaTerbaru60PP = hargaBulat60P; //untuk mengecek bahwa setelah ditambah 5.5% apakah masih dibawah 15jt jika diatas 15jt maka berjalan rumus IF dibawah
+
+  if (hargaTerbaru60PP > 21400000) {
+    DpMentah60P = (hargaTerbaru60PP - 21400000) + 6420000 + 200000;
+  } else {
+    DpMentah60P = (hargaBulat60P * 30 / 100) + 200000;
+  }
+
+  var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
+
+  var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  var DpSesungguhnya60P = DpTerbaru60P - 199000;
+  var HargaSesungguhnya60P = hargaTerbaru60PP - DpSesungguhnya60P;
+
+  var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+  var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+  var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  //Cicilan Tenor 6 Bulan Bunga 0%
+  konten3.innerHTML = `
+${doc.data().nama} <br>
+Promo DP : ${DpBulatShowTime} <br>
+9x : ${cicilan9asli} <br>
+
+<br>
+Promo Spesial Cicilan 6 Bulan <br>
+DP : ${DpTerbaru60PShowTime} <br>
+6x : ${cicilan60Pasli}
+`;
+
+} ////// Khusus Produk dibawah 21.400.000 juta ENDING ////////////
+ ////// Khusus Produk diatas 15 juta START ////////////
+ else if (hargaHCI > 21400000) {
+  //////TENOR NORMAL START/////////////
+  var hargaMentah = (hargaHCI - 21400000) + 6420000; //15jt adalah batas maksimal kredit di HCI
+  var DpRecomend = hargaMentah + 200000; // 1.7jt ada lah 10% dari 15jt (1.5jt) + biaya admin 200rb
+  var DpBulat = Math.ceil(DpRecomend / 50000) * 50000; //membulatkan kelipatan 50rb
+  var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  var DpSesungguhnya = DpBulat - 199000;
+  var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
+  var BungaNormal = (HargaSesungguhnya * bunga1224 / 100);
+  var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100);
+  var Admin = 5000;
+  var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+
+  var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+
+  //toLocaleString untuk menambahkan koma disetiap 3 digit
+  var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+
+  //////////// TENOR NORMAL ENDING ///////////////////////////////////////////////
+
+  //Cicilan Tenor 6 Bulan Bunga 0%
+  var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+  var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
+  var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 50rb
+
+  var hargaMentah60P = (hargaBulat60P - 21400000)+ 6420000; //15jt adalah batas maksimal kredit di HCI
+  var DpRecomend60P = hargaMentah60P + 200000;
+
+  var DpBulat60P = Math.ceil(DpRecomend60P / 50000) * 50000; //membulatkan kelipatan 50rb
+  var DpBulat60PShowTime = DpBulat60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+
+  var DpSesungguhnya60P = DpBulat60P - 199000;
+  var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
+  var Admin = 5000;
+  var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+  var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+  var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+
+  //Cicilan Tenor 6 Bulan Bunga 0%
+  konten3.innerHTML = `
+${doc.data().nama} <br>
+Promo DP : ${DpBulatShowTime} <br>
+9x : ${cicilan9asli} <br>
+
+<br>
+Promo Spesial Cicilan 6 Bulan <br>
+DP : ${DpBulat60PShowTime} <br>
+6x : ${cicilan60Pasli}
+`;
+}else{
+  konten3.innerHTML = `
+  Maaf Produk ${doc.data().nama} belum dapat dikredit <br>
+  
+  `;
+} ////// Khusus Produk diatas 15 juta ENDING ////////////
+
+
+
+
+
+
 
 
   // TOMBOL COPY CICILAN #1
@@ -1491,6 +1922,8 @@ function renderLensa(doc) {
     selection.addRange(range);
     //add to clipboard.
     document.execCommand('copy');
+    var toastHTML = '<span>Berhasil di Copy</span>';
+    M.toast({html: toastHTML})
   });
   // TOMBOL COPY CICILAN #1 ENDING
 
@@ -1636,7 +2069,7 @@ function renderGimbal(doc) {
   var free = new Object();
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
-  free['Garansi'] = doc.data().periode;
+  free['Garansi'] = doc.data().garansi;
   free['Info'] = doc.data().keterangan;
 
 
@@ -1739,7 +2172,7 @@ function renderGimbal(doc) {
 
   la.innerHTML = `
            <div class="modal" id="updatemodal${doc.id}">
-              <form id="${doc.id}form">
+              <form id="form${doc.id}">
                <label for="update-nama-produk">Nama Kamera</label>
                <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                <br>
@@ -1870,7 +2303,7 @@ function renderGimbal(doc) {
   }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
-
+/** 
   ////// Khusus Produk dibawah 4.5 juta START /////////////
   let konten3 = document.querySelector('.konten3' + doc.id)
   if (hargaHCI <= 4500000 && hargaHCI >= 1500000) {
@@ -2194,6 +2627,206 @@ function renderGimbal(doc) {
       6x : ${cicilan60Pasli}
     `;
   } ////// Khusus Produk diatas 15 juta ENDING ////////////
+*/
+let konten3 = document.querySelector('.konten3' + doc.id)
+if (hargaHCI <= 5625000 && hargaHCI >= 1000000) {
+  ////////////////////Cicilan DP Normal//////////////////////////
+  var Dp = (hargaHCI * 20 / 100) + 200000; // mengkonversikan 20% dari harga asli ditambah biaya adm 200rb
+  var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
+  // DpBulatShowTime hanya untuk tampil dihalaman depan dengan ada koma disetiap 3 digit 0
+  var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  var DpSesungguhnya = DpBulat - 199000;
+  var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
+  var BungaNormal = (HargaSesungguhnya * bunga1224 / 100); // Seharusnya harga asli
+  var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100); // Seharusnya harga asli
+  var Admin = 5000;
+  var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+
+  var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+
+  //toLocaleString untuk menambahkan koma disetiap 3 digit
+  var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
+  //Cicilan Tenor Normal
+
+  //Cicilan Tenor 6 Bulan Bunga 0%
+
+  var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+  var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 5.5% admin
+  var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
+  var DpMentah60P = (hargaBulat60P * 30 / 100) + 200000; // mengkonversikan 10% dari harga asli
+  var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
+  var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  var DpSesungguhnya60P = DpTerbaru60P - 199000;
+  var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
+  //var Bunga6099 = (hargaBulat6099 *2.69 / 100);
+  var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+  var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+  var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+
+  konten3.innerHTML = `
+  ${doc.data().nama} <br>
+  Promo DP : ${DpBulatShowTime} <br>
+  9x : ${cicilan9asli} <br>
+  <br>
+  Promo Spesial Cicilan 6 Bulan <br>
+  DP : ${DpTerbaru60PShowTime} <br>
+  6x : ${cicilan60Pasli}
+`;
+
+} ////// Khusus Produk dibawah 5.625.000 juta ENDING/////////////
+
+else if (hargaHCI <= 21400000 && hargaHCI > 5625000) {
+
+  ////////////////////Cicilan Tenor Normal//////////////////////////
+  var Dp = (hargaHCI * 30 / 100) + 200000; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
+  var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
+  var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  var DpSesungguhnya = DpBulat - 199000;
+  var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
+  var BungaNormal = (HargaSesungguhnya * bunga1224 / 100); // Seharusnya harga asli
+  var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100); // Seharusnya harga asli
+  var Admin = 5000;
+  var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+
+  var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+
+  //toLocaleString untuk menambahkan koma disetiap 3 digit
+  var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
+  ////////////////////Cicilan Tenor Normal ENDING//////////////////////////
+
+  //Cicilan Tenor 6 Bulan Bunga 0%
+  var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+  var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
+  // Problem dikolom ini
+  var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
+  var hargaBulat60PShowTime = hargaBulat60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  var hargaTerbaru60PP = hargaBulat60P; //untuk mengecek bahwa setelah ditambah 5.5% apakah masih dibawah 15jt jika diatas 15jt maka berjalan rumus IF dibawah
+
+  if (hargaTerbaru60PP > 21400000) {
+    DpMentah60P = (hargaTerbaru60PP - 21400000) + 6420000 + 200000;
+  } else {
+    DpMentah60P = (hargaBulat60P * 30 / 100) + 200000;
+  }
+
+  var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
+
+  var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  var DpSesungguhnya60P = DpTerbaru60P - 199000;
+  var HargaSesungguhnya60P = hargaTerbaru60PP - DpSesungguhnya60P;
+
+  var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+  var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+  var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  //Cicilan Tenor 6 Bulan Bunga 0%
+  konten3.innerHTML = `
+${doc.data().nama} <br>
+Promo DP : ${DpBulatShowTime} <br>
+9x : ${cicilan9asli} <br>
+
+<br>
+Promo Spesial Cicilan 6 Bulan <br>
+DP : ${DpTerbaru60PShowTime} <br>
+6x : ${cicilan60Pasli}
+`;
+
+} ////// Khusus Produk dibawah 21.400.000 juta ENDING ////////////
+ ////// Khusus Produk diatas 15 juta START ////////////
+ else if (hargaHCI > 21400000) {
+  //////TENOR NORMAL START/////////////
+  var hargaMentah = (hargaHCI - 21400000) + 6420000; //15jt adalah batas maksimal kredit di HCI
+  var DpRecomend = hargaMentah + 200000; // 1.7jt ada lah 10% dari 15jt (1.5jt) + biaya admin 200rb
+  var DpBulat = Math.ceil(DpRecomend / 50000) * 50000; //membulatkan kelipatan 50rb
+  var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+  var DpSesungguhnya = DpBulat - 199000;
+  var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
+  var BungaNormal = (HargaSesungguhnya * bunga1224 / 100);
+  var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100);
+  var Admin = 5000;
+  var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+
+  var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+
+  //toLocaleString untuk menambahkan koma disetiap 3 digit
+  var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+
+  //////////// TENOR NORMAL ENDING ///////////////////////////////////////////////
+
+  //Cicilan Tenor 6 Bulan Bunga 0%
+  var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+  var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
+  var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 50rb
+
+  var hargaMentah60P = (hargaBulat60P - 21400000)+ 6420000; //15jt adalah batas maksimal kredit di HCI
+  var DpRecomend60P = hargaMentah60P + 200000;
+
+  var DpBulat60P = Math.ceil(DpRecomend60P / 50000) * 50000; //membulatkan kelipatan 50rb
+  var DpBulat60PShowTime = DpBulat60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+
+  var DpSesungguhnya60P = DpBulat60P - 199000;
+  var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
+  var Admin = 5000;
+  var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+  var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+  var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+
+  //Cicilan Tenor 6 Bulan Bunga 0%
+  konten3.innerHTML = `
+${doc.data().nama} <br>
+Promo DP : ${DpBulatShowTime} <br>
+9x : ${cicilan9asli} <br>
+
+<br>
+Promo Spesial Cicilan 6 Bulan <br>
+DP : ${DpBulat60PShowTime} <br>
+6x : ${cicilan60Pasli}
+`;
+}else{
+  konten3.innerHTML = `
+  Maaf Produk ${doc.data().nama} belum dapat dikredit <br>
+  
+  `;
+} ////// Khusus Produk diatas 15 juta ENDING ////////////
 
 
   // TOMBOL COPY CICILAN #1
@@ -2207,6 +2840,8 @@ function renderGimbal(doc) {
     selection.addRange(range);
     //add to clipboard.
     document.execCommand('copy');
+    var toastHTML = '<span>Berhasil di Copy</span>';
+    M.toast({html: toastHTML})
   });
   // TOMBOL COPY CICILAN #1 ENDING
 
@@ -2351,7 +2986,7 @@ function renderDrone(doc) {
   var free = new Object();
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
-  free['Garansi'] = doc.data().periode;
+  free['Garansi'] = doc.data().garansi;
   free['Info'] = doc.data().keterangan;
 
 
@@ -2454,7 +3089,7 @@ function renderDrone(doc) {
 
   la.innerHTML = `
              <div class="modal" id="updatemodal${doc.id}">
-                <form id="${doc.id}form">
+                <form id="form${doc.id}">
                  <label for="update-nama-produk">Nama Kamera</label>
                  <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                  <br>
@@ -2765,6 +3400,8 @@ function renderDrone(doc) {
     selection.addRange(range);
     //add to clipboard.
     document.execCommand('copy');
+    var toastHTML = '<span>Berhasil di Copy</span>';
+    M.toast({html: toastHTML})
   });
   // TOMBOL COPY CICILAN #1 ENDING
 
@@ -3004,7 +3641,7 @@ function renderAdapterLensa(doc) {
 
   la.innerHTML = `
                <div class="modal" id="updatemodal${doc.id}">
-                  <form id="${doc.id}form">
+                  <form id="form${doc.id}">
                    <label for="update-nama-produk">Nama Kamera</label>
                    <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                    <br>
@@ -3074,20 +3711,20 @@ function renderAdapterLensa(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -3228,7 +3865,7 @@ function renderBaterai(doc) {
   var free = new Object();
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
-  free['Garansi'] = doc.data().periode;
+  free['Garansi'] = doc.data().garansi;
   free['Info'] = doc.data().keterangan;
 
 
@@ -3323,7 +3960,7 @@ function renderBaterai(doc) {
 
   la.innerHTML = `
          <div class="modal" id="updatemodal${doc.id}">
-            <form id="${doc.id}form">
+            <form id="form${doc.id}">
              <label for="update-nama-produk">Nama Kamera</label>
              <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
              <br>
@@ -3393,20 +4030,20 @@ function renderBaterai(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0 || `${free[property]}` == NaN || `${free[property]}` == null) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -3641,7 +4278,7 @@ function renderCardCase(doc) {
 
   la.innerHTML = `
        <div class="modal" id="updatemodal${doc.id}">
-          <form id="${doc.id}form">
+          <form id="form${doc.id}">
            <label for="update-nama-produk">Nama Kamera</label>
            <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
            <br>
@@ -3711,20 +4348,20 @@ function renderCardCase(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -3958,7 +4595,7 @@ function renderCharger(doc) {
 
   la.innerHTML = `
          <div class="modal" id="updatemodal${doc.id}">
-            <form id="${doc.id}form">
+            <form id="form${doc.id}">
              <label for="update-nama-produk">Nama Kamera</label>
              <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
              <br>
@@ -4028,20 +4665,20 @@ function renderCharger(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -4275,7 +4912,7 @@ function renderCleaning(doc) {
 
   la.innerHTML = `
            <div class="modal" id="updatemodal${doc.id}">
-              <form id="${doc.id}form">
+              <form id="form${doc.id}">
                <label for="update-nama-produk">Nama Kamera</label>
                <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                <br>
@@ -4345,20 +4982,20 @@ function renderCleaning(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -4592,7 +5229,7 @@ function renderDryBox(doc) {
 
   la.innerHTML = `
              <div class="modal" id="updatemodal${doc.id}">
-                <form id="${doc.id}form">
+                <form id="form${doc.id}">
                  <label for="update-nama-produk">Nama Kamera</label>
                  <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                  <br>
@@ -4662,20 +5299,20 @@ function renderDryBox(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -4909,7 +5546,7 @@ function renderFilterUv(doc) {
 
   la.innerHTML = `
              <div class="modal" id="updatemodal${doc.id}">
-                <form id="${doc.id}form">
+                <form id="form${doc.id}">
                  <label for="update-nama-produk">Nama Kamera</label>
                  <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                  <br>
@@ -4979,20 +5616,20 @@ function renderFilterUv(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -5226,7 +5863,7 @@ function renderKabelData(doc) {
 
   la.innerHTML = `
              <div class="modal" id="updatemodal${doc.id}">
-                <form id="${doc.id}form">
+                <form id="form${doc.id}">
                  <label for="update-nama-produk">Nama Kamera</label>
                  <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                  <br>
@@ -5296,20 +5933,20 @@ function renderKabelData(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -5543,7 +6180,7 @@ function renderActionCamAcc(doc) {
 
   la.innerHTML = `
              <div class="modal" id="updatemodal${doc.id}">
-                <form id="${doc.id}form">
+                <form id="form${doc.id}">
                  <label for="update-nama-produk">Nama Kamera</label>
                  <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                  <br>
@@ -5613,20 +6250,20 @@ function renderActionCamAcc(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -5860,7 +6497,7 @@ function renderKertasInstax(doc) {
 
   la.innerHTML = `
              <div class="modal" id="updatemodal${doc.id}">
-                <form id="${doc.id}form">
+                <form id="form${doc.id}">
                  <label for="update-nama-produk">Nama Kamera</label>
                  <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                  <br>
@@ -5930,20 +6567,20 @@ function renderKertasInstax(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -6177,7 +6814,7 @@ function renderLeatherCase(doc) {
 
   la.innerHTML = `
              <div class="modal" id="updatemodal${doc.id}">
-                <form id="${doc.id}form">
+                <form id="form${doc.id}">
                  <label for="update-nama-produk">Nama Kamera</label>
                  <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                  <br>
@@ -6247,20 +6884,20 @@ function renderLeatherCase(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -6494,7 +7131,7 @@ function renderLampuFlash(doc) {
 
   la.innerHTML = `
              <div class="modal" id="updatemodal${doc.id}">
-                <form id="${doc.id}form">
+                <form id="form${doc.id}">
                  <label for="update-nama-produk">Nama Kamera</label>
                  <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                  <br>
@@ -6564,20 +7201,20 @@ function renderLampuFlash(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -6811,7 +7448,7 @@ function renderLampuVideo(doc) {
 
   la.innerHTML = `
              <div class="modal" id="updatemodal${doc.id}">
-                <form id="${doc.id}form">
+                <form id="form${doc.id}">
                  <label for="update-nama-produk">Nama Kamera</label>
                  <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                  <br>
@@ -6881,20 +7518,20 @@ function renderLampuVideo(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -7128,7 +7765,7 @@ function renderLensCap(doc) {
 
   la.innerHTML = `
              <div class="modal" id="updatemodal${doc.id}">
-                <form id="${doc.id}form">
+                <form id="form${doc.id}">
                  <label for="update-nama-produk">Nama Kamera</label>
                  <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                  <br>
@@ -7198,20 +7835,20 @@ function renderLensCap(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -7445,7 +8082,7 @@ function renderLensHood(doc) {
 
   la.innerHTML = `
              <div class="modal" id="updatemodal${doc.id}">
-                <form id="${doc.id}form">
+                <form id="form${doc.id}">
                  <label for="update-nama-produk">Nama Kamera</label>
                  <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                  <br>
@@ -7515,20 +8152,20 @@ function renderLensHood(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -7762,7 +8399,7 @@ function renderMemoryCard(doc) {
 
   la.innerHTML = `
              <div class="modal" id="updatemodal${doc.id}">
-                <form id="${doc.id}form">
+                <form id="form${doc.id}">
                  <label for="update-nama-produk">Nama Kamera</label>
                  <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                  <br>
@@ -7832,20 +8469,20 @@ function renderMemoryCard(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -8079,7 +8716,7 @@ function renderMicrophone(doc) {
 
   la.innerHTML = `
              <div class="modal" id="updatemodal${doc.id}">
-                <form id="${doc.id}form">
+                <form id="form${doc.id}">
                  <label for="update-nama-produk">Nama Kamera</label>
                  <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                  <br>
@@ -8149,20 +8786,20 @@ function renderMicrophone(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -8396,7 +9033,7 @@ function renderTaliStrap(doc) {
 
   la.innerHTML = `
              <div class="modal" id="updatemodal${doc.id}">
-                <form id="${doc.id}form">
+                <form id="form${doc.id}">
                  <label for="update-nama-produk">Nama Kamera</label>
                  <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                  <br>
@@ -8466,20 +9103,20 @@ function renderTaliStrap(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -8713,7 +9350,7 @@ function renderTasKamera(doc) {
 
   la.innerHTML = `
              <div class="modal" id="updatemodal${doc.id}">
-                <form id="${doc.id}form">
+                <form id="form${doc.id}">
                  <label for="update-nama-produk">Nama Kamera</label>
                  <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                  <br>
@@ -8783,20 +9420,20 @@ function renderTasKamera(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -9030,7 +9667,7 @@ function renderAntiGores(doc) {
 
   la.innerHTML = `
              <div class="modal" id="updatemodal${doc.id}">
-                <form id="${doc.id}form">
+                <form id="form${doc.id}">
                  <label for="update-nama-produk">Nama Kamera</label>
                  <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                  <br>
@@ -9100,20 +9737,20 @@ function renderAntiGores(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -9347,7 +9984,7 @@ function renderTripod(doc) {
 
   la.innerHTML = `
              <div class="modal" id="updatemodal${doc.id}">
-                <form class="${doc.id}form">
+                <form class="form${doc.id}">
                  <label for="update-nama-produk">Nama Kamera</label>
                  <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
                  <br>
@@ -9417,20 +10054,20 @@ function renderTripod(doc) {
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
@@ -10140,6 +10777,8 @@ function renderPrinter(doc) {
     selection.addRange(range);
     //add to clipboard.
     document.execCommand('copy');
+    var toastHTML = '<span>Berhasil di Copy</span>';
+    M.toast({html: toastHTML})
   });
   // TOMBOL COPY CICILAN #1 ENDING
 

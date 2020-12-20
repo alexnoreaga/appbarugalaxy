@@ -59,7 +59,7 @@
             <option value="cleaning">Cleaning Set / Pembersih Kamera</option>
             <option value="drybox">Dry Box</option>
             <option value="filter">Filter Lensa</option>
-            <option value="kabeldata">Kabel Data</option>
+            <option value="kabeldata">Kabel Data / Audio</option>
             <option value="actioncamacc">Kamera Action (Aksesoris)</option>
             <option value="kertasinstax">Kertas Instax</option>
             <option value="leathercase">Leather Case / Sarung Kulit</option>
@@ -74,11 +74,12 @@
             <option value="taskamera">Tas Kamera</option>
             <option value="antigores">Temper Glass / Anti Gores</option>
             <option value="tripod">Tripod</option>
+            <option value="ulanzi">Ulanzi Aksesoris</option>
+            <option value="acclain">Aksesoris Lainnya</option>
 
         </select>
         <label>Kategori</label>
         <a href="#" class="center btn red tombol-reset" id="load-produk" onclick="refresh()">Reset Kategori</a>
-
 
         <!-- MODAL PENDAFTARAN PRODUK-->
         <div class="container">
@@ -113,6 +114,8 @@
                             <option value="taskamera">Tas Kamera</option>
                             <option value="antigores">Temper Glass / Anti Gores</option>
                             <option value="tripod">Tripod</option>
+                            <option value="ulanzi">Ulanzi Aksesoris</option>
+                            <option value="acclain">Aksesoris Lainnya</option>
                         </select>
                         <label>Kategori</label>
                     </div>
@@ -131,6 +134,9 @@
                     <label for="free-bonus">Free</label>
                     <input type="text" placeholder="Free" id="free-bonus">
                     <br>
+                    <label for="free-claim">Free Claim</label>
+                    <input type="text" placeholder="Free Klaim" id="free-claim">
+                    <br>
                     <label for="periode-promo">Periode Promo</label>
                     <input type="text" placeholder="Periode Promo" id="periode-promo">
                     <br>
@@ -139,6 +145,11 @@
                               <label for="keterangan">Keterangan</label>
                             </div>
                             <br>
+                            <div class="input-field col s12">
+                                <textarea id="linkproduk" class="materialize-textarea"></textarea>
+                                <label for="linkproduk">Link Produk</label>
+                              </div>
+                              <br>
                             <div class="input-field col s12">
                               <textarea id="spesifikasi" class="materialize-textarea"></textarea>
                               <label for="spesifikasi">Spesifikasi</label>
@@ -179,16 +190,160 @@
 
 
 
-
         <ul id="daftar-harga" class="collapsible">
-
+            
         </ul>
+
+        <div class="center">
+            Untuk setiap produk yang belum diupload ke website Galaxycamera.id akan otomatis berwarna <span class="bold red-text darken-3">merah</span> pada nama produk. 
+        </div>
+
+        <br>
+        <div class="center">
+             <!-- Modal Trigger -->
+                <a class="waves-effect waves-light btn modal-trigger red" href="#modal1">Info Paket</a>
+
+                <!-- Modal Structure -->
+                <div id="modal1" class="modal">
+                    <div class="modal-content">
+                        <h6 class="red-text bold">Tidak untuk dilihat Customer</h6>
+                        <table class="centered">
+                            <thead>
+                              <tr>
+                                  <th>Nama Paket</th>
+                                  <th>Nominal</th>
+                                  <th>Minimal Jumlah Produk</th>
+                                  <th>Discount Customer</th>
+                                  <th>Reward</th>
+                              </tr>
+                            </thead>
+                    
+                            <tbody>
+                              <tr>
+                                <td>Paket A</td>
+                                <td>200rb - 300rb</td>
+                                <td>2</td>
+                                <td>10.000</td>
+                                <td>15.000</td>
+                              </tr>
+                              <tr>
+                                <td>Paket B</td>
+                                <td>300rb - 400rb</td>
+                                <td>3</td>
+                                <td>20.000</td>
+                                <td>30.000</td>
+                              </tr>
+ 
+                              <tr>
+                                <td>Paket B2</td>
+                                <td>300rb - 400rb</td>
+                                <td>2</td>
+                                <td>15.000</td>
+                                <td>20.000</td>
+                              </tr>
+
+                              <tr>
+                                <td>Paket C</td>
+                                <td>400rb - 500rb</td>
+                                <td>3</td>
+                                <td>20.000</td>
+                                <td>50.000</td>
+                              </tr>
+                              <tr>
+                                <td>Paket C2</td>
+                                <td>400rb - 500rb</td>
+                                <td>2</td>
+                                <td>15.000</td>
+                                <td>30.000</td>
+                              </tr>
+                              <tr>
+                                <td>Paket D</td>
+                                <td>500rb - 700rb</td>
+                                <td>3</td>
+                                <td>20.000</td>
+                                <td>50.000</td>
+                              </tr>
+                              <tr>
+                                <td>Paket D2</td>
+                                <td>500rb - 700rb</td>
+                                <td>2</td>
+                                <td>15.000</td>
+                                <td>30.000</td>
+                              </tr>
+                              <tr>
+                                <td>Paket E</td>
+                                <td>700rb - 1jt</td>
+                                <td>3</td>
+                                <td>20.000</td>
+                                <td>50.000</td>
+                              </tr>
+
+                              <tr>
+                                <td>Paket E2</td>
+                                <td>700rb - 1jt</td>
+                                <td>2</td>
+                                <td>15.000</td>
+                                <td>40.000</td>
+                              </tr>
+                              <tr>
+                                <td>Paket F</td>
+                                <td>1jt - 1,5jt</td>
+                                <td>3</td>
+                                <td>20.000</td>
+                                <td>50.000</td>
+                              </tr>
+
+                              <tr>
+                                <td>Paket F2</td>
+                                <td>1jt - 1,5jt</td>
+                                <td>2</td>
+                                <td>15.000</td>
+                                <td>40.000</td>
+                              </tr>
+
+                              <tr>
+                                <td>Paket G</td>
+                                <td>1,5jt - 2,5jt</td>
+                                <td>3</td>
+                                <td>20.000</td>
+                                <td>50.000</td>
+                              </tr>
+
+                              <tr>
+                                <td>Paket G2</td>
+                                <td>1,5jt - 2,5jt</td>
+                                <td>2</td>
+                                <td>15.000</td>
+                                <td>40.000</td>
+                              </tr>
+                              <tr>
+                                <td>Anti Gores</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>20.000</td>
+                              </tr>
+                            </tbody>
+                          </table>
+
+                          
+                        <p>Diskon untuk customer wajib dicantumkan dan tercetak di Invoice (Bukan coretan manual). Silahkan tanya admin cara memberi diskon langsung melalui Canasoft.</p>
+                        <p>Paket dianggap valid apabila penjualan paket disertai dengan pembelian Unit Kamera/Drone/Lensa/Gimbal</p>
+                        <p>Nota penjualan paket wajib ditanda tangani oleh customer sesuai tanda tangan pembelian unit kamera</p>
+                    
+                    </div>
+                    <div class="modal-footer">
+                    <a href="#!" class="modal-close waves-effect waves-green btn-flat">Tutup</a>
+                    </div>
+                </div>
+        </div>
 
 
         <div class="spesifikasi"></div>
 
-
         <div class="appendmodal"></div>
+
+
 
         <div class="fixed-action-btn" onclick="refresh()">
             <a class="btn-floating btn-large red">
@@ -198,7 +353,9 @@
       
 
 
+
     </div>
+
 
 
     <!-- The core Firebase JS SDK is always required and must be listed first -->

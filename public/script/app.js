@@ -2,11 +2,13 @@ const loginForm = document.querySelector('#login-form'); // FORMULIR LOGIN
 const logout = document.querySelectorAll('#logout'); // FORMULIR LOGOUT
 const formulir = document.querySelector('#daftar-produk'); // FORMULIR DAFTAR PRODUK
 let daftarHarga = document.querySelector('#daftar-harga');
-let biaya6bln = 6; // Biaya Subsidi Cicilan 6 Bulan Promo lokal
-let bunga69 = 2.29; // BUNGA TENOR 9 BULAN 
-let bunga1224 = 2.69; // BUNGA TENOR 12, 15, 18 & 24 BULAN
+let biaya6bln = 7.5; // Biaya Subsidi Cicilan 6 Bulan Promo lokal
+let bunga69 = 2.99; // BUNGA TENOR 9 BULAN 
+let bunga1224 = 3.29; // BUNGA TENOR 12, 15, 18 & 24 BULAN
 let bungadrone = 3.29; // BUNGA TENOR 12, 15, 18 & 24 BULAN
-let b69drone = 2.69;
+let b69drone = 2.99;
+let infoHtml = 'HTML produk tidak dapat di copy karena produk dibawah 1jt'
+let biayaAdm = 0;
 // Untuk memunculkan navbar samping dari MaterializeCSS
 document.addEventListener('DOMContentLoaded', function () {
   var elems = document.querySelectorAll('.sidenav');
@@ -157,8 +159,10 @@ formulir.addEventListener('submit', (e) => {
       cashback: formulir['cashback'].value,
       garansi: formulir['garansi'].value,
       free: formulir['free-bonus'].value,
+      freeclaim : formulir['free-claim'].value,
       periode: formulir['periode-promo'].value,
       keterangan: formulir['keterangan'].value,
+      linkproduk : formulir['linkproduk'].value,
       spesifikasi: formulir['spesifikasi'].value,
       isibox: formulir['isibox'].value
     }).then(() => {
@@ -193,9 +197,20 @@ function renderKamera(doc) {
 
   var free = new Object();
   free['Free'] = doc.data().free;
+  free['Free Klaim'] = doc.data().freeclaim;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().garansi;
-  free['Info'] = doc.data().keterangan;
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
+
+  var free2 = new Object();
+  free2['Free'] = doc.data().free;
+  free2['Free Klaim'] = doc.data().freeclaim;
+  free2['Keterangan'] = doc.data().keterangan;
+  free2['Periode Promo'] = doc.data().periode;
+
+
+ 
 
 
 
@@ -207,9 +222,13 @@ function renderKamera(doc) {
   objek['Cashback'] = Number(doc.data().cashback);
   objek['Harga Spesial'] = world();
   objek['Free'] = doc.data().free;
+  objek['Free Klaim'] = doc.data().freeclaim;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan.split("\n").join("<br>");
+  objek['Info Produk'] = doc.data().linkproduk;
+
+
 
   // Memunculkan Harga Spesial
   function world() {
@@ -245,13 +264,33 @@ function renderKamera(doc) {
   });
   // MEMBERI TANDA KOMA UNTUK HASIL BILANGAN YANG DI PRINT KELUAR
 
-  let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
-  let newIsibox = doc.data().isibox.split(",").join("<br>");
+  let newSpesifikasi = doc.data().spesifikasi.split("\n").join("<br>");
+  let newIsibox = doc.data().isibox.split("\n").join("<br>");
 
+  console.log(doc.data().isibox)
 
-  li.innerHTML = `
+ 
+  // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+  let hargaNormal = Number(doc.data().harga);
+  let cashBack = Number(doc.data().cashback);
+  let hargaHCI = hitung();
+
+  function hitung() {
+    if (cashBack !== 0 || cashBack !== '') {
+      return hargaNormal - cashBack;
+    } else {
+      hargaHCI = hargaNormal;
+    }
+  }
+  let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
        <div class="collapsible-header">
-          <span class="left col s12">${doc.data().nama}</span>
+       <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
        </div>
        <div class="center-align collapsible-body">
             <div class="konten1${doc.id}"></div> <!-- INFO HARGA HCI TIDAK BISA DICOPAS -->
@@ -271,6 +310,97 @@ function renderKamera(doc) {
 
             <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
             <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+            
+            <div class="garis"></div>
+            <div class="html${doc.id}"></div>
+            <br>
+            <a id="copyhtml${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy HTML</a>
+            <div class="garis"></div>
+            <div  class="blue-grey-text text-lighten-3">Copy Konten Free & Keterangan dibawah ini</div>
+            <div class="konten5${doc.id}"></div>
+            <br>
+            <a class="light-blue darken-4 waves-effect waves-light btn-small copykonten5${doc.id}">Copy</a>
+            <div class="garis"></div>
+            <div class="blue-grey-text text-lighten-3">Copy Format HTML Free dan Keterangan dibawah ini</div>
+            <div class="konten7${doc.id}">
+              <div class="pembuka${doc.id}"></div>
+              <div class="konten6${doc.id}"></div>
+              <div class="penutup${doc.id}"></div>
+            </div>  
+            <br>
+            <a class="light-blue darken-4 waves-effect waves-light btn-small copykonten7${doc.id}">Copy</a>
+
+
+            <!-- Modal Structure -->
+            <div id="modal1${doc.id}" class="modal">
+              <div class="modal-content">
+                <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+              </div>
+              <div class="modal-footer">
+                <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+              </div>
+            </div>
+            
+            <!-- Modal Structure -->
+            <div id="modal2${doc.id}" class="modal">
+            <div class="modal-content">
+              <div class="isibox${doc.id}">${newIsibox}</div>
+            </div>
+            <div class="modal-footer">
+              <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+            </div>
+      
+
+          </div>
+         
+       `;
+
+  }else{
+    li.innerHTML = `
+       <div class="collapsible-header">
+       <span class="left col s12">
+       ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+      <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+     </span>
+       </div>
+       <div class="center-align collapsible-body">
+            <div class="konten1${doc.id}"></div> <!-- INFO HARGA HCI TIDAK BISA DICOPAS -->
+            <div id="cicilan${doc.id}">
+              <div class="konten3${doc.id}"></div> <!-- INFO CICILAN HOMECREDIT YANG BISA DI COPAS -->
+              <div class="konten4${doc.id}"></div> <!-- INFO FREEAN BONUS GABUNG CICILAN -->
+            </div>
+            <br>
+            <a id="copycicilan${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Angsuran</a>
+            <div class="garis"></div>
+            <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+            <br>
+            <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+            <a  class=" btn-small disabled delete" href="#" >Delete</a>
+            <br>
+            <br>
+
+            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+            <div class="garis"></div>
+            <div class="html${doc.id}"></div>
+            <br>
+            <a id="copyhtml${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy</a>
+            <div class="garis"></div>
+            <div class="blue-grey-text text-lighten-3">Copy Konten Free & Keterangan dibawah ini</div>
+            <div class="konten5${doc.id}"></div>
+            <br>
+            <a class="light-blue darken-4 waves-effect waves-light btn-small copykonten5${doc.id}">Copy</a>
+            <div class="garis"></div>
+            <div class="blue-grey-text text-lighten-3">Copy Format HTML Free dan Keterangan dibawah ini</div>
+            <div class="konten7${doc.id}">
+              <div class="pembuka${doc.id}"></div>
+              <div class="konten6${doc.id}"></div>
+              <div class="penutup${doc.id}"></div>
+            </div>  
+            <br>
+            <a class="light-blue darken-4 waves-effect waves-light btn-small copykonten7${doc.id}">Copy</a>
+
+
             <!-- Modal Structure -->
             <div id="modal1${doc.id}" class="modal">
               <div class="modal-content">
@@ -293,6 +423,9 @@ function renderKamera(doc) {
          
        `;
 
+  }
+
+  
 
 
   la.innerHTML = `
@@ -313,13 +446,22 @@ function renderKamera(doc) {
            <label for="update-free-bonus">Free</label>
            <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
            <br>
+           <label for="update-free-claim">Free Klaim</label>
+           <input type="text" placeholder="Free Klaim" id="update-free-claim${doc.id}" value="${doc.data().freeclaim}">
+           <br>
            <label for="periode-promo">Periode Promo</label>
            <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
            <br>
            <div class="input-field col s12">
            <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
            <label for="keterangan">Keterangan</label>
-         </div>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+           </div>
+
          <br>
          <div class="input-field col s12">
            <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
@@ -359,22 +501,6 @@ function renderKamera(doc) {
 
 
 
-  // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
-  let hargaNormal = Number(doc.data().harga);
-  let cashBack = Number(doc.data().cashback);
-  let hargaHCI = hitung();
-
-  function hitung() {
-    if (cashBack !== 0 || cashBack !== '') {
-      return hargaNormal - cashBack;
-    } else {
-      hargaHCI = hargaNormal;
-    }
-  }
-  let hargaHCIST = hargaHCI.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  });
   let biayaSubsidi6Bln = hitung6bln(); // HASIL SUBSIDI DALAM RUPIAH
   let hargaHCI6Bln = hargaHCI + biayaSubsidi6Bln;
 
@@ -382,10 +508,13 @@ function renderKamera(doc) {
     return hargaHCI * biaya6bln / 100;
   }
   let hargaHCI6BlnBulat = Math.ceil(hargaHCI6Bln / 100) * 100; // Dibulat ke 100 Rupiah 
-  let hargaHCI6BlnST = hargaHCI6BlnBulat.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  });
+
+  let hargaHCI6BlnST = hargaHCIST
+  // Sementara di terminate untuk harga 6 bulan yang spesial
+  // let hargaHCI6BlnST = hargaHCI6BlnBulat.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // });
   let konten1 = document.querySelector('.konten1' + doc.id)
   konten1.innerHTML = `
     <div>Harga Cash / HCI Normal : <span class="bold">Rp ${hargaHCIST} </span> </div>
@@ -393,573 +522,402 @@ function renderKamera(doc) {
     <div class="garis"></div>
   `;
 
-  // MERENDER HARGA CASH YANG BISA DI COPY PASTE
-  for (const property in objek) {
-    if (`${objek[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${objek[property]}`)
-    let idbaru = document.querySelector('.konten2' + doc.id);
-    if (typeof objek[property] == Number) {
-      return objek[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
+
+// MERENDER HARGA CASH & FREE ATAU KETERANGAN YANG BISA DI COPY PASTE
+for (const property in objek) {
+  if (`${objek[property]}` == 0 ||`${objek[property]}` == 'undefined' ||`${objek[property]}` == undefined) {
+    continue;
   }
+  if(objek[property].value == 0 || objek[property].value == 'undefined'){
+    continue;
+  }
+  if (typeof objek[property] == undefined) {
+    return objek[property] = '';
+  }
+  // console.log(`${property}: ${objek[property]}`)
+  let idbaru = document.querySelector('.konten2' + doc.id);
+  if (typeof objek[property] == Number) {
+    return objek[property].toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+  }
+  idbaru.innerHTML += `${property} ${objek[property]} <br>`
+}
+// MERENDER HARGA CASH YANG BISA DI COPY PASTE ENDING
+
+
+// MERENDER FREE & KETERANGAN BONUS TEPAT DIBAWAH ANGSURAN START
+for (const property in free) {
+  if (`${free[property]}` == 0 || `${free[property]}` == undefined || `${free[property]}` == 'undefined') {
+    continue;
+  }
+  // console.log(`${property}: ${free[property]}`)
+  let idbaru2 = document.querySelector('.konten4' + doc.id);
+  let idbaru3 = document.querySelector('.konten5' + doc.id);
+
+  if (typeof free[property] == Number) {
+    return free[property].toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+  }
+
+  idbaru2.innerHTML += `${property} : ${objek[property]} <br>`;
+
+}
+// MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
+
+
+// MERENDER FREE & KETERANGAN BONUS TEPAT DIBAWAH ANGSURAN START
+for (const property in free2) {
+  if (`${free2[property]}` == 0 || `${free2[property]}` == undefined || `${free2[property]}` == 'undefined') {
+    continue;
+  }
+  let pembuka = document.querySelector('.pembuka' + doc.id)
+  pembuka.innerText = '<div class="bungkus2">'
+  let penutup = document.querySelector('.penutup' + doc.id)
+  penutup.innerText = '</div>'
+
+  let idbaru3 = document.querySelector('.konten5' + doc.id);
+  idbaru3.innerHTML += `${property} : ${objek[property]} <br>`;
+
+  let idbaru4 = document.querySelector('.konten6' + doc.id);
+  let elbaru = document.createElement('div')
+  elbaru.classList.add("testing")
+
+
+  var node =  `<div class='konten'>${property} : ${objek[property]}</div>`;
+  elbaru.append(node);
+  idbaru4.appendChild(elbaru)
+  //idbaru4.innerText += `<div>${property} ${objek[property]}</div>`;
+  
+}
+// MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
+
+  // MERENDER HARGA CASH YANG BISA DI COPY PASTE
+  // for (const property in objek) {
+  //   if (`${objek[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${objek[property]}`)
+  //   let idbaru = document.querySelector('.konten2' + doc.id);
+  //   if (typeof objek[property] == Number) {
+  //     return objek[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER HARGA CASH YANG BISA DI COPY PASTE ENDING
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
-// HITUNGAN LAMA MULAI DARI SINI (DIBAWAH INI)
-/**
-  ////// Khusus Produk dibawah 4.5 juta START /////////////
-  let konten3 = document.querySelector('.konten3' + doc.id)
-  if (hargaHCI <= 4500000 && hargaHCI >= 1500000) {
 
-    var Dp = 0; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
-
-    var BungaDp0_9 = (hargaHCI * bunga69 / 100); // Bunga dari tenor 9 Bulan
-    var BungaDp0_N = (hargaHCI * bunga1224 / 100); // Bunga dari tenor 12 sampai 24 Bulan
-    var Admin = 5000;
-
-    var cicilan9_0 = (hargaHCI / 9) + BungaDp0_9 + Admin;
-    var cicilan12_0 = (hargaHCI / 12) + BungaDp0_N + Admin;
-    var cicilan15_0 = (hargaHCI / 15) + BungaDp0_N + Admin;
-    var cicilan18_0 = (hargaHCI / 18) + BungaDp0_N + Admin;
-    var cicilan24_0 = (hargaHCI / 24) + BungaDp0_N + Admin;
-
-    // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
-    var mathcicilan9 = Math.ceil(cicilan9_0 / 100) * 100;
-    var mathcicilan12 = Math.ceil(cicilan12_0 / 100) * 100;
-    var mathcicilan15 = Math.ceil(cicilan15_0 / 100) * 100;
-    var mathcicilan18 = Math.ceil(cicilan18_0 / 100) * 100;
-    var mathcicilan24 = Math.ceil(cicilan24_0 / 100) * 100;
-
-    //toLocaleString untuk menambahkan koma disetiap 3 digit
-
-    var cicilan9_0asli = mathcicilan9.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
-    var cicilan12_0asli = mathcicilan12.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
-    var cicilan15_0asli = mathcicilan15.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
-    var cicilan18_0asli = mathcicilan18.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
-    var cicilan24_0asli = mathcicilan24.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
-
-    ////////////////////Cicilan DP Normal//////////////////////////
-    var Dp = (hargaHCI * 10 / 100) + 200000; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
-    var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
-    // DpBulatShowTime hanya untuk tampil dihalaman depan dengan ada koma disetiap 3 digit 0
-    var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var DpSesungguhnya = DpBulat - 199000;
-    var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
-    var BungaNormal = (HargaSesungguhnya * bunga1224 / 100); // Seharusnya harga asli
-    var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100); // Seharusnya harga asli
-    var Admin = 5000;
-    var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
-    var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
-    var cicilan15 = (HargaSesungguhnya / 15) + BungaNormal + Admin;
-    var cicilan18 = (HargaSesungguhnya / 18) + BungaNormal + Admin;
-    var cicilan24 = (HargaSesungguhnya / 24) + BungaNormal + Admin;
-    var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
-    var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100;
-    var mathcicilan15 = Math.ceil(cicilan15 / 100) * 100;
-    var mathcicilan18 = Math.ceil(cicilan18 / 100) * 100;
-    var mathcicilan24 = Math.ceil(cicilan24 / 100) * 100;
-    //toLocaleString untuk menambahkan koma disetiap 3 digit
-    var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan12asli = mathcicilan12.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan15asli = mathcicilan15.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan18asli = mathcicilan18.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan24asli = mathcicilan24.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    //Cicilan Tenor Normal
-
-
-
-    //Cicilan Tenor 6 Bulan Bunga 0%
-
-    var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
-    var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 5.5% admin
-    var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
-    var DpMentah60P = (hargaBulat60P * 10 / 100) + 200000; // mengkonversikan 10% dari harga asli
-    var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
-    var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var DpSesungguhnya60P = DpTerbaru60P - 199000;
-    var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
-    //var Bunga6099 = (hargaBulat6099 *2.69 / 100);
-    var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
-    var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
-    var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-
-
-    konten3.innerHTML = `
-    ${doc.data().nama} <br>
-    Promo DP  0 (Cukup bayar biaya admin 200rb) <br>
-    9x : ${cicilan9_0asli} <br>
-    12x : ${cicilan12_0asli} <br>
-    15x : ${cicilan15_0asli} <br>
-    18x : ${cicilan18_0asli} <br>
-    24x : ${cicilan24_0asli} <br>
-    <br>
-    Promo DP : ${DpBulatShowTime} <br>
-    9x : ${cicilan9asli} <br>
-    12x : ${cicilan12asli} <br>
-    15x : ${cicilan15asli} <br>
-    18x : ${cicilan18asli} <br>
-    24x : ${cicilan24asli} <br>
-    <br>
-    Promo Spesial Cicilan 6 Bulan <br>
-    DP : ${DpTerbaru60PShowTime} <br>
-    6x : ${cicilan60Pasli}
-  `;
-
-  } ////// Khusus Produk dibawah 4.5 juta ENDING/////////////
-  else if (hargaHCI <= 16700000 && hargaHCI >= 1500000) {
-
-    ////////////////////Cicilan Tenor Normal//////////////////////////
-    var Dp = (hargaHCI * 10 / 100) + 200000; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
-    var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
-    var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var DpSesungguhnya = DpBulat - 199000;
-    var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
-    var BungaNormal = (HargaSesungguhnya * bunga1224 / 100); // Seharusnya harga asli
-    var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100); // Seharusnya harga asli
-    var Admin = 5000;
-    var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
-    var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
-    var cicilan15 = (HargaSesungguhnya / 15) + BungaNormal + Admin;
-    var cicilan18 = (HargaSesungguhnya / 18) + BungaNormal + Admin;
-    var cicilan24 = (HargaSesungguhnya / 24) + BungaNormal + Admin;
-    var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
-    var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100;
-    var mathcicilan15 = Math.ceil(cicilan15 / 100) * 100;
-    var mathcicilan18 = Math.ceil(cicilan18 / 100) * 100;
-    var mathcicilan24 = Math.ceil(cicilan24 / 100) * 100;
-    //toLocaleString untuk menambahkan koma disetiap 3 digit
-    var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan12asli = mathcicilan12.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan15asli = mathcicilan15.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan18asli = mathcicilan18.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan24asli = mathcicilan24.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    ////////////////////Cicilan Tenor Normal ENDING//////////////////////////
-
-    //Cicilan Tenor 6 Bulan Bunga 0%
-    var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
-    var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
-    // Problem dikolom ini
-    var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
-    var hargaBulat60PShowTime = hargaBulat60P.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var hargaTerbaru60PP = hargaBulat60P; //untuk mengecek bahwa setelah ditambah 5.5% apakah masih dibawah 15jt jika diatas 15jt maka berjalan rumus IF dibawah
-
-    if (hargaTerbaru60PP > 16700000) {
-      DpMentah60P = (hargaTerbaru60PP - 15000000) + 200000;
-    } else {
-      DpMentah60P = (hargaBulat60P * 10 / 100) + 200000;
-    }
-
-    var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
-
-    var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var DpSesungguhnya60P = DpTerbaru60P - 199000;
-    var HargaSesungguhnya60P = hargaTerbaru60PP - DpSesungguhnya60P;
-
-    var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
-    var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
-    var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    //Cicilan Tenor 6 Bulan Bunga 0%
-    konten3.innerHTML = `
-  ${doc.data().nama} <br>
-  Promo DP : ${DpBulatShowTime} <br>
-  9x : ${cicilan9asli} <br>
-  12x : ${cicilan12asli} <br>
-  15x : ${cicilan15asli} <br>
-  18x : ${cicilan18asli} <br>
-  24x : ${cicilan24asli} <br>
-  <br>
-  Promo Spesial Cicilan 6 Bulan <br>
-  DP : ${DpTerbaru60PShowTime} <br>
-  6x : ${cicilan60Pasli}
-`;
-
-  } ////// Khusus Produk dibawah 15 juta ENDING ////////////
-
-  ////// Khusus Produk diatas 15 juta START ////////////
-  else if (hargaHCI > 16700000) {
-    //////TENOR NORMAL START/////////////
-    var hargaMentah = hargaHCI - 15000000; //15jt adalah batas maksimal kredit di HCI
-    var DpRecomend = hargaMentah + 200000; // 1.7jt ada lah 10% dari 15jt (1.5jt) + biaya admin 200rb
-    var DpBulat = Math.ceil(DpRecomend / 50000) * 50000; //membulatkan kelipatan 50rb
-    var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var DpSesungguhnya = DpBulat - 199000;
-    var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
-    var BungaNormal = (HargaSesungguhnya * bunga1224 / 100);
-    var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100);
-    var Admin = 5000;
-    var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
-    var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
-    var cicilan15 = (HargaSesungguhnya / 15) + BungaNormal + Admin;
-    var cicilan18 = (HargaSesungguhnya / 18) + BungaNormal + Admin;
-    var cicilan24 = (HargaSesungguhnya / 24) + BungaNormal + Admin;
-    var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
-    var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100;
-    var mathcicilan15 = Math.ceil(cicilan15 / 100) * 100;
-    var mathcicilan18 = Math.ceil(cicilan18 / 100) * 100;
-    var mathcicilan24 = Math.ceil(cicilan24 / 100) * 100;
-    //toLocaleString untuk menambahkan koma disetiap 3 digit
-    var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan12asli = mathcicilan12.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan15asli = mathcicilan15.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan18asli = mathcicilan18.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan24asli = mathcicilan24.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    //////////// TENOR NORMAL ENDING ///////////////////////////////////////////////
-
-
-
-    //Cicilan Tenor 6 Bulan Bunga 0%
-    var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
-    var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
-    var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 50rb
-
-    var hargaMentah60P = (hargaBulat60P - 15000000); //15jt adalah batas maksimal kredit di HCI
-    var DpRecomend60P = hargaMentah60P + 200000;
-
-    var DpBulat60P = Math.ceil(DpRecomend60P / 50000) * 50000; //membulatkan kelipatan 50rb
-    var DpBulat60PShowTime = DpBulat60P.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-
-    var DpSesungguhnya60P = DpBulat60P - 199000;
-    var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
-    var Admin = 5000;
-    var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
-    var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
-    var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-
-    //Cicilan Tenor 6 Bulan Bunga 0%
-    konten3.innerHTML = `
-  ${doc.data().nama} <br>
-  Promo DP : ${DpBulatShowTime} <br>
-  9x : ${cicilan9asli} <br>
-  12x : ${cicilan12asli} <br>
-  15x : ${cicilan15asli} <br>
-  18x : ${cicilan18asli} <br>
-  24x : ${cicilan24asli} <br>
-  <br>
-  Promo Spesial Cicilan 6 Bulan <br>
-  DP : ${DpBulat60PShowTime} <br>
-  6x : ${cicilan60Pasli}
-`;
-  }else{
-    konten3.innerHTML = `
-    Maaf Produk ${doc.data().nama} belum dapat dikredit <br>
-    
-    `;
-  } ////// Khusus Produk diatas 15 juta ENDING ////////////
-
- **/ 
-// HITUNGAN LAMA BERAKHIR DiSINI (DIATAS INI)
 
 let konten3 = document.querySelector('.konten3' + doc.id)
-if (hargaHCI <= 5625000 && hargaHCI >= 1000000) {
+let htmlproduk = document.querySelector('.html' +doc.id)
+let htmlspek = document.querySelector('.htmlspek' +doc.id )
+if (hargaHCI <= 4500000 && hargaHCI >= 1000000) {
   ////////////////////Cicilan DP Normal//////////////////////////
-  var Dp = (hargaHCI * 20 / 100) + 200000; // mengkonversikan 20% dari harga asli ditambah biaya adm 200rb
+  var Dp = (hargaHCI * 5 / 100) + biayaAdm; // mengkonversikan 20% dari harga asli ditambah biaya adm 200rb
   var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
   // DpBulatShowTime hanya untuk tampil dihalaman depan dengan ada koma disetiap 3 digit 0
   var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   })
-  var DpSesungguhnya = DpBulat - 199000;
+  var DpSesungguhnya = DpBulat - biayaAdm;
   var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
   var BungaNormal = (HargaSesungguhnya * bunga1224 / 100); // Seharusnya harga asli
   var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100); // Seharusnya harga asli
   var Admin = 5000;
+  var cicilan6 = (HargaSesungguhnya / 6) + Bunga9Bulan + Admin;
   var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+  var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
 
+  var mathcicilan6 = Math.ceil(cicilan6 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
   var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+  var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100;
 
   //toLocaleString untuk menambahkan koma disetiap 3 digit
-  var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+  var cicilan6asli = mathcicilan6.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   });
+    //toLocaleString untuk menambahkan koma disetiap 3 digit
+    var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+    var cicilan12asli = mathcicilan12.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
 
   //Cicilan Tenor Normal
 
   //Cicilan Tenor 6 Bulan Bunga 0%
 
-  var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
-  var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 5.5% admin
-  var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
-  var DpMentah60P = (hargaBulat60P * 30 / 100) + 200000; // mengkonversikan 10% dari harga asli
-  var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
-  var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
-  var DpSesungguhnya60P = DpTerbaru60P - 199000;
-  var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
-  //var Bunga6099 = (hargaBulat6099 *2.69 / 100);
-  var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
-  var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
-  var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
+  // var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+  // var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 5.5% admin
+  // var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
+  // var DpMentah60P = (hargaBulat60P * 30 / 100) + 200000; // mengkonversikan 10% dari harga asli
+  // var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
+  // var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
+  // var DpSesungguhnya60P = DpTerbaru60P - 199000;
+  // var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
+
+  // var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+  // var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+  // var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
 
   konten3.innerHTML = `
   ${doc.data().nama} <br>
   Promo DP : ${DpBulatShowTime} <br>
+  6x : ${cicilan6asli} <br>
   9x : ${cicilan9asli} <br>
-  <br>
-  Promo Spesial Cicilan 6 Bulan <br>
-  DP : ${DpTerbaru60PShowTime} <br>
-  6x : ${cicilan60Pasli}
+  12x : ${cicilan12asli} <br>
 `;
+
+var data = `
+<tr>
+<td><a href="${doc.data().linkproduk}">${doc.data().nama}</a></td>
+<td>${DpBulatShowTime}</td>
+<td>${cicilan6asli}</td>
+<td>${cicilan9asli}</td>
+<td>${cicilan12asli}</td>
+</tr>
+`;
+
+
+
+// if (claim == '' || claim == 'undefined' || claim == undefined){
+//    htmlspek.innerText = `
+//    <div class="bungkus2">
+//   <h4 class="free">FREE</h4>
+//   <p class="konten">${doc.data().free}</p>
+//   </div>
+   
+//    `;
+// }
+
+
+
+
+htmlproduk.innerText =  data; 
 
 } ////// Khusus Produk dibawah 5.625.000 juta ENDING/////////////
 
-else if (hargaHCI <= 21400000 && hargaHCI > 5625000) {
+else if (hargaHCI <= 11000000 && hargaHCI > 4500000) {
 
   ////////////////////Cicilan Tenor Normal//////////////////////////
-  var Dp = (hargaHCI * 30 / 100) + 200000; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
+  var Dp = (hargaHCI * 10 / 100) + biayaAdm; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
   var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
   var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   })
-  var DpSesungguhnya = DpBulat - 199000;
+  var DpSesungguhnya = DpBulat - biayaAdm;
   var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
   var BungaNormal = (HargaSesungguhnya * bunga1224 / 100); // Seharusnya harga asli
   var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100); // Seharusnya harga asli
   var Admin = 5000;
+  var cicilan6 = (HargaSesungguhnya / 6) + Bunga9Bulan + Admin;
   var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+  var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
 
+  var mathcicilan6 = Math.ceil(cicilan6 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
   var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+  var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100;
 
   //toLocaleString untuk menambahkan koma disetiap 3 digit
   var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   });
+    //toLocaleString untuk menambahkan koma disetiap 3 digit
+    var cicilan6asli = mathcicilan6.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+
+    var cicilan12asli = mathcicilan12.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
 
   ////////////////////Cicilan Tenor Normal ENDING//////////////////////////
 
-  //Cicilan Tenor 6 Bulan Bunga 0%
-  var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
-  var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
-  // Problem dikolom ini
-  var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
-  var hargaBulat60PShowTime = hargaBulat60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
-  var hargaTerbaru60PP = hargaBulat60P; //untuk mengecek bahwa setelah ditambah 5.5% apakah masih dibawah 15jt jika diatas 15jt maka berjalan rumus IF dibawah
+  // //Cicilan Tenor 6 Bulan Bunga 0%
+  // var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+  // var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
+  // // Problem dikolom ini
+  // var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
+  // var hargaBulat60PShowTime = hargaBulat60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
+  // var hargaTerbaru60PP = hargaBulat60P; //untuk mengecek bahwa setelah ditambah 5.5% apakah masih dibawah 15jt jika diatas 15jt maka berjalan rumus IF dibawah
 
-  if (hargaTerbaru60PP > 21400000) {
-    DpMentah60P = (hargaTerbaru60PP - 21400000) + 6420000 + 200000;
-  } else {
-    DpMentah60P = (hargaBulat60P * 30 / 100) + 200000;
-  }
+  // if (hargaTerbaru60PP > 21400000) {
+  //   DpMentah60P = (hargaTerbaru60PP - 21400000) + 6420000 + 200000;
+  // } else {
+  //   DpMentah60P = (hargaBulat60P * 30 / 100) + 200000;
+  // }
 
-  var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
+  // var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
 
-  var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
-  var DpSesungguhnya60P = DpTerbaru60P - 199000;
-  var HargaSesungguhnya60P = hargaTerbaru60PP - DpSesungguhnya60P;
+  // var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
+  // var DpSesungguhnya60P = DpTerbaru60P - 199000;
+  // var HargaSesungguhnya60P = hargaTerbaru60PP - DpSesungguhnya60P;
 
-  var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
-  var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
-  var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
+  // var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+  // var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+  // var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
   //Cicilan Tenor 6 Bulan Bunga 0%
   konten3.innerHTML = `
 ${doc.data().nama} <br>
 Promo DP : ${DpBulatShowTime} <br>
+6x : ${cicilan6asli} <br>
 9x : ${cicilan9asli} <br>
-
-<br>
-Promo Spesial Cicilan 6 Bulan <br>
-DP : ${DpTerbaru60PShowTime} <br>
-6x : ${cicilan60Pasli}
+12x : ${cicilan12asli} <br>
 `;
+
+var data = `
+<tr>
+<td><a href="${doc.data().linkproduk}">${doc.data().nama}</a></td>
+<td>${DpBulatShowTime}</td>
+<td>${cicilan6asli}</td>
+<td>${cicilan9asli}</td>
+<td>${cicilan12asli}</td>
+</tr>
+`;
+
+htmlproduk.innerText =  data; 
 
 } ////// Khusus Produk dibawah 21.400.000 juta ENDING ////////////
  ////// Khusus Produk diatas 15 juta START ////////////
- else if (hargaHCI > 21400000) {
-  //////TENOR NORMAL START/////////////
-  var hargaMentah = (hargaHCI - 21400000) + 6420000; //15jt adalah batas maksimal kredit di HCI
-  var DpRecomend = hargaMentah + 200000; // 1.7jt ada lah 10% dari 15jt (1.5jt) + biaya admin 200rb
+ else if (hargaHCI > 11000000) {
+  //////TENOR NORMAL START/////////////  
+  var hargaMentah = hargaHCI - 10000000; //15jt adalah batas maksimal kredit di HCI
+  var DpRecomend = hargaMentah + biayaAdm; // 1.7jt ada lah 10% dari 15jt (1.5jt) + biaya admin 200rb
   var DpBulat = Math.ceil(DpRecomend / 50000) * 50000; //membulatkan kelipatan 50rb
   var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   })
-  var DpSesungguhnya = DpBulat - 199000;
+  var DpSesungguhnya = DpBulat - biayaAdm;
   var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
   var BungaNormal = (HargaSesungguhnya * bunga1224 / 100);
   var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100);
   var Admin = 5000;
+  var cicilan6 = (HargaSesungguhnya / 6) + Bunga9Bulan + Admin;
   var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+  var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
 
+  var mathcicilan6 = Math.ceil(cicilan6 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
   var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+  var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
 
   //toLocaleString untuk menambahkan koma disetiap 3 digit
+  var cicilan6asli = mathcicilan6.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+
   var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+
+  var cicilan12asli = mathcicilan12.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   })
 
   //////////// TENOR NORMAL ENDING ///////////////////////////////////////////////
 
-  //Cicilan Tenor 6 Bulan Bunga 0%
-  var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
-  var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
-  var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 50rb
+  // //Cicilan Tenor 6 Bulan Bunga 0%
+  // var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+  // var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
+  // var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 50rb
 
-  var hargaMentah60P = (hargaBulat60P - 21400000)+ 6420000; //15jt adalah batas maksimal kredit di HCI
-  var DpRecomend60P = hargaMentah60P + 200000;
+  // var hargaMentah60P = (hargaBulat60P - 21400000)+ 6420000; //15jt adalah batas maksimal kredit di HCI
+  // var DpRecomend60P = hargaMentah60P + 200000;
 
-  var DpBulat60P = Math.ceil(DpRecomend60P / 50000) * 50000; //membulatkan kelipatan 50rb
-  var DpBulat60PShowTime = DpBulat60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
+  // var DpBulat60P = Math.ceil(DpRecomend60P / 50000) * 50000; //membulatkan kelipatan 50rb
+  // var DpBulat60PShowTime = DpBulat60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
 
-  var DpSesungguhnya60P = DpBulat60P - 199000;
-  var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
-  var Admin = 5000;
-  var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
-  var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
-  var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
+  // var DpSesungguhnya60P = DpBulat60P - 199000;
+  // var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
+  // var Admin = 5000;
+  // var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+  // var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+  // var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
 
   //Cicilan Tenor 6 Bulan Bunga 0%
   konten3.innerHTML = `
 ${doc.data().nama} <br>
 Promo DP : ${DpBulatShowTime} <br>
+6x : ${cicilan6asli} <br>
 9x : ${cicilan9asli} <br>
+12x : ${cicilan12asli} <br>
 
-<br>
-Promo Spesial Cicilan 6 Bulan <br>
-DP : ${DpBulat60PShowTime} <br>
-6x : ${cicilan60Pasli}
 `;
+var data = `
+<tr>
+<td><a href="${doc.data().linkproduk}">${doc.data().nama}</a></td>
+<td>${DpBulatShowTime}</td>
+<td>${cicilan6asli}</td>
+<td>${cicilan9asli}</td>
+<td>${cicilan12asli}</td>
+</tr>
+`;
+
+htmlproduk.innerText =  data; 
+
 }else{
+  konten3.style.color = 'red'
   konten3.innerHTML = `
   Maaf Produk ${doc.data().nama} belum dapat dikredit <br>
-  
   `;
+  htmlproduk.innerText =  infoHtml; 
 } ////// Khusus Produk diatas 15 juta ENDING ////////////
 
 
@@ -1011,6 +969,51 @@ DP : ${DpBulat60PShowTime} <br>
     
   });
   // TOMBOL COPY #1 ENDING
+
+  
+  // TOMBOL COPY HTML  #1
+  let copyHtml = document.querySelector('#copyhtml' + doc.id);
+  copyHtml.addEventListener('click', function (e) {
+    var text = document.querySelector(".html" + doc.id);
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(text);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    //add to clipboard.
+    document.execCommand('copy');
+    
+  });
+  // TOMBOL COPY HTML #1 ENDING
+
+    // TOMBOL COPY KONTEN5  #1
+    let copyKonten_5 = document.querySelector('.copykonten5' + doc.id);
+    copyKonten_5.addEventListener('click', function (e) {
+      var text = document.querySelector(".konten5" + doc.id);
+      var selection = window.getSelection();
+      var range = document.createRange();
+      range.selectNodeContents(text);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      //add to clipboard.
+      document.execCommand('copy');
+      
+    });
+    // TOMBOL COPY KONTEN5 #1 ENDING
+
+    let copyKonten_7 = document.querySelector('.copykonten7' + doc.id);
+    copyKonten_7.addEventListener('click', function (e) {
+      var text = document.querySelector(".konten7" + doc.id);
+      var selection = window.getSelection();
+      var range = document.createRange();
+      range.selectNodeContents(text);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      //add to clipboard.
+      document.execCommand('copy');
+      
+    });
+    // TOMBOL COPY KONTEN5 #1 ENDING  
 
   // TOMBOL COPY SPESIFIKASI #1
   let copySpec = document.querySelector('#copyspesifikasi' + doc.id);
@@ -1088,8 +1091,10 @@ DP : ${DpBulat60PShowTime} <br>
         let cashback = document.querySelector('#update-cashback' + doc.id).value;
         let garansi = document.querySelector('#update-garansi' + doc.id).value;
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
+        let freeclaim = document.querySelector('#update-free-claim' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
@@ -1100,8 +1105,10 @@ DP : ${DpBulat60PShowTime} <br>
           cashback: cashback,
           garansi: garansi,
           free: free,
+          freeclaim : freeclaim,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -1138,9 +1145,11 @@ function renderLensa(doc) {
 
   var free = new Object();
   free['Free'] = doc.data().free;
+  free['Free Klaim'] = doc.data().freeclaim;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().garansi;
-  free['Info'] = doc.data().keterangan;
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
 
 
@@ -1152,9 +1161,11 @@ function renderLensa(doc) {
   objek['Cashback'] = Number(doc.data().cashback);
   objek['Harga Spesial'] = world();
   objek['Free'] = doc.data().free;
+  objek['Free Klaim'] = doc.data().freeclaim;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -1193,10 +1204,28 @@ function renderLensa(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+    // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+    let hargaNormal = Number(doc.data().harga);
+    let cashBack = Number(doc.data().cashback);
+    let hargaHCI = hitung();
+  
+    function hitung() {
+      if (cashBack !== 0 || cashBack !== '') {
+        return hargaNormal - cashBack;
+      } else {
+        hargaHCI = hargaNormal;
+      }
+    }
+    let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
 
-  li.innerHTML = `
+
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
        <div class="collapsible-header">
-          <span class="left col s12">${doc.data().nama}</span>
+       <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
        </div>
        <div class="center-align collapsible-body">
             <div class="konten1${doc.id}"></div> <!-- INFO HARGA HCI TIDAK BISA DICOPAS -->
@@ -1216,6 +1245,68 @@ function renderLensa(doc) {
 
             <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
             <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+            
+            <div class="garis"></div>
+            <div class="html${doc.id}"></div>
+            <br>
+            <a id="copyhtml${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy HTML</a>
+            
+            <!-- Modal Structure -->
+            <div id="modal1${doc.id}" class="modal">
+              <div class="modal-content">
+                <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+              </div>
+              <div class="modal-footer">
+                <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+              </div>
+            </div>
+            
+            <!-- Modal Structure -->
+            <div id="modal2${doc.id}" class="modal">
+            <div class="modal-content">
+              <div class="isibox${doc.id}">${newIsibox}</div>
+            </div>
+            <div class="modal-footer">
+              <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+            </div>
+      
+
+          </div>
+         
+       `;
+
+  }else{
+    li.innerHTML = `
+       <div class="collapsible-header">
+       <span class="left col s12">
+         ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+        <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+       </span>
+       </div>
+       <div class="center-align collapsible-body">
+            <div class="konten1${doc.id}"></div> <!-- INFO HARGA HCI TIDAK BISA DICOPAS -->
+            <div id="cicilan${doc.id}">
+              <div class="konten3${doc.id}"></div> <!-- INFO CICILAN HOMECREDIT YANG BISA DI COPAS -->
+              <div class="konten4${doc.id}"></div> <!-- INFO FREEAN BONUS GABUNG CICILAN -->
+            </div>
+            <br>
+            <a id="copycicilan${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Angsuran</a>
+            <div class="garis"></div>
+            <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+            <br>
+            <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+            <a  class=" btn-small disabled delete" href="#" >Delete</a>
+            <br>
+            <br>
+
+            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+            
+            <div class="garis"></div>
+            <div class="html${doc.id}"></div>
+            <br>
+            <a id="copyhtml${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy HTML</a>
+            
             <!-- Modal Structure -->
             <div id="modal1${doc.id}" class="modal">
               <div class="modal-content">
@@ -1238,6 +1329,7 @@ function renderLensa(doc) {
          
        `;
 
+  }
 
 
   la.innerHTML = `
@@ -1258,13 +1350,20 @@ function renderLensa(doc) {
            <label for="update-free-bonus">Free</label>
            <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
            <br>
+           <label for="update-free-claim">Free Klaim</label>
+           <input type="text" placeholder="Free Klaim" id="update-free-claim${doc.id}" value="${doc.data().freeclaim}">
+           <br>
            <label for="periode-promo">Periode Promo</label>
            <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
            <br>
            <div class="input-field col s12">
            <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
            <label for="keterangan">Keterangan</label>
-         </div>
+           </div>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+            </div>
          <br>
          <div class="input-field col s12">
            <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
@@ -1304,22 +1403,7 @@ function renderLensa(doc) {
 
 
 
-  // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
-  let hargaNormal = Number(doc.data().harga);
-  let cashBack = Number(doc.data().cashback);
-  let hargaHCI = hitung();
 
-  function hitung() {
-    if (cashBack !== 0 || cashBack !== '') {
-      return hargaNormal - cashBack;
-    } else {
-      hargaHCI = hargaNormal;
-    }
-  }
-  let hargaHCIST = hargaHCI.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  });
   let biayaSubsidi6Bln = hitung6bln(); // HASIL SUBSIDI DALAM RUPIAH
   let hargaHCI6Bln = hargaHCI + biayaSubsidi6Bln;
 
@@ -1327,10 +1411,11 @@ function renderLensa(doc) {
     return hargaHCI * biaya6bln / 100;
   }
   let hargaHCI6BlnBulat = Math.ceil(hargaHCI6Bln / 100) * 100; // Dibulat ke 100 Rupiah 
-  let hargaHCI6BlnST = hargaHCI6BlnBulat.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  });
+  let hargaHCI6BlnST = hargaHCIST
+  // let hargaHCI6BlnST = hargaHCI6BlnBulat.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // });
   let konten1 = document.querySelector('.konten1' + doc.id)
   konten1.innerHTML = `
     <div>Harga Cash / HCI Normal : <span class="bold">Rp ${hargaHCIST} </span> </div>
@@ -1340,8 +1425,14 @@ function renderLensa(doc) {
 
   // MERENDER HARGA CASH YANG BISA DI COPY PASTE
   for (const property in objek) {
-    if (`${objek[property]}` == 0) {
+    if (`${objek[property]}` == 0 ||`${objek[property]}` == 'undefined' ||`${objek[property]}` == undefined) {
       continue;
+    }
+    if(objek[property].value == 0 || objek[property].value == 'undefined'){
+      continue;
+    }
+    if (typeof objek[property] == undefined) {
+      return objek[property] = '';
     }
     // console.log(`${property}: ${objek[property]}`)
     let idbaru = document.querySelector('.konten2' + doc.id);
@@ -1358,7 +1449,7 @@ function renderLensa(doc) {
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
   for (const property in free) {
-    if (`${free[property]}` == 0) {
+    if (`${free[property]}` == 0 || `${free[property]}` == undefined || `${free[property]}` == 'undefined') {
       continue;
     }
     // console.log(`${property}: ${free[property]}`)
@@ -1703,28 +1794,42 @@ function renderLensa(doc) {
     `;
   } ////// Khusus Produk diatas 15 juta ENDING ////////////
 */
-
+let htmlproduk = document.querySelector('.html' +doc.id)
 let konten3 = document.querySelector('.konten3' + doc.id)
-if (hargaHCI <= 5625000 && hargaHCI >= 1000000) {
+if (hargaHCI <= 4500000 && hargaHCI >= 1000000) {
   ////////////////////Cicilan DP Normal//////////////////////////
-  var Dp = (hargaHCI * 20 / 100) + 200000; // mengkonversikan 20% dari harga asli ditambah biaya adm 200rb
+  var Dp = (hargaHCI * 5 / 100) + biayaAdm; // mengkonversikan 20% dari harga asli ditambah biaya adm 200rb
   var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
   // DpBulatShowTime hanya untuk tampil dihalaman depan dengan ada koma disetiap 3 digit 0
   var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   })
-  var DpSesungguhnya = DpBulat - 199000;
+  var DpSesungguhnya = DpBulat - biayaAdm;
   var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
   var BungaNormal = (HargaSesungguhnya * bunga1224 / 100); // Seharusnya harga asli
   var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100); // Seharusnya harga asli
   var Admin = 5000;
+  var cicilan6 = (HargaSesungguhnya / 6) + Bunga9Bulan + Admin;
   var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+  var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
 
+  var mathcicilan6 = Math.ceil(cicilan6 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
   var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+  var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
 
   //toLocaleString untuk menambahkan koma disetiap 3 digit
+  var cicilan6asli = mathcicilan6.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
   var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
+  var cicilan12asli = mathcicilan12.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   });
@@ -1733,57 +1838,81 @@ if (hargaHCI <= 5625000 && hargaHCI >= 1000000) {
 
   //Cicilan Tenor 6 Bulan Bunga 0%
 
-  var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
-  var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 5.5% admin
-  var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
-  var DpMentah60P = (hargaBulat60P * 30 / 100) + 200000; // mengkonversikan 10% dari harga asli
-  var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
-  var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
-  var DpSesungguhnya60P = DpTerbaru60P - 199000;
-  var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
-  //var Bunga6099 = (hargaBulat6099 *2.69 / 100);
-  var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
-  var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
-  var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
+  // var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+  // var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 5.5% admin
+  // var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
+  // var DpMentah60P = (hargaBulat60P * 30 / 100) + 200000; // mengkonversikan 10% dari harga asli
+  // var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
+  // var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
+  // var DpSesungguhnya60P = DpTerbaru60P - 199000;
+  // var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
+  // //var Bunga6099 = (hargaBulat6099 *2.69 / 100);
+  // var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+  // var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+  // var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
 
   konten3.innerHTML = `
   ${doc.data().nama} <br>
   Promo DP : ${DpBulatShowTime} <br>
+  6x : ${cicilan6asli} <br>
   9x : ${cicilan9asli} <br>
-  <br>
-  Promo Spesial Cicilan 6 Bulan <br>
-  DP : ${DpTerbaru60PShowTime} <br>
-  6x : ${cicilan60Pasli}
+  12x : ${cicilan12asli} <br>
 `;
+
+var data = `
+<tr>
+<td><a href="${doc.data().linkproduk}">${doc.data().nama}</a></td>
+<td>${DpBulatShowTime}</td>
+<td>${cicilan6asli}</td>
+<td>${cicilan9asli}</td>
+<td>${cicilan12asli}</td>
+</tr>
+`;
+
+htmlproduk.innerText =  data; 
 
 } ////// Khusus Produk dibawah 5.625.000 juta ENDING/////////////
 
-else if (hargaHCI <= 21400000 && hargaHCI > 5625000) {
+else if (hargaHCI <= 11000000 && hargaHCI > 4500000) {
 
   ////////////////////Cicilan Tenor Normal//////////////////////////
-  var Dp = (hargaHCI * 30 / 100) + 200000; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
+  var Dp = (hargaHCI * 10 / 100) + biayaAdm; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
   var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
   var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   })
-  var DpSesungguhnya = DpBulat - 199000;
+  var DpSesungguhnya = DpBulat - biayaAdm;
   var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
   var BungaNormal = (HargaSesungguhnya * bunga1224 / 100); // Seharusnya harga asli
   var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100); // Seharusnya harga asli
   var Admin = 5000;
+  var cicilan6 = (HargaSesungguhnya / 6) + Bunga9Bulan + Admin;
   var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+  var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
 
+  var mathcicilan6 = Math.ceil(cicilan6 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
   var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+  var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
 
   //toLocaleString untuk menambahkan koma disetiap 3 digit
+  var cicilan6asli = mathcicilan6.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
   var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
+  var cicilan12asli = mathcicilan12.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   });
@@ -1791,71 +1920,94 @@ else if (hargaHCI <= 21400000 && hargaHCI > 5625000) {
   ////////////////////Cicilan Tenor Normal ENDING//////////////////////////
 
   //Cicilan Tenor 6 Bulan Bunga 0%
-  var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
-  var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
-  // Problem dikolom ini
-  var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
-  var hargaBulat60PShowTime = hargaBulat60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
-  var hargaTerbaru60PP = hargaBulat60P; //untuk mengecek bahwa setelah ditambah 5.5% apakah masih dibawah 15jt jika diatas 15jt maka berjalan rumus IF dibawah
+  // var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+  // var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
+  // // Problem dikolom ini
+  // var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
+  // var hargaBulat60PShowTime = hargaBulat60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
+  // var hargaTerbaru60PP = hargaBulat60P; //untuk mengecek bahwa setelah ditambah 5.5% apakah masih dibawah 15jt jika diatas 15jt maka berjalan rumus IF dibawah
 
-  if (hargaTerbaru60PP > 21400000) {
-    DpMentah60P = (hargaTerbaru60PP - 21400000) + 6420000 + 200000;
-  } else {
-    DpMentah60P = (hargaBulat60P * 30 / 100) + 200000;
-  }
+  // if (hargaTerbaru60PP > 21400000) {
+  //   DpMentah60P = (hargaTerbaru60PP - 21400000) + 6420000 + 200000;
+  // } else {
+  //   DpMentah60P = (hargaBulat60P * 30 / 100) + 200000;
+  // }
 
-  var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
+  // var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
 
-  var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
-  var DpSesungguhnya60P = DpTerbaru60P - 199000;
-  var HargaSesungguhnya60P = hargaTerbaru60PP - DpSesungguhnya60P;
+  // var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
+  // var DpSesungguhnya60P = DpTerbaru60P - 199000;
+  // var HargaSesungguhnya60P = hargaTerbaru60PP - DpSesungguhnya60P;
 
-  var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
-  var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
-  var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
+  // var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+  // var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+  // var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
   //Cicilan Tenor 6 Bulan Bunga 0%
   konten3.innerHTML = `
 ${doc.data().nama} <br>
 Promo DP : ${DpBulatShowTime} <br>
+6x : ${cicilan6asli} <br>
 9x : ${cicilan9asli} <br>
-
-<br>
-Promo Spesial Cicilan 6 Bulan <br>
-DP : ${DpTerbaru60PShowTime} <br>
-6x : ${cicilan60Pasli}
+12x : ${cicilan12asli} <br>
 `;
+
+var data = `
+<tr>
+<td><a href="${doc.data().linkproduk}">${doc.data().nama}</a></td>
+<td>${DpBulatShowTime}</td>
+<td>${cicilan6asli}</td>
+<td>${cicilan9asli}</td>
+<td>${cicilan12asli}</td>
+</tr>
+`;
+
+htmlproduk.innerText =  data; 
 
 } ////// Khusus Produk dibawah 21.400.000 juta ENDING ////////////
  ////// Khusus Produk diatas 15 juta START ////////////
- else if (hargaHCI > 21400000) {
+ else if (hargaHCI > 11000000) {
   //////TENOR NORMAL START/////////////
-  var hargaMentah = (hargaHCI - 21400000) + 6420000; //15jt adalah batas maksimal kredit di HCI
-  var DpRecomend = hargaMentah + 200000; // 1.7jt ada lah 10% dari 15jt (1.5jt) + biaya admin 200rb
+  var hargaMentah = hargaHCI - 10000000; //15jt adalah batas maksimal kredit di HCI
+  var DpRecomend = hargaMentah + biayaAdm; // 1.7jt ada lah 10% dari 15jt (1.5jt) + biaya admin 200rb
   var DpBulat = Math.ceil(DpRecomend / 50000) * 50000; //membulatkan kelipatan 50rb
   var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   })
-  var DpSesungguhnya = DpBulat - 199000;
+  var DpSesungguhnya = DpBulat - biayaAdm;
   var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
   var BungaNormal = (HargaSesungguhnya * bunga1224 / 100);
   var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100);
   var Admin = 5000;
-  var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
 
+  var cicilan6 = (HargaSesungguhnya / 6) + Bunga9Bulan + Admin;
+  var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+  var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
+
+  var mathcicilan6 = Math.ceil(cicilan6 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
   var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+  var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
 
   //toLocaleString untuk menambahkan koma disetiap 3 digit
+  var cicilan6asli = mathcicilan6.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
   var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+
+  var cicilan12asli = mathcicilan12.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   })
@@ -1863,46 +2015,56 @@ DP : ${DpTerbaru60PShowTime} <br>
   //////////// TENOR NORMAL ENDING ///////////////////////////////////////////////
 
   //Cicilan Tenor 6 Bulan Bunga 0%
-  var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
-  var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
-  var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 50rb
+  // var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+  // var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
+  // var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 50rb
 
-  var hargaMentah60P = (hargaBulat60P - 21400000)+ 6420000; //15jt adalah batas maksimal kredit di HCI
-  var DpRecomend60P = hargaMentah60P + 200000;
+  // var hargaMentah60P = (hargaBulat60P - 21400000)+ 6420000; //15jt adalah batas maksimal kredit di HCI
+  // var DpRecomend60P = hargaMentah60P + 200000;
 
-  var DpBulat60P = Math.ceil(DpRecomend60P / 50000) * 50000; //membulatkan kelipatan 50rb
-  var DpBulat60PShowTime = DpBulat60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
+  // var DpBulat60P = Math.ceil(DpRecomend60P / 50000) * 50000; //membulatkan kelipatan 50rb
+  // var DpBulat60PShowTime = DpBulat60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
 
-  var DpSesungguhnya60P = DpBulat60P - 199000;
-  var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
-  var Admin = 5000;
-  var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
-  var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
-  var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
+  // var DpSesungguhnya60P = DpBulat60P - 199000;
+  // var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
+  // var Admin = 5000;
+  // var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+  // var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+  // var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
 
   //Cicilan Tenor 6 Bulan Bunga 0%
   konten3.innerHTML = `
 ${doc.data().nama} <br>
 Promo DP : ${DpBulatShowTime} <br>
+6x : ${cicilan6asli} <br>
 9x : ${cicilan9asli} <br>
-
-<br>
-Promo Spesial Cicilan 6 Bulan <br>
-DP : ${DpBulat60PShowTime} <br>
-6x : ${cicilan60Pasli}
+12x : ${cicilan12asli} <br>
 `;
+var data = `
+<tr>
+<td><a href="${doc.data().linkproduk}">${doc.data().nama}</a></td>
+<td>${DpBulatShowTime}</td>
+<td>${cicilan6asli}</td>
+<td>${cicilan9asli}</td>
+<td>${cicilan12asli}</td>
+</tr>
+`;
+
+htmlproduk.innerText =  data; 
+
 }else{
   konten3.innerHTML = `
   Maaf Produk ${doc.data().nama} belum dapat dikredit <br>
-  
   `;
+  htmlproduk.innerText =  infoHtml; 
 } ////// Khusus Produk diatas 15 juta ENDING ////////////
+
 
 
 
@@ -1941,6 +2103,21 @@ DP : ${DpBulat60PShowTime} <br>
     document.execCommand('copy');
   });
   // TOMBOL COPY #1 ENDING
+
+    // TOMBOL COPY HTML  #1
+    let copyHtml = document.querySelector('#copyhtml' + doc.id);
+    copyHtml.addEventListener('click', function (e) {
+      var text = document.querySelector(".html" + doc.id);
+      var selection = window.getSelection();
+      var range = document.createRange();
+      range.selectNodeContents(text);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      //add to clipboard.
+      document.execCommand('copy');
+      
+    });
+    // TOMBOL COPY HTML #1 ENDING
 
   // TOMBOL COPY SPESIFIKASI #1
   let copySpec = document.querySelector('#copyspesifikasi' + doc.id);
@@ -2018,8 +2195,10 @@ DP : ${DpBulat60PShowTime} <br>
         let cashback = document.querySelector('#update-cashback' + doc.id).value;
         let garansi = document.querySelector('#update-garansi' + doc.id).value;
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
+        let freeclaim = document.querySelector('#update-free-claim' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
@@ -2030,8 +2209,10 @@ DP : ${DpBulat60PShowTime} <br>
           cashback: cashback,
           garansi: garansi,
           free: free,
+          freeclaim: freeclaim,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -2068,9 +2249,11 @@ function renderGimbal(doc) {
 
   var free = new Object();
   free['Free'] = doc.data().free;
+  free['Free Klaim'] = doc.data().freeclaim;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().garansi;
-  free['Info'] = doc.data().keterangan;
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
 
 
@@ -2082,9 +2265,11 @@ function renderGimbal(doc) {
   objek['Cashback'] = Number(doc.data().cashback);
   objek['Harga Spesial'] = world();
   objek['Free'] = doc.data().free;
+  objek['Free Klaim'] = doc.data().freeclaim;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -2123,50 +2308,133 @@ function renderGimbal(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+    // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+    let hargaNormal = Number(doc.data().harga);
+    let cashBack = Number(doc.data().cashback);
+    let hargaHCI = hitung();
+  
+    function hitung() {
+      if (cashBack !== 0 || cashBack !== '') {
+        return hargaNormal - cashBack;
+      } else {
+        hargaHCI = hargaNormal;
+      }
+    }
+    let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
 
-  li.innerHTML = `
-           <div class="collapsible-header">
-              <span class="left col s12">${doc.data().nama}</span>
-           </div>
-           <div class="center-align collapsible-body">
-                <div class="konten1${doc.id}"></div> <!-- INFO HARGA HCI TIDAK BISA DICOPAS -->
-                <div id="cicilan${doc.id}">
-                  <div class="konten3${doc.id}"></div> <!-- INFO CICILAN HOMECREDIT YANG BISA DI COPAS -->
-                  <div class="konten4${doc.id}"></div> <!-- INFO FREEAN BONUS GABUNG CICILAN -->
-                </div>
-                <br>
-                <a id="copycicilan${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Angsuran</a>
-                <div class="garis"></div>
-                <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                <br>
-                <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                <br>
-                <br>
-    
-                <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                <!-- Modal Structure -->
-                <div id="modal1${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                  </div>
-                </div>
-                
-                <!-- Modal Structure -->
-                <div id="modal2${doc.id}" class="modal">
-                <div class="modal-content">
-                  <div class="isibox${doc.id}">${newIsibox}</div>
-                </div>
-                <div class="modal-footer">
-                  <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                </div>
+
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+       <div class="collapsible-header">
+       <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+       </div>
+       <div class="center-align collapsible-body">
+            <div class="konten1${doc.id}"></div> <!-- INFO HARGA HCI TIDAK BISA DICOPAS -->
+            <div id="cicilan${doc.id}">
+              <div class="konten3${doc.id}"></div> <!-- INFO CICILAN HOMECREDIT YANG BISA DI COPAS -->
+              <div class="konten4${doc.id}"></div> <!-- INFO FREEAN BONUS GABUNG CICILAN -->
+            </div>
+            <br>
+            <a id="copycicilan${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Angsuran</a>
+            <div class="garis"></div>
+            <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+            <br>
+            <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+            <a  class=" btn-small disabled delete" href="#" >Delete</a>
+            <br>
+            <br>
+
+            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+            
+            <div class="garis"></div>
+            <div class="html${doc.id}"></div>
+            <br>
+            <a id="copyhtml${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy HTML</a>
+            
+            <!-- Modal Structure -->
+            <div id="modal1${doc.id}" class="modal">
+              <div class="modal-content">
+                <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
               </div>
-             
-           `;
+              <div class="modal-footer">
+                <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+              </div>
+            </div>
+            
+            <!-- Modal Structure -->
+            <div id="modal2${doc.id}" class="modal">
+            <div class="modal-content">
+              <div class="isibox${doc.id}">${newIsibox}</div>
+            </div>
+            <div class="modal-footer">
+              <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+            </div>
+      
+
+          </div>
+         
+       `;
+
+  }else{
+    li.innerHTML = `
+       <div class="collapsible-header">
+       <span class="left col s12">
+       ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+      <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+     </span>
+       </div>
+       <div class="center-align collapsible-body">
+            <div class="konten1${doc.id}"></div> <!-- INFO HARGA HCI TIDAK BISA DICOPAS -->
+            <div id="cicilan${doc.id}">
+              <div class="konten3${doc.id}"></div> <!-- INFO CICILAN HOMECREDIT YANG BISA DI COPAS -->
+              <div class="konten4${doc.id}"></div> <!-- INFO FREEAN BONUS GABUNG CICILAN -->
+            </div>
+            <br>
+            <a id="copycicilan${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Angsuran</a>
+            <div class="garis"></div>
+            <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+            <br>
+            <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+            <a  class=" btn-small disabled delete" href="#" >Delete</a>
+            <br>
+            <br>
+
+            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+            
+            <div class="garis"></div>
+            <div class="html${doc.id}"></div>
+            <br>
+            <a id="copyhtml${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy HTML</a>
+            
+            <!-- Modal Structure -->
+            <div id="modal1${doc.id}" class="modal">
+              <div class="modal-content">
+                <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+              </div>
+              <div class="modal-footer">
+                <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+              </div>
+            </div>
+            
+            <!-- Modal Structure -->
+            <div id="modal2${doc.id}" class="modal">
+            <div class="modal-content">
+              <div class="isibox${doc.id}">${newIsibox}</div>
+            </div>
+            <div class="modal-footer">
+              <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+            </div>
+          </div>
+         
+       `;
+
+  }
+
 
 
 
@@ -2188,13 +2456,21 @@ function renderGimbal(doc) {
                <label for="update-free-bonus">Free</label>
                <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
                <br>
+               <label for="update-free-claim">Free Klaim</label>
+               <input type="text" placeholder="Free Klaim" id="update-free-claim${doc.id}" value="${doc.data().claim}">
+               <br>
                <label for="periode-promo">Periode Promo</label>
                <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
                <br>
                <div class="input-field col s12">
                <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
                <label for="keterangan">Keterangan</label>
-             </div>
+               </div>
+               <br>
+               <div class="input-field col s12">
+               <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+               <label for="linkproduk">Link Produk</label>
+                </div>
              <br>
              <div class="input-field col s12">
                <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
@@ -2234,22 +2510,7 @@ function renderGimbal(doc) {
 
 
 
-  // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
-  let hargaNormal = Number(doc.data().harga);
-  let cashBack = Number(doc.data().cashback);
-  let hargaHCI = hitung();
 
-  function hitung() {
-    if (cashBack !== 0 || cashBack !== '') {
-      return hargaNormal - cashBack;
-    } else {
-      hargaHCI = hargaNormal;
-    }
-  }
-  let hargaHCIST = hargaHCI.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  });
   let biayaSubsidi6Bln = hitung6bln(); // HASIL SUBSIDI DALAM RUPIAH
   let hargaHCI6Bln = hargaHCI + biayaSubsidi6Bln;
 
@@ -2257,10 +2518,13 @@ function renderGimbal(doc) {
     return hargaHCI * biaya6bln / 100;
   }
   let hargaHCI6BlnBulat = Math.ceil(hargaHCI6Bln / 100) * 100; // Dibulat ke 100 Rupiah 
-  let hargaHCI6BlnST = hargaHCI6BlnBulat.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  });
+  let hargaHCI6BlnST = hargaHCIST
+
+  //Bersifat sementara jangan lupa suatu saat dibalikan lagi
+  // let hargaHCI6BlnST = hargaHCI6BlnBulat.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // });
   let konten1 = document.querySelector('.konten1' + doc.id)
   konten1.innerHTML = `
         <div>Harga Cash / HCI Normal : <span class="bold">Rp ${hargaHCIST} </span> </div>
@@ -2268,40 +2532,46 @@ function renderGimbal(doc) {
         <div class="garis"></div>
       `;
 
-  // MERENDER HARGA CASH YANG BISA DI COPY PASTE
-  for (const property in objek) {
-    if (`${objek[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${objek[property]}`)
-    let idbaru = document.querySelector('.konten2' + doc.id);
-    if (typeof objek[property] == Number) {
-      return objek[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // MERENDER HARGA CASH & FREE ATAU KETERANGAN YANG BISA DI COPY PASTE
+for (const property in objek) {
+  if (`${objek[property]}` == 0 ||`${objek[property]}` == 'undefined' ||`${objek[property]}` == undefined) {
+    continue;
   }
-  // MERENDER HARGA CASH YANG BISA DI COPY PASTE ENDING
+  if(objek[property].value == 0 || objek[property].value == 'undefined'){
+    continue;
+  }
+  if (typeof objek[property] == undefined) {
+    return objek[property] = '';
+  }
+  // console.log(`${property}: ${objek[property]}`)
+  let idbaru = document.querySelector('.konten2' + doc.id);
+  if (typeof objek[property] == Number) {
+    return objek[property].toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+  }
+  idbaru.innerHTML += `${property} ${objek[property]} <br>`
+}
+// MERENDER HARGA CASH YANG BISA DI COPY PASTE ENDING
 
 
-  // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
+// MERENDER FREE & KETERANGAN BONUS TEPAT DIBAWAH ANGSURAN START
+for (const property in free) {
+  if (`${free[property]}` == 0 || `${free[property]}` == undefined || `${free[property]}` == 'undefined') {
+    continue;
   }
-  // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
+  // console.log(`${property}: ${free[property]}`)
+  let idbaru2 = document.querySelector('.konten4' + doc.id);
+  if (typeof free[property] == Number) {
+    return free[property].toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+  }
+  idbaru2.innerHTML += `${property} ${objek[property]} <br>`
+}
+// MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 /** 
   ////// Khusus Produk dibawah 4.5 juta START /////////////
@@ -2628,27 +2898,42 @@ function renderGimbal(doc) {
     `;
   } ////// Khusus Produk diatas 15 juta ENDING ////////////
 */
+let htmlproduk = document.querySelector('.html' +doc.id)
 let konten3 = document.querySelector('.konten3' + doc.id)
-if (hargaHCI <= 5625000 && hargaHCI >= 1000000) {
+if (hargaHCI <= 4500000 && hargaHCI >= 1000000) {
   ////////////////////Cicilan DP Normal//////////////////////////
-  var Dp = (hargaHCI * 20 / 100) + 200000; // mengkonversikan 20% dari harga asli ditambah biaya adm 200rb
+  var Dp = (hargaHCI * 5 / 100) + biayaAdm; // mengkonversikan 20% dari harga asli ditambah biaya adm 200rb
   var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
   // DpBulatShowTime hanya untuk tampil dihalaman depan dengan ada koma disetiap 3 digit 0
   var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   })
-  var DpSesungguhnya = DpBulat - 199000;
+  var DpSesungguhnya = DpBulat - biayaAdm;
   var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
   var BungaNormal = (HargaSesungguhnya * bunga1224 / 100); // Seharusnya harga asli
   var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100); // Seharusnya harga asli
   var Admin = 5000;
+  var cicilan6 = (HargaSesungguhnya / 6) + Bunga9Bulan + Admin;
   var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+  var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
 
+  var mathcicilan6 = Math.ceil(cicilan6 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
   var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+  var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
 
   //toLocaleString untuk menambahkan koma disetiap 3 digit
+
+  var cicilan6asli = mathcicilan6.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
   var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  var cicilan12asli = mathcicilan12.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   });
@@ -2657,57 +2942,80 @@ if (hargaHCI <= 5625000 && hargaHCI >= 1000000) {
 
   //Cicilan Tenor 6 Bulan Bunga 0%
 
-  var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
-  var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 5.5% admin
-  var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
-  var DpMentah60P = (hargaBulat60P * 30 / 100) + 200000; // mengkonversikan 10% dari harga asli
-  var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
-  var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
-  var DpSesungguhnya60P = DpTerbaru60P - 199000;
-  var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
-  //var Bunga6099 = (hargaBulat6099 *2.69 / 100);
-  var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
-  var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
-  var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
+  // var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+  // var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 5.5% admin
+  // var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
+  // var DpMentah60P = (hargaBulat60P * 30 / 100) + 200000; // mengkonversikan 10% dari harga asli
+  // var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
+  // var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
+  // var DpSesungguhnya60P = DpTerbaru60P - 199000;
+  // var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
+  // //var Bunga6099 = (hargaBulat6099 *2.69 / 100);
+  // var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+  // var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+  // var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
 
   konten3.innerHTML = `
   ${doc.data().nama} <br>
   Promo DP : ${DpBulatShowTime} <br>
+  6x : ${cicilan6asli} <br>
   9x : ${cicilan9asli} <br>
-  <br>
-  Promo Spesial Cicilan 6 Bulan <br>
-  DP : ${DpTerbaru60PShowTime} <br>
-  6x : ${cicilan60Pasli}
+  12x : ${cicilan12asli} <br>
 `;
+
+var data = `
+<tr>
+<td><a href="${doc.data().linkproduk}">${doc.data().nama}</a></td>
+<td>${DpBulatShowTime}</td>
+<td>${cicilan6asli}</td>
+<td>${cicilan9asli}</td>
+<td>${cicilan12asli}</td>
+</tr>
+`;
+
+htmlproduk.innerText =  data; 
 
 } ////// Khusus Produk dibawah 5.625.000 juta ENDING/////////////
 
-else if (hargaHCI <= 21400000 && hargaHCI > 5625000) {
+else if (hargaHCI <= 11000000 && hargaHCI > 4500000) {
 
   ////////////////////Cicilan Tenor Normal//////////////////////////
-  var Dp = (hargaHCI * 30 / 100) + 200000; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
+  var Dp = (hargaHCI * 10 / 100) + biayaAdm; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
   var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
   var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   })
-  var DpSesungguhnya = DpBulat - 199000;
+  var DpSesungguhnya = DpBulat - biayaAdm;
   var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
   var BungaNormal = (HargaSesungguhnya * bunga1224 / 100); // Seharusnya harga asli
   var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100); // Seharusnya harga asli
   var Admin = 5000;
-  var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
 
+  var cicilan6 = (HargaSesungguhnya / 6) + Bunga9Bulan + Admin;
+  var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+  var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
+  var mathcicilan6 = Math.ceil(cicilan6 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
   var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+  var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
 
   //toLocaleString untuk menambahkan koma disetiap 3 digit
+  var cicilan6asli = mathcicilan6.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
   var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  var cicilan12asli = mathcicilan12.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   });
@@ -2715,118 +3023,152 @@ else if (hargaHCI <= 21400000 && hargaHCI > 5625000) {
   ////////////////////Cicilan Tenor Normal ENDING//////////////////////////
 
   //Cicilan Tenor 6 Bulan Bunga 0%
-  var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
-  var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
-  // Problem dikolom ini
-  var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
-  var hargaBulat60PShowTime = hargaBulat60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
-  var hargaTerbaru60PP = hargaBulat60P; //untuk mengecek bahwa setelah ditambah 5.5% apakah masih dibawah 15jt jika diatas 15jt maka berjalan rumus IF dibawah
+  // var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+  // var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
+  // // Problem dikolom ini
+  // var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
+  // var hargaBulat60PShowTime = hargaBulat60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
+  // var hargaTerbaru60PP = hargaBulat60P; //untuk mengecek bahwa setelah ditambah 5.5% apakah masih dibawah 15jt jika diatas 15jt maka berjalan rumus IF dibawah
 
-  if (hargaTerbaru60PP > 21400000) {
-    DpMentah60P = (hargaTerbaru60PP - 21400000) + 6420000 + 200000;
-  } else {
-    DpMentah60P = (hargaBulat60P * 30 / 100) + 200000;
-  }
+  // if (hargaTerbaru60PP > 21400000) {
+  //   DpMentah60P = (hargaTerbaru60PP - 21400000) + 6420000 + 200000;
+  // } else {
+  //   DpMentah60P = (hargaBulat60P * 30 / 100) + 200000;
+  // }
 
-  var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
+  // var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
 
-  var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
-  var DpSesungguhnya60P = DpTerbaru60P - 199000;
-  var HargaSesungguhnya60P = hargaTerbaru60PP - DpSesungguhnya60P;
+  // var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
+  // var DpSesungguhnya60P = DpTerbaru60P - 199000;
+  // var HargaSesungguhnya60P = hargaTerbaru60PP - DpSesungguhnya60P;
 
-  var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
-  var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
-  var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
+  // var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+  // var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+  // var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
   //Cicilan Tenor 6 Bulan Bunga 0%
   konten3.innerHTML = `
 ${doc.data().nama} <br>
 Promo DP : ${DpBulatShowTime} <br>
+6x : ${cicilan6asli} <br>
 9x : ${cicilan9asli} <br>
-
-<br>
-Promo Spesial Cicilan 6 Bulan <br>
-DP : ${DpTerbaru60PShowTime} <br>
-6x : ${cicilan60Pasli}
+12x : ${cicilan12asli} <br>
 `;
+
+var data = `
+<tr>
+<td><a href="${doc.data().linkproduk}">${doc.data().nama}</a></td>
+<td>${DpBulatShowTime}</td>
+<td>${cicilan6asli}</td>
+<td>${cicilan9asli}</td>
+<td>${cicilan12asli}</td>
+</tr>
+`;
+
+htmlproduk.innerText =  data; 
 
 } ////// Khusus Produk dibawah 21.400.000 juta ENDING ////////////
  ////// Khusus Produk diatas 15 juta START ////////////
- else if (hargaHCI > 21400000) {
+ else if (hargaHCI > 11000000) {
   //////TENOR NORMAL START/////////////
-  var hargaMentah = (hargaHCI - 21400000) + 6420000; //15jt adalah batas maksimal kredit di HCI
-  var DpRecomend = hargaMentah + 200000; // 1.7jt ada lah 10% dari 15jt (1.5jt) + biaya admin 200rb
+  var hargaMentah = hargaHCI - 10000000; //15jt adalah batas maksimal kredit di HCI
+  var DpRecomend = hargaMentah + biayaAdm; // 1.7jt ada lah 10% dari 15jt (1.5jt) + biaya admin 200rb
   var DpBulat = Math.ceil(DpRecomend / 50000) * 50000; //membulatkan kelipatan 50rb
   var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   })
-  var DpSesungguhnya = DpBulat - 199000;
+  var DpSesungguhnya = DpBulat - biayaAdm;
   var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
   var BungaNormal = (HargaSesungguhnya * bunga1224 / 100);
   var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100);
   var Admin = 5000;
-  var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
 
+  var cicilan6 = (HargaSesungguhnya / 6) + Bunga9Bulan + Admin;
+  var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
+  var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
+  var mathcicilan6 = Math.ceil(cicilan6 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
   var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
+  var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
 
   //toLocaleString untuk menambahkan koma disetiap 3 digit
+  var cicilan6asli = mathcicilan6.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
   var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
-  })
+  });
+
+  var cicilan12asli = mathcicilan12.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
 
   //////////// TENOR NORMAL ENDING ///////////////////////////////////////////////
 
   //Cicilan Tenor 6 Bulan Bunga 0%
-  var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
-  var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
-  var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 50rb
+  // var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
+  // var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
+  // var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 50rb
 
-  var hargaMentah60P = (hargaBulat60P - 21400000)+ 6420000; //15jt adalah batas maksimal kredit di HCI
-  var DpRecomend60P = hargaMentah60P + 200000;
+  // var hargaMentah60P = (hargaBulat60P - 21400000)+ 6420000; //15jt adalah batas maksimal kredit di HCI
+  // var DpRecomend60P = hargaMentah60P + 200000;
 
-  var DpBulat60P = Math.ceil(DpRecomend60P / 50000) * 50000; //membulatkan kelipatan 50rb
-  var DpBulat60PShowTime = DpBulat60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
+  // var DpBulat60P = Math.ceil(DpRecomend60P / 50000) * 50000; //membulatkan kelipatan 50rb
+  // var DpBulat60PShowTime = DpBulat60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
 
-  var DpSesungguhnya60P = DpBulat60P - 199000;
-  var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
-  var Admin = 5000;
-  var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
-  var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
-  var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
+  // var DpSesungguhnya60P = DpBulat60P - 199000;
+  // var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
+  // var Admin = 5000;
+  // var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
+  // var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
+  // var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 0
+  // })
 
   //Cicilan Tenor 6 Bulan Bunga 0%
   konten3.innerHTML = `
 ${doc.data().nama} <br>
 Promo DP : ${DpBulatShowTime} <br>
+6x : ${cicilan6asli} <br>
 9x : ${cicilan9asli} <br>
-
-<br>
-Promo Spesial Cicilan 6 Bulan <br>
-DP : ${DpBulat60PShowTime} <br>
-6x : ${cicilan60Pasli}
+12x : ${cicilan12asli} <br>
 `;
+
+var data = `
+<tr>
+<td><a href="${doc.data().linkproduk}">${doc.data().nama}</a></td>
+<td>${DpBulatShowTime}</td>
+<td>${cicilan6asli}</td>
+<td>${cicilan9asli}</td>
+<td>${cicilan12asli}</td>
+</tr>
+`;
+
+htmlproduk.innerText =  data; 
+
 }else{
   konten3.innerHTML = `
   Maaf Produk ${doc.data().nama} belum dapat dikredit <br>
-  
   `;
+  htmlproduk.innerText =  infoHtml; 
 } ////// Khusus Produk diatas 15 juta ENDING ////////////
+
 
 
   // TOMBOL COPY CICILAN #1
@@ -2859,6 +3201,21 @@ DP : ${DpBulat60PShowTime} <br>
     document.execCommand('copy');
   });
   // TOMBOL COPY #1 ENDING
+
+    // TOMBOL COPY HTML  #1
+    let copyHtml = document.querySelector('#copyhtml' + doc.id);
+    copyHtml.addEventListener('click', function (e) {
+      var text = document.querySelector(".html" + doc.id);
+      var selection = window.getSelection();
+      var range = document.createRange();
+      range.selectNodeContents(text);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      //add to clipboard.
+      document.execCommand('copy');
+      
+    });
+    // TOMBOL COPY HTML #1 ENDING
 
   // TOMBOL COPY SPESIFIKASI #1
   let copySpec = document.querySelector('#copyspesifikasi' + doc.id);
@@ -2936,8 +3293,10 @@ DP : ${DpBulat60PShowTime} <br>
         let cashback = document.querySelector('#update-cashback' + doc.id).value;
         let garansi = document.querySelector('#update-garansi' + doc.id).value;
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
+        let freeclaim = document.querySelector('#update-free-claim' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
@@ -2948,8 +3307,10 @@ DP : ${DpBulat60PShowTime} <br>
           cashback: cashback,
           garansi: garansi,
           free: free,
+          freeclaim : freeclaim,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -2985,9 +3346,11 @@ function renderDrone(doc) {
 
   var free = new Object();
   free['Free'] = doc.data().free;
+  free['Free Klaim'] = doc.data().freeclaim;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().garansi;
-  free['Info'] = doc.data().keterangan;
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
 
 
@@ -2999,9 +3362,12 @@ function renderDrone(doc) {
   objek['Cashback'] = Number(doc.data().cashback);
   objek['Harga Spesial'] = world();
   objek['Free'] = doc.data().free;
+  objek['Free Klaim'] = doc.data().freeclaim;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
+
 
   // Memunculkan Harga Spesial
   function world() {
@@ -3041,49 +3407,132 @@ function renderDrone(doc) {
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
 
-  li.innerHTML = `
-             <div class="collapsible-header">
-                <span class="left col s12">${doc.data().nama}</span>
-             </div>
-             <div class="center-align collapsible-body">
-                  <div class="konten1${doc.id}"></div> <!-- INFO HARGA HCI TIDAK BISA DICOPAS -->
-                  <div id="cicilan${doc.id}">
-                    <div class="konten3${doc.id}"></div> <!-- INFO CICILAN HOMECREDIT YANG BISA DI COPAS -->
-                    <div class="konten4${doc.id}"></div> <!-- INFO FREEAN BONUS GABUNG CICILAN -->
-                  </div>
-                  <br>
-                  <a id="copycicilan${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Angsuran</a>
-                  <div class="garis"></div>
-                  <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                  <br>
-                  <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                  <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                  <br>
-                  <br>
+  // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+  let hargaNormal = Number(doc.data().harga);
+  let cashBack = Number(doc.data().cashback);
+  let hargaHCI = hitung();
+
+  function hitung() {
+    if (cashBack !== 0 || cashBack !== '') {
+      return hargaNormal - cashBack;
+    } else {
+      hargaHCI = hargaNormal;
+    }
+  }
+
+  let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+       <div class="collapsible-header">
+       <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+       </div>
+       <div class="center-align collapsible-body">
+            <div class="konten1${doc.id}"></div> <!-- INFO HARGA HCI TIDAK BISA DICOPAS -->
+            <div id="cicilan${doc.id}">
+              <div class="konten3${doc.id}"></div> <!-- INFO CICILAN HOMECREDIT YANG BISA DI COPAS -->
+              <div class="konten4${doc.id}"></div> <!-- INFO FREEAN BONUS GABUNG CICILAN -->
+            </div>
+            <br>
+            <a id="copycicilan${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Angsuran</a>
+            <div class="garis"></div>
+            <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+            <br>
+            <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+            <a  class=" btn-small disabled delete" href="#" >Delete</a>
+            <br>
+            <br>
+
+            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+            
+            <div class="garis"></div>
+            <div class="html${doc.id}"></div>
+            <br>
+            <a id="copyhtml${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy HTML</a>
+            
+            <!-- Modal Structure -->
+            <div id="modal1${doc.id}" class="modal">
+              <div class="modal-content">
+                <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+              </div>
+              <div class="modal-footer">
+                <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+              </div>
+            </div>
+            
+            <!-- Modal Structure -->
+            <div id="modal2${doc.id}" class="modal">
+            <div class="modal-content">
+              <div class="isibox${doc.id}">${newIsibox}</div>
+            </div>
+            <div class="modal-footer">
+              <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+            </div>
       
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                  <!-- Modal Structure -->
-                  <div id="modal1${doc.id}" class="modal">
-                    <div class="modal-content">
-                      <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                    </div>
-                    <div class="modal-footer">
-                      <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                    </div>
-                  </div>
-                  
-                  <!-- Modal Structure -->
-                  <div id="modal2${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="isibox${doc.id}">${newIsibox}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                  </div>
-                </div>
-               
-             `;
+
+          </div>
+         
+       `;
+
+  }else{
+    li.innerHTML = `
+       <div class="collapsible-header">
+       <span class="left col s12">
+       ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+      <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+     </span>
+       </div>
+       <div class="center-align collapsible-body">
+            <div class="konten1${doc.id}"></div> <!-- INFO HARGA HCI TIDAK BISA DICOPAS -->
+            <div id="cicilan${doc.id}">
+              <div class="konten3${doc.id}"></div> <!-- INFO CICILAN HOMECREDIT YANG BISA DI COPAS -->
+              <div class="konten4${doc.id}"></div> <!-- INFO FREEAN BONUS GABUNG CICILAN -->
+            </div>
+            <br>
+            <a id="copycicilan${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Angsuran</a>
+            <div class="garis"></div>
+            <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+            <br>
+            <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+            <a  class=" btn-small disabled delete" href="#" >Delete</a>
+            <br>
+            <br>
+
+            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+            
+            <div class="garis"></div>
+            <div class="html${doc.id}"></div>
+            <br>
+            <a id="copyhtml${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy HTML</a>
+            
+            <!-- Modal Structure -->
+            <div id="modal1${doc.id}" class="modal">
+              <div class="modal-content">
+                <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+              </div>
+              <div class="modal-footer">
+                <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+              </div>
+            </div>
+            
+            <!-- Modal Structure -->
+            <div id="modal2${doc.id}" class="modal">
+            <div class="modal-content">
+              <div class="isibox${doc.id}">${newIsibox}</div>
+            </div>
+            <div class="modal-footer">
+              <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+            </div>
+          </div>
+         
+       `;
+
+  }
 
 
 
@@ -3105,13 +3554,21 @@ function renderDrone(doc) {
                  <label for="update-free-bonus">Free</label>
                  <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
                  <br>
+                 <label for="update-free-claim">Free Klaim</label>
+                 <input type="text" placeholder="Free Klaim" id="update-free-claim${doc.id}" value="${doc.data().freeclaim}">
+                 <br>
                  <label for="periode-promo">Periode Promo</label>
                  <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
                  <br>
                  <div class="input-field col s12">
                  <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
                  <label for="keterangan">Keterangan</label>
-               </div>
+                 </div>
+                 <br>
+                 <div class="input-field col s12">
+                 <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+                 <label for="linkproduk">Link Produk</label>
+                  </div>
                <br>
                <div class="input-field col s12">
                  <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
@@ -3151,22 +3608,7 @@ function renderDrone(doc) {
 
 
 
-  // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
-  let hargaNormal = Number(doc.data().harga);
-  let cashBack = Number(doc.data().cashback);
-  let hargaHCI = hitung();
 
-  function hitung() {
-    if (cashBack !== 0 || cashBack !== '') {
-      return hargaNormal - cashBack;
-    } else {
-      hargaHCI = hargaNormal;
-    }
-  }
-  let hargaHCIST = hargaHCI.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  });
 
   let konten1 = document.querySelector('.konten1' + doc.id)
   konten1.innerHTML = `
@@ -3175,48 +3617,55 @@ function renderDrone(doc) {
           <div class="garis"></div>
         `;
 
-  // MERENDER HARGA CASH YANG BISA DI COPY PASTE
-  for (const property in objek) {
-    if (`${objek[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${objek[property]}`)
-    let idbaru = document.querySelector('.konten2' + doc.id);
-    if (typeof objek[property] == Number) {
-      return objek[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // MERENDER HARGA CASH & FREE ATAU KETERANGAN YANG BISA DI COPY PASTE
+for (const property in objek) {
+  if (`${objek[property]}` == 0 ||`${objek[property]}` == 'undefined' ||`${objek[property]}` == undefined) {
+    continue;
   }
-  // MERENDER HARGA CASH YANG BISA DI COPY PASTE ENDING
+  if(objek[property].value == 0 || objek[property].value == 'undefined'){
+    continue;
+  }
+  if (typeof objek[property] == undefined) {
+    return objek[property] = '';
+  }
+  // console.log(`${property}: ${objek[property]}`)
+  let idbaru = document.querySelector('.konten2' + doc.id);
+  if (typeof objek[property] == Number) {
+    return objek[property].toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+  }
+  idbaru.innerHTML += `${property} ${objek[property]} <br>`
+}
+// MERENDER HARGA CASH YANG BISA DI COPY PASTE ENDING
 
 
-  // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
+// MERENDER FREE & KETERANGAN BONUS TEPAT DIBAWAH ANGSURAN START
+for (const property in free) {
+  if (`${free[property]}` == 0 || `${free[property]}` == undefined || `${free[property]}` == 'undefined') {
+    continue;
   }
-  // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
+  // console.log(`${property}: ${free[property]}`)
+  let idbaru2 = document.querySelector('.konten4' + doc.id);
+  if (typeof free[property] == Number) {
+    return free[property].toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+  }
+  idbaru2.innerHTML += `${property} ${objek[property]} <br>`
+}
+// MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
   ////// Khusus Produk dibawah 4.5 juta START /////////////
+  let htmlproduk = document.querySelector('.html' +doc.id)
   let konten3 = document.querySelector('.konten3' + doc.id)
-  if (hargaHCI <= 2000000 && hargaHCI >= 1000000) {
+  if (hargaHCI <= 3700000 && hargaHCI >= 1000000) {
 
     ////////////////////Cicilan DP Normal//////////////////////////
-    var Dp = (hargaHCI * 30 / 100) + 50000; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
+    var Dp = (hargaHCI * 20 / 100) + 100000; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
     var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
     // DpBulatShowTime hanya untuk tampil dihalaman depan dengan ada koma disetiap 3 digit 0
     var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
@@ -3229,17 +3678,23 @@ function renderDrone(doc) {
     console.log(BungaNormal)
     var Bunga9Bulan = (HargaSesungguhnya * b69drone / 100); // Seharusnya harga asli
     var Admin = 5000;
+    var cicilan6 = (HargaSesungguhnya / 6) + Bunga9Bulan + Admin;
     var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
     var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
     var cicilan15 = (HargaSesungguhnya / 15) + BungaNormal + Admin;
     var cicilan18 = (HargaSesungguhnya / 18) + BungaNormal + Admin;
 
+    var mathcicilan6 = Math.ceil(cicilan6 / 100) * 100;
     var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
     var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100;
     var mathcicilan15 = Math.ceil(cicilan15 / 100) * 100;
     var mathcicilan18 = Math.ceil(cicilan18 / 100) * 100;
 
     //toLocaleString untuk menambahkan koma disetiap 3 digit
+    var cicilan6asli = mathcicilan6.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
     var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
@@ -3261,17 +3716,27 @@ function renderDrone(doc) {
     konten3.innerHTML = `
         ${doc.data().nama} <br>
         DP : ${DpBulatShowTime} <br>
+        6x : ${cicilan6asli} <br>
         9x : ${cicilan9asli} <br>
         12x : ${cicilan12asli} <br>
-        15x : ${cicilan15asli} <br>
-        18x : ${cicilan18asli} <br>
         `;
 
+        var data = `
+<tr>
+<td><a href="${doc.data().linkproduk}">${doc.data().nama}</a></td>
+<td>${DpBulatShowTime}</td>
+<td>${cicilan6asli}</td>
+<td>${cicilan9asli}</td>
+<td>${cicilan12asli}</td>
+</tr>
+`;
+
+htmlproduk.innerText =  data; 
 
 
 
   } ////// Khusus Produk dibawah 4.5 juta ENDING/////////////
-  else if (hargaHCI <= 14300000 && hargaHCI >= 2000000) {
+  else if (hargaHCI <= 14300000 && hargaHCI >= 3700000) {
 
     ////////////////////Cicilan Tenor Normal//////////////////////////
     var Dp = (hargaHCI * 30 / 100) + 200000; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
@@ -3285,16 +3750,23 @@ function renderDrone(doc) {
     var BungaNormal = (HargaSesungguhnya * bungadrone / 100); // Seharusnya harga asli
     var Bunga9Bulan = (HargaSesungguhnya * b69drone / 100); // Seharusnya harga asli
     var Admin = 5000;
+    var cicilan6 = (HargaSesungguhnya / 6 ) + Bunga9Bulan + Admin;
     var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
     var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
     var cicilan15 = (HargaSesungguhnya / 15) + BungaNormal + Admin;
     var cicilan18 = (HargaSesungguhnya / 18) + BungaNormal + Admin;
+    var mathcicilan6 = Math.ceil(cicilan6 / 100) * 100;
     var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
     var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100;
     var mathcicilan15 = Math.ceil(cicilan15 / 100) * 100;
     var mathcicilan18 = Math.ceil(cicilan18 / 100) * 100;
 
     //toLocaleString untuk menambahkan koma disetiap 3 digit
+    var cicilan6asli = mathcicilan6.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
+
     var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
@@ -3317,13 +3789,22 @@ function renderDrone(doc) {
     konten3.innerHTML = `
         ${doc.data().nama} <br>
         DP : ${DpBulatShowTime} <br>
+        6x : ${cicilan6asli} <br>
         9x : ${cicilan9asli} <br>
         12x : ${cicilan12asli} <br>
-        15x : ${cicilan15asli} <br>
-        18x : ${cicilan18asli} <br>
         `;
 
+        var data = `
+<tr>
+<td><a href="${doc.data().linkproduk}">${doc.data().nama}</a></td>
+<td>${DpBulatShowTime}</td>
+<td>${cicilan6asli}</td>
+<td>${cicilan9asli}</td>
+<td>${cicilan12asli}</td>
+</tr>
+`;
 
+htmlproduk.innerText =  data; 
 
 
   } ////// Khusus Produk dibawah 15 juta ENDING ////////////
@@ -3344,17 +3825,23 @@ function renderDrone(doc) {
     var BungaNormal = (HargaSesungguhnya * bungadrone / 100);
     var Bunga9Bulan = (HargaSesungguhnya * b69drone / 100);
     var Admin = 5000;
+    var cicilan6 =  (HargaSesungguhnya / 6) + Bunga9Bulan + Admin;
     var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
     var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
     var cicilan15 = (HargaSesungguhnya / 15) + BungaNormal + Admin;
     var cicilan18 = (HargaSesungguhnya / 18) + BungaNormal + Admin;
 
+    var mathcicilan6 = Math.ceil(cicilan6 / 100) * 100;
     var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
     var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100;
     var mathcicilan15 = Math.ceil(cicilan15 / 100) * 100;
     var mathcicilan18 = Math.ceil(cicilan18 / 100) * 100;
 
     //toLocaleString untuk menambahkan koma disetiap 3 digit
+    var cicilan6asli = mathcicilan6.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    })
     var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
@@ -3377,16 +3864,33 @@ function renderDrone(doc) {
     konten3.innerHTML = `
       ${doc.data().nama} <br>
       DP : ${DpBulatShowTime} <br>
+      6x : ${cicilan6asli} <br>
       9x : ${cicilan9asli} <br>
       12x : ${cicilan12asli} <br>
-      15x : ${cicilan15asli} <br>
-      18x : ${cicilan18asli} <br>
+
       `;
 
-
+      var data = `
+      <tr>
+      <td><a href="${doc.data().linkproduk}">${doc.data().nama}</a></td>
+      <td>${DpBulatShowTime}</td>
+      <td>${cicilan6asli}</td>
+      <td>${cicilan9asli}</td>
+      <td>${cicilan12asli}</td>
+      </tr>
+      `;
+      
+      htmlproduk.innerText =  data; 
 
 
   } ////// Khusus Produk diatas 15 juta ENDING ////////////
+  else{
+    konten3.innerHTML = `
+    Maaf Produk ${doc.data().nama} belum dapat dikredit <br>
+    `;
+    htmlproduk.innerText =  infoHtml; 
+  } ////// Khusus Produk diatas 15 juta ENDING ////////////
+  
 
 
   // TOMBOL COPY CICILAN #1
@@ -3419,6 +3923,21 @@ function renderDrone(doc) {
     document.execCommand('copy');
   });
   // TOMBOL COPY #1 ENDING
+
+      // TOMBOL COPY HTML  #1
+      let copyHtml = document.querySelector('#copyhtml' + doc.id);
+      copyHtml.addEventListener('click', function (e) {
+        var text = document.querySelector(".html" + doc.id);
+        var selection = window.getSelection();
+        var range = document.createRange();
+        range.selectNodeContents(text);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        //add to clipboard.
+        document.execCommand('copy');
+        
+      });
+      // TOMBOL COPY HTML #1 ENDING
 
   // TOMBOL COPY SPESIFIKASI #1
   let copySpec = document.querySelector('#copyspesifikasi' + doc.id);
@@ -3496,8 +4015,10 @@ function renderDrone(doc) {
         let cashback = document.querySelector('#update-cashback' + doc.id).value;
         let garansi = document.querySelector('#update-garansi' + doc.id).value;
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
+        let freeclaim = document.querySelector('#update-free-claim' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
@@ -3508,8 +4029,10 @@ function renderDrone(doc) {
           cashback: cashback,
           garansi: garansi,
           free: free,
+          freeclaim : freeclaim,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -3526,323 +4049,370 @@ function renderDrone(doc) {
 // RENDER DRONE ENDING
 
 // RENDER ADAPTER LENSA START      
-function renderAdapterLensa(doc) {
-  let li = document.createElement('li');
-  let la = document.createElement('div');
-  let edit = document.createElement('a');
-  edit.href = '#updatemodal' + doc.id;
-  edit.id = 'helo' + doc.id;
+// function renderAdapterLensa(doc) {
+//   let li = document.createElement('li');
+//   let la = document.createElement('div');
+//   let edit = document.createElement('a');
+//   edit.href = '#updatemodal' + doc.id;
+//   edit.id = 'helo' + doc.id;
 
-  edit.className = "col s2 btn-small disabled edit modal-trigger";
-  edit.style.display = "none";
-  edit.textContent = 'edit';
-  li.className = 'loaded-data';
-  li.setAttribute('data-id', doc.id);
+//   edit.className = "col s2 btn-small disabled edit modal-trigger";
+//   edit.style.display = "none";
+//   edit.textContent = 'edit';
+//   li.className = 'loaded-data';
+//   li.setAttribute('data-id', doc.id);
 
-  let hargaInput = doc.data().harga;
-  let numHargaInput = Number(hargaInput);
-
-
-  var free = new Object();
-  free['Free'] = doc.data().free;
-  free['Periode Promo'] = doc.data().periode;
-  free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
+//   let hargaInput = doc.data().harga;
+//   let numHargaInput = Number(hargaInput);
 
 
-
-
-  // Mengambil data sebagai objek untuk keperluan CASH
-  var objek = new Object();
-  objek['Produk'] = doc.data().nama;
-  objek['Harga'] = Number(doc.data().harga);
-  objek['Cashback'] = Number(doc.data().cashback);
-  objek['Harga Spesial'] = world();
-  objek['Free'] = doc.data().free;
-  objek['Periode Promo'] = doc.data().periode;
-  objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
-
-  // Memunculkan Harga Spesial
-  function world() {
-    if (objek['Cashback'] !== 0) {
-      return objek['Harga'] - objek['Cashback']
-    } else if (objek['Cashback'] == 0) {
-      return objek['Harga Spesial'] = '';
-    } else {
-      return 0 // Memunculkan 0 == Tidak ditampilkan karena sudah dirumuskan dibawah
-    }
-  }
-
-  // MEMPERBAIKI HASIL DARI JIKA HARGA CASHBACK = 0 JADI TAMPILAN YANG DITAYANG CUKUP SATU YAITU Harga
-  if (objek['Harga'] === objek['Harga Spesial']) {
-    objek['Harga Spesial'] = 0
-  }
-  // MEMPERBAIKI HASIL DARI JIKA HARGA CASHBACK = 0 JADI TAMPILAN YANG DITAYANG CUKUP SATU YAITU Harga
-
-
-
-  // MEMBERI TANDA KOMA UNTUK HASIL BILANGAN YANG DI PRINT KELUAR
-  objek['Harga'] = objek['Harga'].toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  });
-  objek['Harga Spesial'] = objek['Harga Spesial'].toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  });
-  objek['Cashback'] = objek['Cashback'].toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  });
-  // MEMBERI TANDA KOMA UNTUK HASIL BILANGAN YANG DI PRINT KELUAR
-
-  let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
-  let newIsibox = doc.data().isibox.split(",").join("<br>");
-
-
-  li.innerHTML = `
-               <div class="collapsible-header">
-                  <span class="left col s12">${doc.data().nama}</span>
-               </div>
-               <div class="center-align collapsible-body">
-                    
-                    <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                    <br>
-                    <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                    <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                    <br>
-                    <br>
-        
-                    <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                    <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                    <!-- Modal Structure -->
-                    <div id="modal1${doc.id}" class="modal">
-                      <div class="modal-content">
-                        <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                      </div>
-                      <div class="modal-footer">
-                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                      </div>
-                    </div>
-                    
-                    <!-- Modal Structure -->
-                    <div id="modal2${doc.id}" class="modal">
-                    <div class="modal-content">
-                      <div class="isibox${doc.id}">${newIsibox}</div>
-                    </div>
-                    <div class="modal-footer">
-                      <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                    </div>
-                  </div>      
-               `;
-
-
-
-  la.innerHTML = `
-               <div class="modal" id="updatemodal${doc.id}">
-                  <form id="form${doc.id}">
-                   <label for="update-nama-produk">Nama Kamera</label>
-                   <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-                   <br>
-                   <label for="update-harga-produk">Masukkan Harga</label>
-                   <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-                   <br>
-                   <label for="update-cashback">Cashback</label>
-                   <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-                   <br>
-                   <label for="update-garansi">Garansi</label>
-                   <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-                   <br>
-                   <label for="update-free-bonus">Free</label>
-                   <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-                   <br>
-                   <label for="periode-promo">Periode Promo</label>
-                   <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-                   <br>
-                   <div class="input-field col s12">
-                   <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-                   <label for="keterangan">Keterangan</label>
-                 </div>
-                 <br>
-                 <div class="input-field col s12">
-                   <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-                   <label for="spesifikasi">Spesifikasi</label>
-                 </div>
-                 <div class="input-field col s12">
-                     <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-                     <label for="isibox">Isi Box</label>
-                   </div>
-                    <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                      <i class="material-icons right">send</i>
-                    </button>
-                   </form>
-                </div>  
-                `;
-
-  elementul.appendChild(li);
-  elementul.appendChild(edit);
-  elementul.appendChild(la);
-
-  // MODAL ISI BOX DAN SPESIFIKASI
-  var elems = document.querySelectorAll('.modal');
-  var el;
-  for (el = 0; el < elems.length; el++) {
-    var instances = M.Modal.init(elems[el]);
-  }
-
-
-  // MERENDER HARGA CASH YANG BISA DI COPY PASTE
-  for (const property in objek) {
-    if (`${objek[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${objek[property]}`)
-    let idbaru = document.querySelector('.konten2' + doc.id);
-    if (typeof objek[property] == Number) {
-      return objek[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} : ${objek[property]} <br>`
-  }
-  // MERENDER HARGA CASH YANG BISA DI COPY PASTE ENDING
-
-
-  // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  // for (const property in free) {
-  //   if (`${free[property]}` == 0) {
-  //     continue;
-  //   }
-  //   // console.log(`${property}: ${free[property]}`)
-  //   let idbaru = document.querySelector('.konten4' + doc.id);
-  //   if (typeof free[property] == Number) {
-  //     return free[property].toLocaleString(undefined, {
-  //       minimumFractionDigits: 0,
-  //       maximumFractionDigits: 0
-  //     });
-  //   }
-  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  // }
-  // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
+//   var free = new Object();
+//   free['Free'] = doc.data().free;
+//   free['Periode Promo'] = doc.data().periode;
+//   free['Garansi'] = doc.data().garansi;
+//   free['Keterangan'] = doc.data().keterangan;
+//   free['Info Produk'] = doc.data().linkproduk;
 
 
 
 
-  // TOMBOL COPY CASH #1
-  let copyCash = document.querySelector('#copycash' + doc.id);
-  copyCash.addEventListener('click', function (e) {
-    var text = document.querySelector(".konten2" + doc.id);
-    var selection = window.getSelection();
-    var range = document.createRange();
-    range.selectNodeContents(text);
-    selection.removeAllRanges();
-    selection.addRange(range);
-    //add to clipboard.
-    document.execCommand('copy');
-  });
-  // TOMBOL COPY #1 ENDING
+//   // Mengambil data sebagai objek untuk keperluan CASH
+//   var objek = new Object();
+//   objek['Produk'] = doc.data().nama;
+//   objek['Harga'] = Number(doc.data().harga);
+//   objek['Cashback'] = Number(doc.data().cashback);
+//   objek['Harga Spesial'] = world();
+//   objek['Free'] = doc.data().free;
+//   objek['Periode Promo'] = doc.data().periode;
+//   objek['Garansi'] = doc.data().garansi;
+//   objek['Keterangan'] = doc.data().keterangan;
+//   objek['Info Produk'] = doc.data().linkproduk;
 
-  // TOMBOL COPY SPESIFIKASI #1
-  let copySpec = document.querySelector('#copyspesifikasi' + doc.id);
-  copySpec.addEventListener('click', function (e) {
-    var text = document.querySelector(".spesifikasi" + doc.id);
-    var selection = window.getSelection();
-    var range = document.createRange();
-    range.selectNodeContents(text);
-    selection.removeAllRanges();
-    selection.addRange(range);
-    //add to clipboard.
-    document.execCommand('copy');
-  });
-  // TOMBOL SPESIFIKASI #1 ENDING
+//   // Memunculkan Harga Spesial
+//   function world() {
+//     if (objek['Cashback'] !== 0) {
+//       return objek['Harga'] - objek['Cashback']
+//     } else if (objek['Cashback'] == 0) {
+//       return objek['Harga Spesial'] = '';
+//     } else {
+//       return 0 // Memunculkan 0 == Tidak ditampilkan karena sudah dirumuskan dibawah
+//     }
+//   }
 
-  // TOMBOL COPY SPESIFIKASI #1
-  let copyBox = document.querySelector('#copyisibox' + doc.id);
-  copyBox.addEventListener('click', function (e) {
-    var text = document.querySelector(".isibox" + doc.id);
-    var selection = window.getSelection();
-    var range = document.createRange();
-    range.selectNodeContents(text);
-    selection.removeAllRanges();
-    selection.addRange(range);
-    //add to clipboard.
-    document.execCommand('copy');
-  });
-  // TOMBOL SPESIFIKASI #1 ENDING
+//   // MEMPERBAIKI HASIL DARI JIKA HARGA CASHBACK = 0 JADI TAMPILAN YANG DITAYANG CUKUP SATU YAITU Harga
+//   if (objek['Harga'] === objek['Harga Spesial']) {
+//     objek['Harga Spesial'] = 0
+//   }
+//   // MEMPERBAIKI HASIL DARI JIKA HARGA CASHBACK = 0 JADI TAMPILAN YANG DITAYANG CUKUP SATU YAITU Harga
 
 
 
-  // HAPUS PRODUK DARI DATABASE (BUKAN REAL TIME)
-  let del = document.querySelectorAll('.delete');
-  let x;
-  for (x = 0; x < del.length; x++) {
-    del[x].addEventListener('click', (e) => {
-      e.stopPropagation();
-      // Mendapatkan data target dari ID yang diklik
-      let id = e.target.parentElement.parentElement.getAttribute('data-id');
-      // UPDATE DIBAWAH INI        
-      db.collection('adapterlensa').doc(id).delete().then(function () {
-        window.location.reload(true);
-      });;
-    });
-  } // HAPUS PRODUK DARI DATABASE (BUKAN REAL TIME)
+//   // MEMBERI TANDA KOMA UNTUK HASIL BILANGAN YANG DI PRINT KELUAR
+//   objek['Harga'] = objek['Harga'].toLocaleString(undefined, {
+//     minimumFractionDigits: 0,
+//     maximumFractionDigits: 0
+//   });
+//   objek['Harga Spesial'] = objek['Harga Spesial'].toLocaleString(undefined, {
+//     minimumFractionDigits: 0,
+//     maximumFractionDigits: 0
+//   });
+//   objek['Cashback'] = objek['Cashback'].toLocaleString(undefined, {
+//     minimumFractionDigits: 0,
+//     maximumFractionDigits: 0
+//   });
+//   // MEMBERI TANDA KOMA UNTUK HASIL BILANGAN YANG DI PRINT KELUAR
+
+//   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
+//   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
 
-  //  KLIK TO EDIT DI PRODUK SATUAN
-  let editt = document.querySelectorAll('#helo' + doc.id);
-  let t;
-  for (t = 0; t < editt.length; t++) {
-    editt[t].addEventListener('click', function (e) {
-      e.preventDefault();
-      let modal = document.querySelector('#updatemodal' + doc.id);
-      var instance = M.Modal.init(modal)
-      instance.open();
-    });
-    //  KLIK TO EDIT DI PRODUK SATUAN ENDING
+//   if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+//     li.innerHTML = `
+//                  <div class="collapsible-header">
+//                     <span class="left col s12 red-text darken-3">${doc.data().nama}</span>
+//                  </div>
+//                  <div class="center-align collapsible-body">
+                      
+//                       <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+//                       <br>
+//                       <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+//                       <a  class=" btn-small disabled delete" href="#" >Delete</a>
+//                       <br>
+//                       <br>
+          
+//                       <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+//                       <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+//                       <!-- Modal Structure -->
+//                       <div id="modal1${doc.id}" class="modal">
+//                         <div class="modal-content">
+//                           <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+//                         </div>
+//                         <div class="modal-footer">
+//                           <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+//                         </div>
+//                       </div>
+                      
+//                       <!-- Modal Structure -->
+//                       <div id="modal2${doc.id}" class="modal">
+//                       <div class="modal-content">
+//                         <div class="isibox${doc.id}">${newIsibox}</div>
+//                       </div>
+//                       <div class="modal-footer">
+//                         <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+//                       </div>
+//                     </div>      
+//                  `;
+//     }else{
+//       li.innerHTML = `
+//       <div class="collapsible-header">
+//          <span class="left col s12">${doc.data().nama}</span>
+//       </div>
+//       <div class="center-align collapsible-body">
+           
+//            <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+//            <br>
+//            <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+//            <a  class=" btn-small disabled delete" href="#" >Delete</a>
+//            <br>
+//            <br>
+  
+//            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+//            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+//            <!-- Modal Structure -->
+//            <div id="modal1${doc.id}" class="modal">
+//              <div class="modal-content">
+//                <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+//              </div>
+//              <div class="modal-footer">
+//                <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+//              </div>
+//            </div>
+           
+//            <!-- Modal Structure -->
+//            <div id="modal2${doc.id}" class="modal">
+//            <div class="modal-content">
+//              <div class="isibox${doc.id}">${newIsibox}</div>
+//            </div>
+//            <div class="modal-footer">
+//              <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+//            </div>
+//          </div>      
+//       `;
+//     }
+  
 
 
-    let tombolKlik = document.querySelectorAll('#form' + doc.id);
-    let tom;
-    // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
-    for (tom = 0; tom < tombolKlik.length; tom++) {
-      tombolKlik[tom].addEventListener('submit', function (e) {
-        e.preventDefault()
+//   la.innerHTML = `
+//          <div class="modal" id="updatemodal${doc.id}">
+//             <form id="form${doc.id}">
+//              <label for="update-nama-produk">Nama Kamera</label>
+//              <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+//              <br>
+//              <label for="update-harga-produk">Masukkan Harga</label>
+//              <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+//              <br>
+//              <label for="update-cashback">Cashback</label>
+//              <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+//              <br>
+//              <label for="update-garansi">Garansi</label>
+//              <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+//              <br>
+//              <label for="update-free-bonus">Free</label>
+//              <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+//              <br>
+//              <label for="periode-promo">Periode Promo</label>
+//              <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+//              <br>
+//              <div class="input-field col s12">
+//              <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+//              <label for="keterangan">Keterangan</label>
+//             </div>
+//             <br>
+//             <div class="input-field col s12">
+//             <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+//             <label for="linkproduk">Link Produk</label>
+//            </div>
+//            <br>
+//            <div class="input-field col s12">
+//              <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+//              <label for="spesifikasi">Spesifikasi</label>
+//            </div>
+//            <div class="input-field col s12">
+//                <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+//                <label for="isibox">Isi Box</label>
+//              </div>
+//               <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+//                 <i class="material-icons right">send</i>
+//               </button>
+//              </form>
+//           </div>  
+//           `;
 
-        let nama = document.querySelector('#update-nama-produk' + doc.id).value;
-        let harga = document.querySelector('#update-harga-produk' + doc.id).value;
-        let cashback = document.querySelector('#update-cashback' + doc.id).value;
-        let garansi = document.querySelector('#update-garansi' + doc.id).value;
-        let free = document.querySelector('#update-free-bonus' + doc.id).value;
-        let periode = document.querySelector('#periode-promo' + doc.id).value;
-        let keterangan = document.querySelector('#keterangan' + doc.id).value;
-        let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
-        let isibox = document.querySelector('#isibox' + doc.id).value;
-        console.log(nama);
-        // UPDATE DIBAWAH INI         
-        db.collection('adapterlensa').doc(doc.id).update({
-          nama: nama,
-          harga: harga,
-          cashback: cashback,
-          garansi: garansi,
-          free: free,
-          periode: periode,
-          keterangan: keterangan,
-          spesifikasi: spesifikasi,
-          isibox: isibox
-        }).then(() => {
-          // let modal = document.querySelector('#updatemodal' + doc.id);
-          // var instance = M.Modal.init(modal);
-          // instance.close();
-          alert(`Update ${nama} Berhasil`);
+//   elementul.appendChild(li);
+//   elementul.appendChild(edit);
+//   elementul.appendChild(la);
 
-        });
-      });
-    } // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
-  } //  KLIK TO EDIT DI PRODUK SATUAN
-}
-// RENDER ADAPTER LENSA ENDING    
+//   // MODAL ISI BOX DAN SPESIFIKASI
+//   var elems = document.querySelectorAll('.modal');
+//   var el;
+//   for (el = 0; el < elems.length; el++) {
+//     var instances = M.Modal.init(elems[el]);
+//   }
+
+
+//   // MERENDER HARGA CASH YANG BISA DI COPY PASTE
+//   for (const property in objek) {
+//     if (`${objek[property]}` == 0) {
+//       continue;
+//     }
+//     // console.log(`${property}: ${objek[property]}`)
+//     let idbaru = document.querySelector('.konten2' + doc.id);
+//     if (typeof objek[property] == Number) {
+//       return objek[property].toLocaleString(undefined, {
+//         minimumFractionDigits: 0,
+//         maximumFractionDigits: 0
+//       });
+//     }
+//     idbaru.innerHTML += `${property} : ${objek[property]} <br>`
+//   }
+//   // MERENDER HARGA CASH YANG BISA DI COPY PASTE ENDING
+
+
+//   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
+//   // for (const property in free) {
+//   //   if (`${free[property]}` == 0 || `${free[property]}` == NaN || `${free[property]}` == null) {
+//   //     continue;
+//   //   }
+//   //   // console.log(`${property}: ${free[property]}`)
+//   //   let idbaru = document.querySelector('.konten4' + doc.id);
+//   //   if (typeof free[property] == Number) {
+//   //     return free[property].toLocaleString(undefined, {
+//   //       minimumFractionDigits: 0,
+//   //       maximumFractionDigits: 0
+//   //     });
+//   //   }
+//   //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+//   // }
+//   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
+
+
+
+
+//   // TOMBOL COPY CASH #1
+//   let copyCash = document.querySelector('#copycash' + doc.id);
+//   copyCash.addEventListener('click', function (e) {
+//     var text = document.querySelector(".konten2" + doc.id);
+//     var selection = window.getSelection();
+//     var range = document.createRange();
+//     range.selectNodeContents(text);
+//     selection.removeAllRanges();
+//     selection.addRange(range);
+//     //add to clipboard.
+//     document.execCommand('copy');
+//   });
+//   // TOMBOL COPY #1 ENDING
+
+//   // TOMBOL COPY SPESIFIKASI #1
+//   let copySpec = document.querySelector('#copyspesifikasi' + doc.id);
+//   copySpec.addEventListener('click', function (e) {
+//     var text = document.querySelector(".spesifikasi" + doc.id);
+//     var selection = window.getSelection();
+//     var range = document.createRange();
+//     range.selectNodeContents(text);
+//     selection.removeAllRanges();
+//     selection.addRange(range);
+//     //add to clipboard.
+//     document.execCommand('copy');
+//   });
+//   // TOMBOL SPESIFIKASI #1 ENDING
+
+//   // TOMBOL COPY SPESIFIKASI #1
+//   let copyBox = document.querySelector('#copyisibox' + doc.id);
+//   copyBox.addEventListener('click', function (e) {
+//     var text = document.querySelector(".isibox" + doc.id);
+//     var selection = window.getSelection();
+//     var range = document.createRange();
+//     range.selectNodeContents(text);
+//     selection.removeAllRanges();
+//     selection.addRange(range);
+//     //add to clipboard.
+//     document.execCommand('copy');
+//   });
+//   // TOMBOL SPESIFIKASI #1 ENDING
+
+
+
+//   // HAPUS PRODUK DARI DATABASE (BUKAN REAL TIME)
+//   let del = document.querySelectorAll('.delete');
+//   let x;
+//   for (x = 0; x < del.length; x++) {
+//     del[x].addEventListener('click', (e) => {
+//       e.stopPropagation();
+//       // Mendapatkan data target dari ID yang diklik
+//       let id = e.target.parentElement.parentElement.getAttribute('data-id');
+//       // UPDATE DIBAWAH INI        
+//       db.collection('adapterlensa').doc(id).delete().then(function () {
+//         window.location.reload(true);
+//       });;
+//     });
+//   } // HAPUS PRODUK DARI DATABASE (BUKAN REAL TIME)
+
+
+//   //  KLIK TO EDIT DI PRODUK SATUAN
+//   let editt = document.querySelectorAll('#helo' + doc.id);
+//   let t;
+//   for (t = 0; t < editt.length; t++) {
+//     editt[t].addEventListener('click', function (e) {
+//       e.preventDefault();
+//       let modal = document.querySelector('#updatemodal' + doc.id);
+//       var instance = M.Modal.init(modal)
+//       instance.open();
+//     });
+//     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
+
+
+//     let tombolKlik = document.querySelectorAll('#form' + doc.id);
+//     let tom;
+//     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
+//     for (tom = 0; tom < tombolKlik.length; tom++) {
+//       tombolKlik[tom].addEventListener('submit', function (e) {
+//         e.preventDefault()
+
+//         let nama = document.querySelector('#update-nama-produk' + doc.id).value;
+//         let harga = document.querySelector('#update-harga-produk' + doc.id).value;
+//         let cashback = document.querySelector('#update-cashback' + doc.id).value;
+//         let garansi = document.querySelector('#update-garansi' + doc.id).value;
+//         let free = document.querySelector('#update-free-bonus' + doc.id).value;
+//         let periode = document.querySelector('#periode-promo' + doc.id).value;
+//         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+//         let linkproduk = document.querySelector('#linkproduk' + doc.id).value;        
+//         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
+//         let isibox = document.querySelector('#isibox' + doc.id).value;
+//         console.log(nama);
+//         // UPDATE DIBAWAH INI         
+//         db.collection('adapterlensa').doc(doc.id).update({
+//           nama: nama,
+//           harga: harga,
+//           cashback: cashback,
+//           garansi: garansi,
+//           free: free,
+//           periode: periode,
+//           keterangan: keterangan,
+//           linkproduk:linkproduk,
+//           spesifikasi: spesifikasi,
+//           isibox: isibox
+//         }).then(() => {
+//           // let modal = document.querySelector('#updatemodal' + doc.id);
+//           // var instance = M.Modal.init(modal);
+//           // instance.close();
+//           alert(`Update ${nama} Berhasil`);
+
+//         });
+//       });
+//     } // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
+//   } //  KLIK TO EDIT DI PRODUK SATUAN
+// }
+// RENDER ADAPTER LENSA ENDING  
 
 // RENDER BATERAI LENSA START      
 function renderBaterai(doc) {
@@ -3866,7 +4436,8 @@ function renderBaterai(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().garansi;
-  free['Info'] = doc.data().keterangan;
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
 
 
@@ -3880,7 +4451,8 @@ function renderBaterai(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -3919,43 +4491,102 @@ function renderBaterai(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
-
-  li.innerHTML = `
-         <div class="collapsible-header">
-            <span class="left col s12">${doc.data().nama}</span>
-         </div>
-         <div class="center-align collapsible-body">
-              
-              <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-              <br>
-              <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-              <a  class=" btn-small disabled delete" href="#" >Delete</a>
-              <br>
-              <br>
+    // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+    let hargaNormal = Number(doc.data().harga);
+    let cashBack = Number(doc.data().cashback);
+    let hargaHCI = hitung();
   
-              <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-              <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-              <!-- Modal Structure -->
-              <div id="modal1${doc.id}" class="modal">
-                <div class="modal-content">
-                  <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                </div>
-                <div class="modal-footer">
-                  <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                </div>
-              </div>
-              
-              <!-- Modal Structure -->
-              <div id="modal2${doc.id}" class="modal">
-              <div class="modal-content">
-                <div class="isibox${doc.id}">${newIsibox}</div>
-              </div>
-              <div class="modal-footer">
-                <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-              </div>
-            </div>      
-         `;
+    function hitung() {
+      if (cashBack !== 0 || cashBack !== '') {
+        return hargaNormal - cashBack;
+      } else {
+        hargaHCI = hargaNormal;
+      }
+    }
+  
+    let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
 
+
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+             </div>
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
 
   la.innerHTML = `
@@ -3982,6 +4613,11 @@ function renderBaterai(doc) {
              <div class="input-field col s12">
              <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
              <label for="keterangan">Keterangan</label>
+            </div>
+            <br>
+            <div class="input-field col s12">
+            <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+            <label for="linkproduk">Link Produk</label>
            </div>
            <br>
            <div class="input-field col s12">
@@ -4136,6 +4772,7 @@ function renderBaterai(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;        
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
@@ -4148,6 +4785,7 @@ function renderBaterai(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk:linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -4184,10 +4822,8 @@ function renderCardCase(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -4198,7 +4834,8 @@ function renderCardCase(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -4238,42 +4875,101 @@ function renderCardCase(doc) {
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
 
-  li.innerHTML = `
-       <div class="collapsible-header">
-          <span class="left col s12">${doc.data().nama}</span>
-       </div>
-       <div class="center-align collapsible-body">
-            
-            <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-            <br>
-            <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-            <a  class=" btn-small disabled delete" href="#" >Delete</a>
-            <br>
-            <br>
+    // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+    let hargaNormal = Number(doc.data().harga);
+    let cashBack = Number(doc.data().cashback);
+    let hargaHCI = hitung();
+  
+    function hitung() {
+      if (cashBack !== 0 || cashBack !== '') {
+        return hargaNormal - cashBack;
+      } else {
+        hargaHCI = hargaNormal;
+      }
+    }
+  
+    let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
 
-            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-            <!-- Modal Structure -->
-            <div id="modal1${doc.id}" class="modal">
-              <div class="modal-content">
-                <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-              </div>
-              <div class="modal-footer">
-                <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-              </div>
-            </div>
-            
-            <!-- Modal Structure -->
-            <div id="modal2${doc.id}" class="modal">
-            <div class="modal-content">
-              <div class="isibox${doc.id}">${newIsibox}</div>
-            </div>
-            <div class="modal-footer">
-              <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-            </div>
-          </div>      
-       `;
-
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                     <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+             </div>
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
 
   la.innerHTML = `
@@ -4301,6 +4997,11 @@ function renderCardCase(doc) {
            <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
            <label for="keterangan">Keterangan</label>
          </div>
+         <br>
+         <div class="input-field col s12">
+         <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+         <label for="linkproduk">Link Produk</label>
+       </div>
          <br>
          <div class="input-field col s12">
            <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
@@ -4454,6 +5155,7 @@ function renderCardCase(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;        
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
@@ -4466,6 +5168,7 @@ function renderCardCase(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk: linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -4501,10 +5204,8 @@ function renderCharger(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -4515,7 +5216,8 @@ function renderCharger(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -4554,44 +5256,101 @@ function renderCharger(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
-
-  li.innerHTML = `
-         <div class="collapsible-header">
-            <span class="left col s12">${doc.data().nama}</span>
-         </div>
-         <div class="center-align collapsible-body">
-              
-              <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-              <br>
-              <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-              <a  class=" btn-small disabled delete" href="#" >Delete</a>
-              <br>
-              <br>
+    // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+    let hargaNormal = Number(doc.data().harga);
+    let cashBack = Number(doc.data().cashback);
+    let hargaHCI = hitung();
   
-              <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-              <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-              <!-- Modal Structure -->
-              <div id="modal1${doc.id}" class="modal">
-                <div class="modal-content">
-                  <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                </div>
-                <div class="modal-footer">
-                  <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                </div>
-              </div>
-              
-              <!-- Modal Structure -->
-              <div id="modal2${doc.id}" class="modal">
-              <div class="modal-content">
-                <div class="isibox${doc.id}">${newIsibox}</div>
-              </div>
-              <div class="modal-footer">
-                <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-              </div>
-            </div>      
-         `;
+    function hitung() {
+      if (cashBack !== 0 || cashBack !== '') {
+        return hargaNormal - cashBack;
+      } else {
+        hargaHCI = hargaNormal;
+      }
+    }
+  
+    let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
 
-
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+             </div>
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
   la.innerHTML = `
          <div class="modal" id="updatemodal${doc.id}">
@@ -4618,6 +5377,11 @@ function renderCharger(doc) {
              <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
              <label for="keterangan">Keterangan</label>
            </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
            <br>
            <div class="input-field col s12">
              <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
@@ -4771,6 +5535,7 @@ function renderCharger(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
@@ -4783,6 +5548,7 @@ function renderCharger(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -4818,10 +5584,8 @@ function renderCleaning(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -4832,7 +5596,8 @@ function renderCleaning(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -4871,85 +5636,149 @@ function renderCleaning(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+    // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+    let hargaNormal = Number(doc.data().harga);
+    let cashBack = Number(doc.data().cashback);
+    let hargaHCI = hitung();
+  
+    function hitung() {
+      if (cashBack !== 0 || cashBack !== '') {
+        return hargaNormal - cashBack;
+      } else {
+        hargaHCI = hargaNormal;
+      }
+    }
+  
+    let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
 
-  li.innerHTML = `
-           <div class="collapsible-header">
-              <span class="left col s12">${doc.data().nama}</span>
+
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+             </div>
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
            </div>
-           <div class="center-align collapsible-body">
-                
-                <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                <br>
-                <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                <br>
-                <br>
-    
-                <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                <!-- Modal Structure -->
-                <div id="modal1${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                  </div>
-                </div>
-                
-                <!-- Modal Structure -->
-                <div id="modal2${doc.id}" class="modal">
-                <div class="modal-content">
-                  <div class="isibox${doc.id}">${newIsibox}</div>
-                </div>
-                <div class="modal-footer">
-                  <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                </div>
-              </div>      
-           `;
-
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
 
   la.innerHTML = `
-           <div class="modal" id="updatemodal${doc.id}">
-              <form id="form${doc.id}">
-               <label for="update-nama-produk">Nama Kamera</label>
-               <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-               <br>
-               <label for="update-harga-produk">Masukkan Harga</label>
-               <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-               <br>
-               <label for="update-cashback">Cashback</label>
-               <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-               <br>
-               <label for="update-garansi">Garansi</label>
-               <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-               <br>
-               <label for="update-free-bonus">Free</label>
-               <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-               <br>
-               <label for="periode-promo">Periode Promo</label>
-               <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-               <br>
-               <div class="input-field col s12">
-               <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-               <label for="keterangan">Keterangan</label>
-             </div>
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
              <br>
              <div class="input-field col s12">
-               <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-               <label for="spesifikasi">Spesifikasi</label>
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
              </div>
-             <div class="input-field col s12">
-                 <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-                 <label for="isibox">Isi Box</label>
-               </div>
-                <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                  <i class="material-icons right">send</i>
-                </button>
-               </form>
-            </div>  
-            `;
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
@@ -5088,6 +5917,7 @@ function renderCleaning(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
@@ -5100,6 +5930,7 @@ function renderCleaning(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -5135,10 +5966,8 @@ function renderDryBox(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -5149,7 +5978,8 @@ function renderDryBox(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -5188,85 +6018,148 @@ function renderDryBox(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+      // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+      let hargaNormal = Number(doc.data().harga);
+      let cashBack = Number(doc.data().cashback);
+      let hargaHCI = hitung();
+    
+      function hitung() {
+        if (cashBack !== 0 || cashBack !== '') {
+          return hargaNormal - cashBack;
+        } else {
+          hargaHCI = hargaNormal;
+        }
+      }
+    
+      let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
 
-  li.innerHTML = `
-             <div class="collapsible-header">
-                <span class="left col s12">${doc.data().nama}</span>
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
              </div>
-             <div class="center-align collapsible-body">
-                  
-                  <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                  <br>
-                  <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                  <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                  <br>
-                  <br>
-      
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                  <!-- Modal Structure -->
-                  <div id="modal1${doc.id}" class="modal">
-                    <div class="modal-content">
-                      <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                    </div>
-                    <div class="modal-footer">
-                      <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                    </div>
-                  </div>
-                  
-                  <!-- Modal Structure -->
-                  <div id="modal2${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="isibox${doc.id}">${newIsibox}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                  </div>
-                </div>      
-             `;
-
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
 
   la.innerHTML = `
-             <div class="modal" id="updatemodal${doc.id}">
-                <form id="form${doc.id}">
-                 <label for="update-nama-produk">Nama Kamera</label>
-                 <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-                 <br>
-                 <label for="update-harga-produk">Masukkan Harga</label>
-                 <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-                 <br>
-                 <label for="update-cashback">Cashback</label>
-                 <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-                 <br>
-                 <label for="update-garansi">Garansi</label>
-                 <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-                 <br>
-                 <label for="update-free-bonus">Free</label>
-                 <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-                 <br>
-                 <label for="periode-promo">Periode Promo</label>
-                 <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-                 <br>
-                 <div class="input-field col s12">
-                 <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-                 <label for="keterangan">Keterangan</label>
-               </div>
-               <br>
-               <div class="input-field col s12">
-                 <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-                 <label for="spesifikasi">Spesifikasi</label>
-               </div>
-               <div class="input-field col s12">
-                   <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-                   <label for="isibox">Isi Box</label>
-                 </div>
-                  <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                    <i class="material-icons right">send</i>
-                  </button>
-                 </form>
-              </div>  
-              `;
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
@@ -5405,6 +6298,7 @@ function renderDryBox(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
@@ -5417,6 +6311,7 @@ function renderDryBox(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -5452,10 +6347,8 @@ function renderFilterUv(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -5466,7 +6359,8 @@ function renderFilterUv(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -5505,85 +6399,147 @@ function renderFilterUv(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+      // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+      let hargaNormal = Number(doc.data().harga);
+      let cashBack = Number(doc.data().cashback);
+      let hargaHCI = hitung();
+    
+      function hitung() {
+        if (cashBack !== 0 || cashBack !== '') {
+          return hargaNormal - cashBack;
+        } else {
+          hargaHCI = hargaNormal;
+        }
+      }
+    
+      let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
 
-  li.innerHTML = `
-             <div class="collapsible-header">
-                <span class="left col s12">${doc.data().nama}</span>
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
              </div>
-             <div class="center-align collapsible-body">
-                  
-                  <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                  <br>
-                  <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                  <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                  <br>
-                  <br>
-      
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                  <!-- Modal Structure -->
-                  <div id="modal1${doc.id}" class="modal">
-                    <div class="modal-content">
-                      <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                    </div>
-                    <div class="modal-footer">
-                      <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                    </div>
-                  </div>
-                  
-                  <!-- Modal Structure -->
-                  <div id="modal2${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="isibox${doc.id}">${newIsibox}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                  </div>
-                </div>      
-             `;
-
-
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
   la.innerHTML = `
-             <div class="modal" id="updatemodal${doc.id}">
-                <form id="form${doc.id}">
-                 <label for="update-nama-produk">Nama Kamera</label>
-                 <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-                 <br>
-                 <label for="update-harga-produk">Masukkan Harga</label>
-                 <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-                 <br>
-                 <label for="update-cashback">Cashback</label>
-                 <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-                 <br>
-                 <label for="update-garansi">Garansi</label>
-                 <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-                 <br>
-                 <label for="update-free-bonus">Free</label>
-                 <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-                 <br>
-                 <label for="periode-promo">Periode Promo</label>
-                 <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-                 <br>
-                 <div class="input-field col s12">
-                 <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-                 <label for="keterangan">Keterangan</label>
-               </div>
-               <br>
-               <div class="input-field col s12">
-                 <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-                 <label for="spesifikasi">Spesifikasi</label>
-               </div>
-               <div class="input-field col s12">
-                   <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-                   <label for="isibox">Isi Box</label>
-                 </div>
-                  <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                    <i class="material-icons right">send</i>
-                  </button>
-                 </form>
-              </div>  
-              `;
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
@@ -5687,7 +6643,7 @@ function renderFilterUv(doc) {
       e.stopPropagation();
       // Mendapatkan data target dari ID yang diklik
       let id = e.target.parentElement.parentElement.getAttribute('data-id');
-// UPDATE DIBAWAH INI        
+      // UPDATE DIBAWAH INI        
       db.collection('filter').doc(id).delete().then(function () {
         window.location.reload(true);
       });;
@@ -5722,10 +6678,11 @@ function renderFilterUv(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
-// UPDATE DIBAWAH INI         
+        // UPDATE DIBAWAH INI         
         db.collection('filter').doc(doc.id).update({
           nama: nama,
           harga: harga,
@@ -5734,6 +6691,387 @@ function renderFilterUv(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
+          spesifikasi: spesifikasi,
+          isibox: isibox
+        }).then(() => {
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
+          alert(`Update ${nama} Berhasil`);
+
+        });
+      });
+    } // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
+  } //  KLIK TO EDIT DI PRODUK SATUAN
+}
+
+function renderAdapterLensa(doc) {
+  let li = document.createElement('li');
+  let la = document.createElement('div');
+  let edit = document.createElement('a');
+  edit.href = '#updatemodal' + doc.id;
+  edit.id = 'helo' + doc.id;
+
+  edit.className = "col s2 btn-small disabled edit modal-trigger";
+  edit.style.display = "none";
+  edit.textContent = 'edit';
+  li.className = 'loaded-data';
+  li.setAttribute('data-id', doc.id);
+
+  let hargaInput = doc.data().harga;
+  let numHargaInput = Number(hargaInput);
+
+
+  var free = new Object();
+  free['Free'] = doc.data().free;
+  free['Periode Promo'] = doc.data().periode;
+  free['Garansi'] = doc.data().periode;
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
+
+  // Mengambil data sebagai objek untuk keperluan CASH
+  var objek = new Object();
+  objek['Produk'] = doc.data().nama;
+  objek['Harga'] = Number(doc.data().harga);
+  objek['Cashback'] = Number(doc.data().cashback);
+  objek['Harga Spesial'] = world();
+  objek['Free'] = doc.data().free;
+  objek['Periode Promo'] = doc.data().periode;
+  objek['Garansi'] = doc.data().garansi;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
+
+  // Memunculkan Harga Spesial
+  function world() {
+    if (objek['Cashback'] !== 0) {
+      return objek['Harga'] - objek['Cashback']
+    } else if (objek['Cashback'] == 0) {
+      return objek['Harga Spesial'] = '';
+    } else {
+      return 0 // Memunculkan 0 == Tidak ditampilkan karena sudah dirumuskan dibawah
+    }
+  }
+
+  // MEMPERBAIKI HASIL DARI JIKA HARGA CASHBACK = 0 JADI TAMPILAN YANG DITAYANG CUKUP SATU YAITU Harga
+  if (objek['Harga'] === objek['Harga Spesial']) {
+    objek['Harga Spesial'] = 0
+  }
+  // MEMPERBAIKI HASIL DARI JIKA HARGA CASHBACK = 0 JADI TAMPILAN YANG DITAYANG CUKUP SATU YAITU Harga
+
+
+
+  // MEMBERI TANDA KOMA UNTUK HASIL BILANGAN YANG DI PRINT KELUAR
+  objek['Harga'] = objek['Harga'].toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  objek['Harga Spesial'] = objek['Harga Spesial'].toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  objek['Cashback'] = objek['Cashback'].toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  // MEMBERI TANDA KOMA UNTUK HASIL BILANGAN YANG DI PRINT KELUAR
+
+  let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
+  let newIsibox = doc.data().isibox.split(",").join("<br>");
+
+    // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+    let hargaNormal = Number(doc.data().harga);
+    let cashBack = Number(doc.data().cashback);
+    let hargaHCI = hitung();
+  
+    function hitung() {
+      if (cashBack !== 0 || cashBack !== '') {
+        return hargaNormal - cashBack;
+      } else {
+        hargaHCI = hargaNormal;
+      }
+    }
+  
+    let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+             </div>
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
+
+  la.innerHTML = `
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
+
+  elementul.appendChild(li);
+  elementul.appendChild(edit);
+  elementul.appendChild(la);
+
+  // MODAL ISI BOX DAN SPESIFIKASI
+  var elems = document.querySelectorAll('.modal');
+  var el;
+  for (el = 0; el < elems.length; el++) {
+    var instances = M.Modal.init(elems[el]);
+  }
+
+
+  // MERENDER HARGA CASH YANG BISA DI COPY PASTE
+  for (const property in objek) {
+    if (`${objek[property]}` == 0) {
+      continue;
+    }
+    // console.log(`${property}: ${objek[property]}`)
+    let idbaru = document.querySelector('.konten2' + doc.id);
+    if (typeof objek[property] == Number) {
+      return objek[property].toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+    }
+    idbaru.innerHTML += `${property} : ${objek[property]} <br>`
+  }
+  // MERENDER HARGA CASH YANG BISA DI COPY PASTE ENDING
+
+
+  // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
+  // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
+
+
+
+
+  // TOMBOL COPY CASH #1
+  let copyCash = document.querySelector('#copycash' + doc.id);
+  copyCash.addEventListener('click', function (e) {
+    var text = document.querySelector(".konten2" + doc.id);
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(text);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    //add to clipboard.
+    document.execCommand('copy');
+  });
+  // TOMBOL COPY #1 ENDING
+
+  // TOMBOL COPY SPESIFIKASI #1
+  let copySpec = document.querySelector('#copyspesifikasi' + doc.id);
+  copySpec.addEventListener('click', function (e) {
+    var text = document.querySelector(".spesifikasi" + doc.id);
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(text);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    //add to clipboard.
+    document.execCommand('copy');
+  });
+  // TOMBOL SPESIFIKASI #1 ENDING
+
+  // TOMBOL COPY SPESIFIKASI #1
+  let copyBox = document.querySelector('#copyisibox' + doc.id);
+  copyBox.addEventListener('click', function (e) {
+    var text = document.querySelector(".isibox" + doc.id);
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(text);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    //add to clipboard.
+    document.execCommand('copy');
+  });
+  // TOMBOL SPESIFIKASI #1 ENDING
+
+
+
+  // HAPUS PRODUK DARI DATABASE (BUKAN REAL TIME)
+  let del = document.querySelectorAll('.delete');
+  let x;
+  for (x = 0; x < del.length; x++) {
+    del[x].addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Mendapatkan data target dari ID yang diklik
+      let id = e.target.parentElement.parentElement.getAttribute('data-id');
+      // UPDATE DIBAWAH INI        
+      db.collection('adapterlensa').doc(id).delete().then(function () {
+        window.location.reload(true);
+      });;
+    });
+  } // HAPUS PRODUK DARI DATABASE (BUKAN REAL TIME)
+
+
+  //  KLIK TO EDIT DI PRODUK SATUAN
+  let editt = document.querySelectorAll('#helo' + doc.id);
+  let t;
+  for (t = 0; t < editt.length; t++) {
+    editt[t].addEventListener('click', function (e) {
+      e.preventDefault();
+      let modal = document.querySelector('#updatemodal' + doc.id);
+      var instance = M.Modal.init(modal)
+      instance.open();
+    });
+    //  KLIK TO EDIT DI PRODUK SATUAN ENDING
+
+
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
+    let tom;
+    // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
+    for (tom = 0; tom < tombolKlik.length; tom++) {
+      tombolKlik[tom].addEventListener('submit', function (e) {
+        e.preventDefault()
+
+        let nama = document.querySelector('#update-nama-produk' + doc.id).value;
+        let harga = document.querySelector('#update-harga-produk' + doc.id).value;
+        let cashback = document.querySelector('#update-cashback' + doc.id).value;
+        let garansi = document.querySelector('#update-garansi' + doc.id).value;
+        let free = document.querySelector('#update-free-bonus' + doc.id).value;
+        let periode = document.querySelector('#periode-promo' + doc.id).value;
+        let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
+        let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
+        let isibox = document.querySelector('#isibox' + doc.id).value;
+        console.log(nama);
+        // UPDATE DIBAWAH INI         
+        db.collection('adapterlensa').doc(doc.id).update({
+          nama: nama,
+          harga: harga,
+          cashback: cashback,
+          garansi: garansi,
+          free: free,
+          periode: periode,
+          keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -5769,10 +7107,8 @@ function renderKabelData(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -5783,7 +7119,8 @@ function renderKabelData(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -5822,85 +7159,148 @@ function renderKabelData(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+      // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+      let hargaNormal = Number(doc.data().harga);
+      let cashBack = Number(doc.data().cashback);
+      let hargaHCI = hitung();
+    
+      function hitung() {
+        if (cashBack !== 0 || cashBack !== '') {
+          return hargaNormal - cashBack;
+        } else {
+          hargaHCI = hargaNormal;
+        }
+      }
+    
+      let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
 
-  li.innerHTML = `
-             <div class="collapsible-header">
-                <span class="left col s12">${doc.data().nama}</span>
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
              </div>
-             <div class="center-align collapsible-body">
-                  
-                  <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                  <br>
-                  <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                  <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                  <br>
-                  <br>
-      
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                  <!-- Modal Structure -->
-                  <div id="modal1${doc.id}" class="modal">
-                    <div class="modal-content">
-                      <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                    </div>
-                    <div class="modal-footer">
-                      <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                    </div>
-                  </div>
-                  
-                  <!-- Modal Structure -->
-                  <div id="modal2${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="isibox${doc.id}">${newIsibox}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                  </div>
-                </div>      
-             `;
-
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
 
   la.innerHTML = `
-             <div class="modal" id="updatemodal${doc.id}">
-                <form id="form${doc.id}">
-                 <label for="update-nama-produk">Nama Kamera</label>
-                 <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-                 <br>
-                 <label for="update-harga-produk">Masukkan Harga</label>
-                 <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-                 <br>
-                 <label for="update-cashback">Cashback</label>
-                 <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-                 <br>
-                 <label for="update-garansi">Garansi</label>
-                 <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-                 <br>
-                 <label for="update-free-bonus">Free</label>
-                 <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-                 <br>
-                 <label for="periode-promo">Periode Promo</label>
-                 <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-                 <br>
-                 <div class="input-field col s12">
-                 <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-                 <label for="keterangan">Keterangan</label>
-               </div>
-               <br>
-               <div class="input-field col s12">
-                 <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-                 <label for="spesifikasi">Spesifikasi</label>
-               </div>
-               <div class="input-field col s12">
-                   <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-                   <label for="isibox">Isi Box</label>
-                 </div>
-                  <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                    <i class="material-icons right">send</i>
-                  </button>
-                 </form>
-              </div>  
-              `;
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
@@ -6004,7 +7404,7 @@ function renderKabelData(doc) {
       e.stopPropagation();
       // Mendapatkan data target dari ID yang diklik
       let id = e.target.parentElement.parentElement.getAttribute('data-id');
-// UPDATE DIBAWAH INI        
+      // UPDATE DIBAWAH INI        
       db.collection('kabeldata').doc(id).delete().then(function () {
         window.location.reload(true);
       });;
@@ -6039,10 +7439,11 @@ function renderKabelData(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
-// UPDATE DIBAWAH INI         
+        // UPDATE DIBAWAH INI         
         db.collection('kabeldata').doc(doc.id).update({
           nama: nama,
           harga: harga,
@@ -6051,6 +7452,7 @@ function renderKabelData(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -6086,10 +7488,8 @@ function renderActionCamAcc(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -6100,7 +7500,8 @@ function renderActionCamAcc(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -6139,85 +7540,148 @@ function renderActionCamAcc(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+      // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+      let hargaNormal = Number(doc.data().harga);
+      let cashBack = Number(doc.data().cashback);
+      let hargaHCI = hitung();
+    
+      function hitung() {
+        if (cashBack !== 0 || cashBack !== '') {
+          return hargaNormal - cashBack;
+        } else {
+          hargaHCI = hargaNormal;
+        }
+      }
+    
+      let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
 
-  li.innerHTML = `
-             <div class="collapsible-header">
-                <span class="left col s12">${doc.data().nama}</span>
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
              </div>
-             <div class="center-align collapsible-body">
-                  
-                  <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                  <br>
-                  <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                  <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                  <br>
-                  <br>
-      
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                  <!-- Modal Structure -->
-                  <div id="modal1${doc.id}" class="modal">
-                    <div class="modal-content">
-                      <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                    </div>
-                    <div class="modal-footer">
-                      <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                    </div>
-                  </div>
-                  
-                  <!-- Modal Structure -->
-                  <div id="modal2${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="isibox${doc.id}">${newIsibox}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                  </div>
-                </div>      
-             `;
-
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
 
   la.innerHTML = `
-             <div class="modal" id="updatemodal${doc.id}">
-                <form id="form${doc.id}">
-                 <label for="update-nama-produk">Nama Kamera</label>
-                 <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-                 <br>
-                 <label for="update-harga-produk">Masukkan Harga</label>
-                 <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-                 <br>
-                 <label for="update-cashback">Cashback</label>
-                 <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-                 <br>
-                 <label for="update-garansi">Garansi</label>
-                 <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-                 <br>
-                 <label for="update-free-bonus">Free</label>
-                 <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-                 <br>
-                 <label for="periode-promo">Periode Promo</label>
-                 <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-                 <br>
-                 <div class="input-field col s12">
-                 <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-                 <label for="keterangan">Keterangan</label>
-               </div>
-               <br>
-               <div class="input-field col s12">
-                 <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-                 <label for="spesifikasi">Spesifikasi</label>
-               </div>
-               <div class="input-field col s12">
-                   <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-                   <label for="isibox">Isi Box</label>
-                 </div>
-                  <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                    <i class="material-icons right">send</i>
-                  </button>
-                 </form>
-              </div>  
-              `;
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
@@ -6321,7 +7785,7 @@ function renderActionCamAcc(doc) {
       e.stopPropagation();
       // Mendapatkan data target dari ID yang diklik
       let id = e.target.parentElement.parentElement.getAttribute('data-id');
-// UPDATE DIBAWAH INI        
+      // UPDATE DIBAWAH INI        
       db.collection('actioncamacc').doc(id).delete().then(function () {
         window.location.reload(true);
       });;
@@ -6356,10 +7820,11 @@ function renderActionCamAcc(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
-// UPDATE DIBAWAH INI         
+        // UPDATE DIBAWAH INI         
         db.collection('actioncamacc').doc(doc.id).update({
           nama: nama,
           harga: harga,
@@ -6368,6 +7833,7 @@ function renderActionCamAcc(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -6403,10 +7869,8 @@ function renderKertasInstax(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -6417,7 +7881,8 @@ function renderKertasInstax(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -6456,85 +7921,148 @@ function renderKertasInstax(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+      // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+      let hargaNormal = Number(doc.data().harga);
+      let cashBack = Number(doc.data().cashback);
+      let hargaHCI = hitung();
+    
+      function hitung() {
+        if (cashBack !== 0 || cashBack !== '') {
+          return hargaNormal - cashBack;
+        } else {
+          hargaHCI = hargaNormal;
+        }
+      }
+    
+      let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
 
-  li.innerHTML = `
-             <div class="collapsible-header">
-                <span class="left col s12">${doc.data().nama}</span>
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
              </div>
-             <div class="center-align collapsible-body">
-                  
-                  <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                  <br>
-                  <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                  <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                  <br>
-                  <br>
-      
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                  <!-- Modal Structure -->
-                  <div id="modal1${doc.id}" class="modal">
-                    <div class="modal-content">
-                      <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                    </div>
-                    <div class="modal-footer">
-                      <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                    </div>
-                  </div>
-                  
-                  <!-- Modal Structure -->
-                  <div id="modal2${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="isibox${doc.id}">${newIsibox}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                  </div>
-                </div>      
-             `;
-
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
 
   la.innerHTML = `
-             <div class="modal" id="updatemodal${doc.id}">
-                <form id="form${doc.id}">
-                 <label for="update-nama-produk">Nama Kamera</label>
-                 <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-                 <br>
-                 <label for="update-harga-produk">Masukkan Harga</label>
-                 <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-                 <br>
-                 <label for="update-cashback">Cashback</label>
-                 <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-                 <br>
-                 <label for="update-garansi">Garansi</label>
-                 <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-                 <br>
-                 <label for="update-free-bonus">Free</label>
-                 <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-                 <br>
-                 <label for="periode-promo">Periode Promo</label>
-                 <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-                 <br>
-                 <div class="input-field col s12">
-                 <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-                 <label for="keterangan">Keterangan</label>
-               </div>
-               <br>
-               <div class="input-field col s12">
-                 <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-                 <label for="spesifikasi">Spesifikasi</label>
-               </div>
-               <div class="input-field col s12">
-                   <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-                   <label for="isibox">Isi Box</label>
-                 </div>
-                  <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                    <i class="material-icons right">send</i>
-                  </button>
-                 </form>
-              </div>  
-              `;
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
@@ -6638,7 +8166,7 @@ function renderKertasInstax(doc) {
       e.stopPropagation();
       // Mendapatkan data target dari ID yang diklik
       let id = e.target.parentElement.parentElement.getAttribute('data-id');
-// UPDATE DIBAWAH INI        
+      // UPDATE DIBAWAH INI        
       db.collection('kertasinstax').doc(id).delete().then(function () {
         window.location.reload(true);
       });;
@@ -6673,10 +8201,11 @@ function renderKertasInstax(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
-// UPDATE DIBAWAH INI         
+        // UPDATE DIBAWAH INI         
         db.collection('kertasinstax').doc(doc.id).update({
           nama: nama,
           harga: harga,
@@ -6685,6 +8214,7 @@ function renderKertasInstax(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -6720,10 +8250,8 @@ function renderLeatherCase(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -6734,7 +8262,8 @@ function renderLeatherCase(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -6773,85 +8302,148 @@ function renderLeatherCase(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+    // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+    let hargaNormal = Number(doc.data().harga);
+    let cashBack = Number(doc.data().cashback);
+    let hargaHCI = hitung();
+  
+    function hitung() {
+      if (cashBack !== 0 || cashBack !== '') {
+        return hargaNormal - cashBack;
+      } else {
+        hargaHCI = hargaNormal;
+      }
+    }
+  
+    let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
 
-  li.innerHTML = `
-             <div class="collapsible-header">
-                <span class="left col s12">${doc.data().nama}</span>
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
              </div>
-             <div class="center-align collapsible-body">
-                  
-                  <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                  <br>
-                  <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                  <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                  <br>
-                  <br>
-      
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                  <!-- Modal Structure -->
-                  <div id="modal1${doc.id}" class="modal">
-                    <div class="modal-content">
-                      <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                    </div>
-                    <div class="modal-footer">
-                      <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                    </div>
-                  </div>
-                  
-                  <!-- Modal Structure -->
-                  <div id="modal2${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="isibox${doc.id}">${newIsibox}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                  </div>
-                </div>      
-             `;
-
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
 
   la.innerHTML = `
-             <div class="modal" id="updatemodal${doc.id}">
-                <form id="form${doc.id}">
-                 <label for="update-nama-produk">Nama Kamera</label>
-                 <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-                 <br>
-                 <label for="update-harga-produk">Masukkan Harga</label>
-                 <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-                 <br>
-                 <label for="update-cashback">Cashback</label>
-                 <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-                 <br>
-                 <label for="update-garansi">Garansi</label>
-                 <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-                 <br>
-                 <label for="update-free-bonus">Free</label>
-                 <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-                 <br>
-                 <label for="periode-promo">Periode Promo</label>
-                 <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-                 <br>
-                 <div class="input-field col s12">
-                 <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-                 <label for="keterangan">Keterangan</label>
-               </div>
-               <br>
-               <div class="input-field col s12">
-                 <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-                 <label for="spesifikasi">Spesifikasi</label>
-               </div>
-               <div class="input-field col s12">
-                   <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-                   <label for="isibox">Isi Box</label>
-                 </div>
-                  <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                    <i class="material-icons right">send</i>
-                  </button>
-                 </form>
-              </div>  
-              `;
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
@@ -6955,7 +8547,7 @@ function renderLeatherCase(doc) {
       e.stopPropagation();
       // Mendapatkan data target dari ID yang diklik
       let id = e.target.parentElement.parentElement.getAttribute('data-id');
-// UPDATE DIBAWAH INI        
+      // UPDATE DIBAWAH INI        
       db.collection('leathercase').doc(id).delete().then(function () {
         window.location.reload(true);
       });;
@@ -6990,10 +8582,11 @@ function renderLeatherCase(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
-// UPDATE DIBAWAH INI         
+        // UPDATE DIBAWAH INI         
         db.collection('leathercase').doc(doc.id).update({
           nama: nama,
           harga: harga,
@@ -7002,6 +8595,7 @@ function renderLeatherCase(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -7037,10 +8631,8 @@ function renderLampuFlash(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -7051,7 +8643,8 @@ function renderLampuFlash(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -7090,85 +8683,148 @@ function renderLampuFlash(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+    // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+    let hargaNormal = Number(doc.data().harga);
+    let cashBack = Number(doc.data().cashback);
+    let hargaHCI = hitung();
+  
+    function hitung() {
+      if (cashBack !== 0 || cashBack !== '') {
+        return hargaNormal - cashBack;
+      } else {
+        hargaHCI = hargaNormal;
+      }
+    }
+  
+    let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
 
-  li.innerHTML = `
-             <div class="collapsible-header">
-                <span class="left col s12">${doc.data().nama}</span>
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
              </div>
-             <div class="center-align collapsible-body">
-                  
-                  <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                  <br>
-                  <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                  <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                  <br>
-                  <br>
-      
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                  <!-- Modal Structure -->
-                  <div id="modal1${doc.id}" class="modal">
-                    <div class="modal-content">
-                      <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                    </div>
-                    <div class="modal-footer">
-                      <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                    </div>
-                  </div>
-                  
-                  <!-- Modal Structure -->
-                  <div id="modal2${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="isibox${doc.id}">${newIsibox}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                  </div>
-                </div>      
-             `;
-
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
 
   la.innerHTML = `
-             <div class="modal" id="updatemodal${doc.id}">
-                <form id="form${doc.id}">
-                 <label for="update-nama-produk">Nama Kamera</label>
-                 <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-                 <br>
-                 <label for="update-harga-produk">Masukkan Harga</label>
-                 <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-                 <br>
-                 <label for="update-cashback">Cashback</label>
-                 <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-                 <br>
-                 <label for="update-garansi">Garansi</label>
-                 <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-                 <br>
-                 <label for="update-free-bonus">Free</label>
-                 <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-                 <br>
-                 <label for="periode-promo">Periode Promo</label>
-                 <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-                 <br>
-                 <div class="input-field col s12">
-                 <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-                 <label for="keterangan">Keterangan</label>
-               </div>
-               <br>
-               <div class="input-field col s12">
-                 <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-                 <label for="spesifikasi">Spesifikasi</label>
-               </div>
-               <div class="input-field col s12">
-                   <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-                   <label for="isibox">Isi Box</label>
-                 </div>
-                  <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                    <i class="material-icons right">send</i>
-                  </button>
-                 </form>
-              </div>  
-              `;
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
@@ -7272,7 +8928,7 @@ function renderLampuFlash(doc) {
       e.stopPropagation();
       // Mendapatkan data target dari ID yang diklik
       let id = e.target.parentElement.parentElement.getAttribute('data-id');
-// UPDATE DIBAWAH INI        
+      // UPDATE DIBAWAH INI        
       db.collection('lampuflash').doc(id).delete().then(function () {
         window.location.reload(true);
       });;
@@ -7307,10 +8963,11 @@ function renderLampuFlash(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
-// UPDATE DIBAWAH INI         
+        // UPDATE DIBAWAH INI         
         db.collection('lampuflash').doc(doc.id).update({
           nama: nama,
           harga: harga,
@@ -7319,6 +8976,7 @@ function renderLampuFlash(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -7354,10 +9012,8 @@ function renderLampuVideo(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -7368,7 +9024,8 @@ function renderLampuVideo(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -7407,85 +9064,148 @@ function renderLampuVideo(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+    // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+    let hargaNormal = Number(doc.data().harga);
+    let cashBack = Number(doc.data().cashback);
+    let hargaHCI = hitung();
+  
+    function hitung() {
+      if (cashBack !== 0 || cashBack !== '') {
+        return hargaNormal - cashBack;
+      } else {
+        hargaHCI = hargaNormal;
+      }
+    }
+  
+    let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
 
-  li.innerHTML = `
-             <div class="collapsible-header">
-                <span class="left col s12">${doc.data().nama}</span>
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
              </div>
-             <div class="center-align collapsible-body">
-                  
-                  <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                  <br>
-                  <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                  <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                  <br>
-                  <br>
-      
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                  <!-- Modal Structure -->
-                  <div id="modal1${doc.id}" class="modal">
-                    <div class="modal-content">
-                      <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                    </div>
-                    <div class="modal-footer">
-                      <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                    </div>
-                  </div>
-                  
-                  <!-- Modal Structure -->
-                  <div id="modal2${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="isibox${doc.id}">${newIsibox}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                  </div>
-                </div>      
-             `;
-
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
 
   la.innerHTML = `
-             <div class="modal" id="updatemodal${doc.id}">
-                <form id="form${doc.id}">
-                 <label for="update-nama-produk">Nama Kamera</label>
-                 <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-                 <br>
-                 <label for="update-harga-produk">Masukkan Harga</label>
-                 <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-                 <br>
-                 <label for="update-cashback">Cashback</label>
-                 <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-                 <br>
-                 <label for="update-garansi">Garansi</label>
-                 <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-                 <br>
-                 <label for="update-free-bonus">Free</label>
-                 <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-                 <br>
-                 <label for="periode-promo">Periode Promo</label>
-                 <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-                 <br>
-                 <div class="input-field col s12">
-                 <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-                 <label for="keterangan">Keterangan</label>
-               </div>
-               <br>
-               <div class="input-field col s12">
-                 <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-                 <label for="spesifikasi">Spesifikasi</label>
-               </div>
-               <div class="input-field col s12">
-                   <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-                   <label for="isibox">Isi Box</label>
-                 </div>
-                  <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                    <i class="material-icons right">send</i>
-                  </button>
-                 </form>
-              </div>  
-              `;
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
@@ -7589,7 +9309,7 @@ function renderLampuVideo(doc) {
       e.stopPropagation();
       // Mendapatkan data target dari ID yang diklik
       let id = e.target.parentElement.parentElement.getAttribute('data-id');
-// UPDATE DIBAWAH INI        
+      // UPDATE DIBAWAH INI        
       db.collection('lampuvideo').doc(id).delete().then(function () {
         window.location.reload(true);
       });;
@@ -7624,10 +9344,11 @@ function renderLampuVideo(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
-// UPDATE DIBAWAH INI         
+        // UPDATE DIBAWAH INI         
         db.collection('lampuvideo').doc(doc.id).update({
           nama: nama,
           harga: harga,
@@ -7636,6 +9357,7 @@ function renderLampuVideo(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -7671,10 +9393,8 @@ function renderLensCap(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -7685,7 +9405,8 @@ function renderLensCap(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -7724,85 +9445,148 @@ function renderLensCap(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+      // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+      let hargaNormal = Number(doc.data().harga);
+      let cashBack = Number(doc.data().cashback);
+      let hargaHCI = hitung();
+    
+      function hitung() {
+        if (cashBack !== 0 || cashBack !== '') {
+          return hargaNormal - cashBack;
+        } else {
+          hargaHCI = hargaNormal;
+        }
+      }
+    
+      let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
 
-  li.innerHTML = `
-             <div class="collapsible-header">
-                <span class="left col s12">${doc.data().nama}</span>
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
              </div>
-             <div class="center-align collapsible-body">
-                  
-                  <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                  <br>
-                  <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                  <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                  <br>
-                  <br>
-      
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                  <!-- Modal Structure -->
-                  <div id="modal1${doc.id}" class="modal">
-                    <div class="modal-content">
-                      <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                    </div>
-                    <div class="modal-footer">
-                      <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                    </div>
-                  </div>
-                  
-                  <!-- Modal Structure -->
-                  <div id="modal2${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="isibox${doc.id}">${newIsibox}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                  </div>
-                </div>      
-             `;
-
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
 
   la.innerHTML = `
-             <div class="modal" id="updatemodal${doc.id}">
-                <form id="form${doc.id}">
-                 <label for="update-nama-produk">Nama Kamera</label>
-                 <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-                 <br>
-                 <label for="update-harga-produk">Masukkan Harga</label>
-                 <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-                 <br>
-                 <label for="update-cashback">Cashback</label>
-                 <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-                 <br>
-                 <label for="update-garansi">Garansi</label>
-                 <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-                 <br>
-                 <label for="update-free-bonus">Free</label>
-                 <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-                 <br>
-                 <label for="periode-promo">Periode Promo</label>
-                 <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-                 <br>
-                 <div class="input-field col s12">
-                 <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-                 <label for="keterangan">Keterangan</label>
-               </div>
-               <br>
-               <div class="input-field col s12">
-                 <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-                 <label for="spesifikasi">Spesifikasi</label>
-               </div>
-               <div class="input-field col s12">
-                   <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-                   <label for="isibox">Isi Box</label>
-                 </div>
-                  <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                    <i class="material-icons right">send</i>
-                  </button>
-                 </form>
-              </div>  
-              `;
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
@@ -7906,7 +9690,7 @@ function renderLensCap(doc) {
       e.stopPropagation();
       // Mendapatkan data target dari ID yang diklik
       let id = e.target.parentElement.parentElement.getAttribute('data-id');
-// UPDATE DIBAWAH INI        
+      // UPDATE DIBAWAH INI        
       db.collection('lenscap').doc(id).delete().then(function () {
         window.location.reload(true);
       });;
@@ -7941,10 +9725,11 @@ function renderLensCap(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
-// UPDATE DIBAWAH INI         
+        // UPDATE DIBAWAH INI         
         db.collection('lenscap').doc(doc.id).update({
           nama: nama,
           harga: harga,
@@ -7953,6 +9738,7 @@ function renderLensCap(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -7988,10 +9774,8 @@ function renderLensHood(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -8002,7 +9786,8 @@ function renderLensHood(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -8041,85 +9826,149 @@ function renderLensHood(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+      // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+      let hargaNormal = Number(doc.data().harga);
+      let cashBack = Number(doc.data().cashback);
+      let hargaHCI = hitung();
+    
+      function hitung() {
+        if (cashBack !== 0 || cashBack !== '') {
+          return hargaNormal - cashBack;
+        } else {
+          hargaHCI = hargaNormal;
+        }
+      }
+    
+      let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
 
-  li.innerHTML = `
-             <div class="collapsible-header">
-                <span class="left col s12">${doc.data().nama}</span>
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
              </div>
-             <div class="center-align collapsible-body">
-                  
-                  <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                  <br>
-                  <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                  <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                  <br>
-                  <br>
-      
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                  <!-- Modal Structure -->
-                  <div id="modal1${doc.id}" class="modal">
-                    <div class="modal-content">
-                      <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                    </div>
-                    <div class="modal-footer">
-                      <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                    </div>
-                  </div>
-                  
-                  <!-- Modal Structure -->
-                  <div id="modal2${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="isibox${doc.id}">${newIsibox}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                  </div>
-                </div>      
-             `;
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
 
 
   la.innerHTML = `
-             <div class="modal" id="updatemodal${doc.id}">
-                <form id="form${doc.id}">
-                 <label for="update-nama-produk">Nama Kamera</label>
-                 <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-                 <br>
-                 <label for="update-harga-produk">Masukkan Harga</label>
-                 <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-                 <br>
-                 <label for="update-cashback">Cashback</label>
-                 <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-                 <br>
-                 <label for="update-garansi">Garansi</label>
-                 <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-                 <br>
-                 <label for="update-free-bonus">Free</label>
-                 <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-                 <br>
-                 <label for="periode-promo">Periode Promo</label>
-                 <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-                 <br>
-                 <div class="input-field col s12">
-                 <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-                 <label for="keterangan">Keterangan</label>
-               </div>
-               <br>
-               <div class="input-field col s12">
-                 <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-                 <label for="spesifikasi">Spesifikasi</label>
-               </div>
-               <div class="input-field col s12">
-                   <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-                   <label for="isibox">Isi Box</label>
-                 </div>
-                  <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                    <i class="material-icons right">send</i>
-                  </button>
-                 </form>
-              </div>  
-              `;
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
@@ -8223,7 +10072,7 @@ function renderLensHood(doc) {
       e.stopPropagation();
       // Mendapatkan data target dari ID yang diklik
       let id = e.target.parentElement.parentElement.getAttribute('data-id');
-// UPDATE DIBAWAH INI        
+      // UPDATE DIBAWAH INI        
       db.collection('lenshood').doc(id).delete().then(function () {
         window.location.reload(true);
       });;
@@ -8258,10 +10107,11 @@ function renderLensHood(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
-// UPDATE DIBAWAH INI         
+        // UPDATE DIBAWAH INI         
         db.collection('lenshood').doc(doc.id).update({
           nama: nama,
           harga: harga,
@@ -8270,6 +10120,7 @@ function renderLensHood(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -8305,10 +10156,8 @@ function renderMemoryCard(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -8319,7 +10168,8 @@ function renderMemoryCard(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -8358,85 +10208,148 @@ function renderMemoryCard(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+      // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+      let hargaNormal = Number(doc.data().harga);
+      let cashBack = Number(doc.data().cashback);
+      let hargaHCI = hitung();
+    
+      function hitung() {
+        if (cashBack !== 0 || cashBack !== '') {
+          return hargaNormal - cashBack;
+        } else {
+          hargaHCI = hargaNormal;
+        }
+      }
+    
+      let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
 
-  li.innerHTML = `
-             <div class="collapsible-header">
-                <span class="left col s12">${doc.data().nama}</span>
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
              </div>
-             <div class="center-align collapsible-body">
-                  
-                  <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                  <br>
-                  <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                  <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                  <br>
-                  <br>
-      
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                  <!-- Modal Structure -->
-                  <div id="modal1${doc.id}" class="modal">
-                    <div class="modal-content">
-                      <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                    </div>
-                    <div class="modal-footer">
-                      <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                    </div>
-                  </div>
-                  
-                  <!-- Modal Structure -->
-                  <div id="modal2${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="isibox${doc.id}">${newIsibox}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                  </div>
-                </div>      
-             `;
-
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
 
   la.innerHTML = `
-             <div class="modal" id="updatemodal${doc.id}">
-                <form id="form${doc.id}">
-                 <label for="update-nama-produk">Nama Kamera</label>
-                 <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-                 <br>
-                 <label for="update-harga-produk">Masukkan Harga</label>
-                 <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-                 <br>
-                 <label for="update-cashback">Cashback</label>
-                 <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-                 <br>
-                 <label for="update-garansi">Garansi</label>
-                 <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-                 <br>
-                 <label for="update-free-bonus">Free</label>
-                 <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-                 <br>
-                 <label for="periode-promo">Periode Promo</label>
-                 <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-                 <br>
-                 <div class="input-field col s12">
-                 <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-                 <label for="keterangan">Keterangan</label>
-               </div>
-               <br>
-               <div class="input-field col s12">
-                 <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-                 <label for="spesifikasi">Spesifikasi</label>
-               </div>
-               <div class="input-field col s12">
-                   <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-                   <label for="isibox">Isi Box</label>
-                 </div>
-                  <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                    <i class="material-icons right">send</i>
-                  </button>
-                 </form>
-              </div>  
-              `;
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
@@ -8540,7 +10453,7 @@ function renderMemoryCard(doc) {
       e.stopPropagation();
       // Mendapatkan data target dari ID yang diklik
       let id = e.target.parentElement.parentElement.getAttribute('data-id');
-// UPDATE DIBAWAH INI        
+      // UPDATE DIBAWAH INI        
       db.collection('memorycard').doc(id).delete().then(function () {
         window.location.reload(true);
       });;
@@ -8575,10 +10488,11 @@ function renderMemoryCard(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
-// UPDATE DIBAWAH INI         
+        // UPDATE DIBAWAH INI         
         db.collection('memorycard').doc(doc.id).update({
           nama: nama,
           harga: harga,
@@ -8587,6 +10501,7 @@ function renderMemoryCard(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -8622,10 +10537,8 @@ function renderMicrophone(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -8636,7 +10549,8 @@ function renderMicrophone(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -8675,85 +10589,148 @@ function renderMicrophone(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+      // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+      let hargaNormal = Number(doc.data().harga);
+      let cashBack = Number(doc.data().cashback);
+      let hargaHCI = hitung();
+    
+      function hitung() {
+        if (cashBack !== 0 || cashBack !== '') {
+          return hargaNormal - cashBack;
+        } else {
+          hargaHCI = hargaNormal;
+        }
+      }
+    
+      let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
 
-  li.innerHTML = `
-             <div class="collapsible-header">
-                <span class="left col s12">${doc.data().nama}</span>
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
              </div>
-             <div class="center-align collapsible-body">
-                  
-                  <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                  <br>
-                  <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                  <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                  <br>
-                  <br>
-      
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                  <!-- Modal Structure -->
-                  <div id="modal1${doc.id}" class="modal">
-                    <div class="modal-content">
-                      <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                    </div>
-                    <div class="modal-footer">
-                      <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                    </div>
-                  </div>
-                  
-                  <!-- Modal Structure -->
-                  <div id="modal2${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="isibox${doc.id}">${newIsibox}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                  </div>
-                </div>      
-             `;
-
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
 
   la.innerHTML = `
-             <div class="modal" id="updatemodal${doc.id}">
-                <form id="form${doc.id}">
-                 <label for="update-nama-produk">Nama Kamera</label>
-                 <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-                 <br>
-                 <label for="update-harga-produk">Masukkan Harga</label>
-                 <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-                 <br>
-                 <label for="update-cashback">Cashback</label>
-                 <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-                 <br>
-                 <label for="update-garansi">Garansi</label>
-                 <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-                 <br>
-                 <label for="update-free-bonus">Free</label>
-                 <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-                 <br>
-                 <label for="periode-promo">Periode Promo</label>
-                 <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-                 <br>
-                 <div class="input-field col s12">
-                 <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-                 <label for="keterangan">Keterangan</label>
-               </div>
-               <br>
-               <div class="input-field col s12">
-                 <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-                 <label for="spesifikasi">Spesifikasi</label>
-               </div>
-               <div class="input-field col s12">
-                   <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-                   <label for="isibox">Isi Box</label>
-                 </div>
-                  <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                    <i class="material-icons right">send</i>
-                  </button>
-                 </form>
-              </div>  
-              `;
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
@@ -8857,7 +10834,7 @@ function renderMicrophone(doc) {
       e.stopPropagation();
       // Mendapatkan data target dari ID yang diklik
       let id = e.target.parentElement.parentElement.getAttribute('data-id');
-// UPDATE DIBAWAH INI        
+      // UPDATE DIBAWAH INI        
       db.collection('microphone').doc(id).delete().then(function () {
         window.location.reload(true);
       });;
@@ -8892,10 +10869,11 @@ function renderMicrophone(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
-// UPDATE DIBAWAH INI         
+        // UPDATE DIBAWAH INI         
         db.collection('microphone').doc(doc.id).update({
           nama: nama,
           harga: harga,
@@ -8904,6 +10882,7 @@ function renderMicrophone(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -8939,10 +10918,8 @@ function renderTaliStrap(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -8953,7 +10930,8 @@ function renderTaliStrap(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -8992,85 +10970,147 @@ function renderTaliStrap(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+      // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+      let hargaNormal = Number(doc.data().harga);
+      let cashBack = Number(doc.data().cashback);
+      let hargaHCI = hitung();
+    
+      function hitung() {
+        if (cashBack !== 0 || cashBack !== '') {
+          return hargaNormal - cashBack;
+        } else {
+          hargaHCI = hargaNormal;
+        }
+      }
+    
+      let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
 
-  li.innerHTML = `
-             <div class="collapsible-header">
-                <span class="left col s12">${doc.data().nama}</span>
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
              </div>
-             <div class="center-align collapsible-body">
-                  
-                  <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                  <br>
-                  <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                  <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                  <br>
-                  <br>
-      
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                  <!-- Modal Structure -->
-                  <div id="modal1${doc.id}" class="modal">
-                    <div class="modal-content">
-                      <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                    </div>
-                    <div class="modal-footer">
-                      <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                    </div>
-                  </div>
-                  
-                  <!-- Modal Structure -->
-                  <div id="modal2${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="isibox${doc.id}">${newIsibox}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                  </div>
-                </div>      
-             `;
-
-
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
   la.innerHTML = `
-             <div class="modal" id="updatemodal${doc.id}">
-                <form id="form${doc.id}">
-                 <label for="update-nama-produk">Nama Kamera</label>
-                 <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-                 <br>
-                 <label for="update-harga-produk">Masukkan Harga</label>
-                 <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-                 <br>
-                 <label for="update-cashback">Cashback</label>
-                 <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-                 <br>
-                 <label for="update-garansi">Garansi</label>
-                 <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-                 <br>
-                 <label for="update-free-bonus">Free</label>
-                 <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-                 <br>
-                 <label for="periode-promo">Periode Promo</label>
-                 <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-                 <br>
-                 <div class="input-field col s12">
-                 <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-                 <label for="keterangan">Keterangan</label>
-               </div>
-               <br>
-               <div class="input-field col s12">
-                 <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-                 <label for="spesifikasi">Spesifikasi</label>
-               </div>
-               <div class="input-field col s12">
-                   <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-                   <label for="isibox">Isi Box</label>
-                 </div>
-                  <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                    <i class="material-icons right">send</i>
-                  </button>
-                 </form>
-              </div>  
-              `;
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
@@ -9174,7 +11214,7 @@ function renderTaliStrap(doc) {
       e.stopPropagation();
       // Mendapatkan data target dari ID yang diklik
       let id = e.target.parentElement.parentElement.getAttribute('data-id');
-// UPDATE DIBAWAH INI        
+      // UPDATE DIBAWAH INI        
       db.collection('talistrap').doc(id).delete().then(function () {
         window.location.reload(true);
       });;
@@ -9209,10 +11249,11 @@ function renderTaliStrap(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
-// UPDATE DIBAWAH INI         
+        // UPDATE DIBAWAH INI         
         db.collection('talistrap').doc(doc.id).update({
           nama: nama,
           harga: harga,
@@ -9221,6 +11262,7 @@ function renderTaliStrap(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -9256,10 +11298,8 @@ function renderTasKamera(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -9270,7 +11310,8 @@ function renderTasKamera(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -9309,85 +11350,148 @@ function renderTasKamera(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+      // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+      let hargaNormal = Number(doc.data().harga);
+      let cashBack = Number(doc.data().cashback);
+      let hargaHCI = hitung();
+    
+      function hitung() {
+        if (cashBack !== 0 || cashBack !== '') {
+          return hargaNormal - cashBack;
+        } else {
+          hargaHCI = hargaNormal;
+        }
+      }
+    
+      let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
 
-  li.innerHTML = `
-             <div class="collapsible-header">
-                <span class="left col s12">${doc.data().nama}</span>
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
              </div>
-             <div class="center-align collapsible-body">
-                  
-                  <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                  <br>
-                  <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                  <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                  <br>
-                  <br>
-      
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                  <!-- Modal Structure -->
-                  <div id="modal1${doc.id}" class="modal">
-                    <div class="modal-content">
-                      <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                    </div>
-                    <div class="modal-footer">
-                      <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                    </div>
-                  </div>
-                  
-                  <!-- Modal Structure -->
-                  <div id="modal2${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="isibox${doc.id}">${newIsibox}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                  </div>
-                </div>      
-             `;
-
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
 
   la.innerHTML = `
-             <div class="modal" id="updatemodal${doc.id}">
-                <form id="form${doc.id}">
-                 <label for="update-nama-produk">Nama Kamera</label>
-                 <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-                 <br>
-                 <label for="update-harga-produk">Masukkan Harga</label>
-                 <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-                 <br>
-                 <label for="update-cashback">Cashback</label>
-                 <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-                 <br>
-                 <label for="update-garansi">Garansi</label>
-                 <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-                 <br>
-                 <label for="update-free-bonus">Free</label>
-                 <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-                 <br>
-                 <label for="periode-promo">Periode Promo</label>
-                 <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-                 <br>
-                 <div class="input-field col s12">
-                 <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-                 <label for="keterangan">Keterangan</label>
-               </div>
-               <br>
-               <div class="input-field col s12">
-                 <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-                 <label for="spesifikasi">Spesifikasi</label>
-               </div>
-               <div class="input-field col s12">
-                   <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-                   <label for="isibox">Isi Box</label>
-                 </div>
-                  <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                    <i class="material-icons right">send</i>
-                  </button>
-                 </form>
-              </div>  
-              `;
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
@@ -9491,7 +11595,7 @@ function renderTasKamera(doc) {
       e.stopPropagation();
       // Mendapatkan data target dari ID yang diklik
       let id = e.target.parentElement.parentElement.getAttribute('data-id');
-// UPDATE DIBAWAH INI        
+      // UPDATE DIBAWAH INI        
       db.collection('taskamera').doc(id).delete().then(function () {
         window.location.reload(true);
       });;
@@ -9526,10 +11630,11 @@ function renderTasKamera(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
-// UPDATE DIBAWAH INI         
+        // UPDATE DIBAWAH INI         
         db.collection('taskamera').doc(doc.id).update({
           nama: nama,
           harga: harga,
@@ -9538,6 +11643,7 @@ function renderTasKamera(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -9573,10 +11679,8 @@ function renderAntiGores(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -9587,7 +11691,8 @@ function renderAntiGores(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -9626,85 +11731,148 @@ function renderAntiGores(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+      // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+      let hargaNormal = Number(doc.data().harga);
+      let cashBack = Number(doc.data().cashback);
+      let hargaHCI = hitung();
+    
+      function hitung() {
+        if (cashBack !== 0 || cashBack !== '') {
+          return hargaNormal - cashBack;
+        } else {
+          hargaHCI = hargaNormal;
+        }
+      }
+    
+      let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
 
-  li.innerHTML = `
-             <div class="collapsible-header">
-                <span class="left col s12">${doc.data().nama}</span>
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
              </div>
-             <div class="center-align collapsible-body">
-                  
-                  <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                  <br>
-                  <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                  <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                  <br>
-                  <br>
-      
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                  <!-- Modal Structure -->
-                  <div id="modal1${doc.id}" class="modal">
-                    <div class="modal-content">
-                      <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                    </div>
-                    <div class="modal-footer">
-                      <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                    </div>
-                  </div>
-                  
-                  <!-- Modal Structure -->
-                  <div id="modal2${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="isibox${doc.id}">${newIsibox}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                  </div>
-                </div>      
-             `;
-
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
 
   la.innerHTML = `
-             <div class="modal" id="updatemodal${doc.id}">
-                <form id="form${doc.id}">
-                 <label for="update-nama-produk">Nama Kamera</label>
-                 <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-                 <br>
-                 <label for="update-harga-produk">Masukkan Harga</label>
-                 <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-                 <br>
-                 <label for="update-cashback">Cashback</label>
-                 <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-                 <br>
-                 <label for="update-garansi">Garansi</label>
-                 <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-                 <br>
-                 <label for="update-free-bonus">Free</label>
-                 <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-                 <br>
-                 <label for="periode-promo">Periode Promo</label>
-                 <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-                 <br>
-                 <div class="input-field col s12">
-                 <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-                 <label for="keterangan">Keterangan</label>
-               </div>
-               <br>
-               <div class="input-field col s12">
-                 <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-                 <label for="spesifikasi">Spesifikasi</label>
-               </div>
-               <div class="input-field col s12">
-                   <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-                   <label for="isibox">Isi Box</label>
-                 </div>
-                  <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                    <i class="material-icons right">send</i>
-                  </button>
-                 </form>
-              </div>  
-              `;
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
@@ -9808,7 +11976,7 @@ function renderAntiGores(doc) {
       e.stopPropagation();
       // Mendapatkan data target dari ID yang diklik
       let id = e.target.parentElement.parentElement.getAttribute('data-id');
-// UPDATE DIBAWAH INI        
+      // UPDATE DIBAWAH INI        
       db.collection('antigores').doc(id).delete().then(function () {
         window.location.reload(true);
       });;
@@ -9843,10 +12011,11 @@ function renderAntiGores(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
-// UPDATE DIBAWAH INI         
+        // UPDATE DIBAWAH INI         
         db.collection('antigores').doc(doc.id).update({
           nama: nama,
           harga: harga,
@@ -9855,6 +12024,7 @@ function renderAntiGores(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -9890,10 +12060,8 @@ function renderTripod(doc) {
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
   free['Garansi'] = doc.data().periode;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
@@ -9904,7 +12072,8 @@ function renderTripod(doc) {
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -9943,85 +12112,148 @@ function renderTripod(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+      // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+      let hargaNormal = Number(doc.data().harga);
+      let cashBack = Number(doc.data().cashback);
+      let hargaHCI = hitung();
+    
+      function hitung() {
+        if (cashBack !== 0 || cashBack !== '') {
+          return hargaNormal - cashBack;
+        } else {
+          hargaHCI = hargaNormal;
+        }
+      }
+    
+      let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
 
-  li.innerHTML = `
-             <div class="collapsible-header">
-                <span class="left col s12">${doc.data().nama}</span>
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
              </div>
-             <div class="center-align collapsible-body">
-                  
-                  <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-                  <br>
-                  <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-                  <a  class=" btn-small disabled delete" href="#" >Delete</a>
-                  <br>
-                  <br>
-      
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-                  <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-                  <!-- Modal Structure -->
-                  <div id="modal1${doc.id}" class="modal">
-                    <div class="modal-content">
-                      <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-                    </div>
-                    <div class="modal-footer">
-                      <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-                    </div>
-                  </div>
-                  
-                  <!-- Modal Structure -->
-                  <div id="modal2${doc.id}" class="modal">
-                  <div class="modal-content">
-                    <div class="isibox${doc.id}">${newIsibox}</div>
-                  </div>
-                  <div class="modal-footer">
-                    <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-                  </div>
-                </div>      
-             `;
-
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
 
   la.innerHTML = `
-             <div class="modal" id="updatemodal${doc.id}">
-                <form class="form${doc.id}">
-                 <label for="update-nama-produk">Nama Kamera</label>
-                 <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-                 <br>
-                 <label for="update-harga-produk">Masukkan Harga</label>
-                 <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-                 <br>
-                 <label for="update-cashback">Cashback</label>
-                 <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-                 <br>
-                 <label for="update-garansi">Garansi</label>
-                 <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-                 <br>
-                 <label for="update-free-bonus">Free</label>
-                 <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-                 <br>
-                 <label for="periode-promo">Periode Promo</label>
-                 <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
-                 <br>
-                 <div class="input-field col s12">
-                 <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-                 <label for="keterangan">Keterangan</label>
-               </div>
-               <br>
-               <div class="input-field col s12">
-                 <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-                 <label for="spesifikasi">Spesifikasi</label>
-               </div>
-               <div class="input-field col s12">
-                   <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-                   <label for="isibox">Isi Box</label>
-                 </div>
-                  <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-                    <i class="material-icons right">send</i>
-                  </button>
-                 </form>
-              </div>  
-              `;
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
@@ -10125,7 +12357,7 @@ function renderTripod(doc) {
       e.stopPropagation();
       // Mendapatkan data target dari ID yang diklik
       let id = e.target.parentElement.parentElement.getAttribute('data-id');
-// UPDATE DIBAWAH INI        
+      // UPDATE DIBAWAH INI        
       db.collection('tripod').doc(id).delete().then(function () {
         window.location.reload(true);
       });;
@@ -10146,7 +12378,7 @@ function renderTripod(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-   let tombolKlik = document.querySelectorAll('#form' + doc.id);
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -10160,10 +12392,11 @@ function renderTripod(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
-// UPDATE DIBAWAH INI         
+        // UPDATE DIBAWAH INI         
         db.collection('tripod').doc(doc.id).update({
           nama: nama,
           harga: harga,
@@ -10172,6 +12405,7 @@ function renderTripod(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -10206,22 +12440,21 @@ function renderPrinter(doc) {
   var free = new Object();
   free['Free'] = doc.data().free;
   free['Periode Promo'] = doc.data().periode;
-  free['Garansi'] = doc.data().garansi;
-  free['Info'] = doc.data().keterangan;
-
-
-
+  free['Garansi'] = doc.data().periode;
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
 
   // Mengambil data sebagai objek untuk keperluan CASH
   var objek = new Object();
-  objek['Printer'] = doc.data().nama;
+  objek['Produk'] = doc.data().nama;
   objek['Harga'] = Number(doc.data().harga);
   objek['Cashback'] = Number(doc.data().cashback);
   objek['Harga Spesial'] = world();
   objek['Free'] = doc.data().free;
   objek['Periode Promo'] = doc.data().periode;
   objek['Garansi'] = doc.data().garansi;
-  objek['Info'] = doc.data().keterangan;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
 
   // Memunculkan Harga Spesial
   function world() {
@@ -10260,150 +12493,161 @@ function renderPrinter(doc) {
   let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
   let newIsibox = doc.data().isibox.split(",").join("<br>");
 
+  
+    // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+    let hargaNormal = Number(doc.data().harga);
+    let cashBack = Number(doc.data().cashback);
+    let hargaHCI = hitung();
+  
+    function hitung() {
+      if (cashBack !== 0 || cashBack !== '') {
+        return hargaNormal - cashBack;
+      } else {
+        hargaHCI = hargaNormal;
+      }
+    }
+  
+    let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
 
-  li.innerHTML = `
-       <div class="collapsible-header">
-          <span class="left col s12">${doc.data().nama}</span>
-       </div>
-       <div class="center-align collapsible-body">
-            <div class="konten1${doc.id}"></div> <!-- INFO HARGA HCI TIDAK BISA DICOPAS -->
-            <div id="cicilan${doc.id}">
-              <div class="konten3${doc.id}"></div> <!-- INFO CICILAN HOMECREDIT YANG BISA DI COPAS -->
-              <div class="konten4${doc.id}"></div> <!-- INFO FREEAN BONUS GABUNG CICILAN -->
-            </div>
-            <br>
-            <a id="copycicilan${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Angsuran</a>
-            <div class="garis"></div>
-            <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
-            <br>
-            <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
-            <a  class=" btn-small disabled delete" href="#" >Delete</a>
-            <br>
-            <br>
-
-            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
-            <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
-            <!-- Modal Structure -->
-            <div id="modal1${doc.id}" class="modal">
-              <div class="modal-content">
-                <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
-              </div>
-              <div class="modal-footer">
-                <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
-              </div>
-            </div>
-            
-            <!-- Modal Structure -->
-            <div id="modal2${doc.id}" class="modal">
-            <div class="modal-content">
-              <div class="isibox${doc.id}">${newIsibox}</div>
-            </div>
-            <div class="modal-footer">
-              <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
-            </div>
-          </div>
-         
-       `;
-
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+             </div>
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
 
 
   la.innerHTML = `
-       <div class="modal" id="updatemodal${doc.id}">
-          <form id="form${doc.id}">
-           <label for="update-nama-produk">Nama Kamera</label>
-           <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
-           <br>
-           <label for="update-harga-produk">Masukkan Harga</label>
-           <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
-           <br>
-           <label for="update-cashback">Cashback</label>
-           <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
-           <br>
-           <label for="update-garansi">Garansi</label>
-           <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
-           <br>
-           <label for="update-free-bonus">Free</label>
-           <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
-           <br>
-           <label for="periode-promo">Periode Promo</label>
-           <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
            <br>
            <div class="input-field col s12">
-           <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
-           <label for="keterangan">Keterangan</label>
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
          </div>
-         <br>
-         <div class="input-field col s12">
-           <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
-           <label for="spesifikasi">Spesifikasi</label>
-         </div>
-         <div class="input-field col s12">
-             <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
-             <label for="isibox">Isi Box</label>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
            </div>
-            <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
-              <i class="material-icons right">send</i>
-            </button>
-           </form>
-        </div>  
-        `;
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
 
   elementul.appendChild(li);
   elementul.appendChild(edit);
   elementul.appendChild(la);
 
-
-
-  var tabs = document.querySelectorAll('.tabs')
-  var tab;
-  for (tab = 0; tab < tabs.length; tab++) {
-    var instance = M.Tabs.init(tabs[tab]);
-  }
-
-
+  // MODAL ISI BOX DAN SPESIFIKASI
   var elems = document.querySelectorAll('.modal');
   var el;
   for (el = 0; el < elems.length; el++) {
     var instances = M.Modal.init(elems[el]);
   }
 
-
-
-
-
-  // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
-  let hargaNormal = Number(doc.data().harga);
-  let cashBack = Number(doc.data().cashback);
-  let hargaHCI = hitung();
-
-  function hitung() {
-    if (cashBack !== 0 || cashBack !== '') {
-      return hargaNormal - cashBack;
-    } else {
-      hargaHCI = hargaNormal;
-    }
-  }
-  let hargaHCIST = hargaHCI.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  });
-  let biayaSubsidi6Bln = hitung6bln(); // HASIL SUBSIDI DALAM RUPIAH
-  let hargaHCI6Bln = hargaHCI + biayaSubsidi6Bln;
-
-  function hitung6bln() {
-    return hargaHCI * biaya6bln / 100;
-  }
-  let hargaHCI6BlnBulat = Math.ceil(hargaHCI6Bln / 100) * 100; // Dibulat ke 100 Rupiah 
-  let hargaHCI6BlnST = hargaHCI6BlnBulat.toLocaleString(undefined, {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  });
-  let konten1 = document.querySelector('.konten1' + doc.id)
-  konten1.innerHTML = `
-    <div>Harga Cash / HCI Normal : <span class="bold">Rp ${hargaHCIST} </span> </div>
-    <div>Harga HCI 6 Bulan : <span class="bold">Rp ${hargaHCI6BlnST}</span> </div>
-    <div class="garis"></div>
-  `;
 
   // MERENDER HARGA CASH YANG BISA DI COPY PASTE
   for (const property in objek) {
@@ -10418,372 +12662,32 @@ function renderPrinter(doc) {
         maximumFractionDigits: 0
       });
     }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
+    idbaru.innerHTML += `${property} : ${objek[property]} <br>`
   }
   // MERENDER HARGA CASH YANG BISA DI COPY PASTE ENDING
 
 
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
-  for (const property in free) {
-    if (`${free[property]}` == 0) {
-      continue;
-    }
-    // console.log(`${property}: ${free[property]}`)
-    let idbaru = document.querySelector('.konten4' + doc.id);
-    if (typeof free[property] == Number) {
-      return free[property].toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      });
-    }
-    idbaru.innerHTML += `${property} ${objek[property]} <br>`
-  }
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
   // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
 
 
-  ////// Khusus Produk dibawah 4.5 juta START /////////////
-  let konten3 = document.querySelector('.konten3' + doc.id)
-  if (hargaHCI <= 4500000 && hargaHCI >= 1500000) {
-
-    var Dp = 0; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
-
-    var BungaDp0_9 = (hargaHCI * bunga69 / 100); // Bunga dari tenor 9 Bulan
-    var BungaDp0_N = (hargaHCI * bunga1224 / 100); // Bunga dari tenor 12 sampai 24 Bulan
-    var Admin = 5000;
-
-    var cicilan9_0 = (hargaHCI / 9) + BungaDp0_9 + Admin;
-    var cicilan12_0 = (hargaHCI / 12) + BungaDp0_N + Admin;
-    var cicilan15_0 = (hargaHCI / 15) + BungaDp0_N + Admin;
-    var cicilan18_0 = (hargaHCI / 18) + BungaDp0_N + Admin;
-    var cicilan24_0 = (hargaHCI / 24) + BungaDp0_N + Admin;
-
-    // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
-    var mathcicilan9 = Math.ceil(cicilan9_0 / 100) * 100;
-    var mathcicilan12 = Math.ceil(cicilan12_0 / 100) * 100;
-    var mathcicilan15 = Math.ceil(cicilan15_0 / 100) * 100;
-    var mathcicilan18 = Math.ceil(cicilan18_0 / 100) * 100;
-    var mathcicilan24 = Math.ceil(cicilan24_0 / 100) * 100;
-
-    //toLocaleString untuk menambahkan koma disetiap 3 digit
-
-    var cicilan9_0asli = mathcicilan9.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
-    var cicilan12_0asli = mathcicilan12.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
-    var cicilan15_0asli = mathcicilan15.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
-    var cicilan18_0asli = mathcicilan18.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
-    var cicilan24_0asli = mathcicilan24.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
-
-    ////////////////////Cicilan DP Normal//////////////////////////
-    var Dp = (hargaHCI * 10 / 100) + 200000; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
-    var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
-    // DpBulatShowTime hanya untuk tampil dihalaman depan dengan ada koma disetiap 3 digit 0
-    var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var DpSesungguhnya = DpBulat - 199000;
-    var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
-    var BungaNormal = (HargaSesungguhnya * bunga1224 / 100); // Seharusnya harga asli
-    var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100); // Seharusnya harga asli
-    var Admin = 5000;
-    var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
-    var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
-    var cicilan15 = (HargaSesungguhnya / 15) + BungaNormal + Admin;
-    var cicilan18 = (HargaSesungguhnya / 18) + BungaNormal + Admin;
-    var cicilan24 = (HargaSesungguhnya / 24) + BungaNormal + Admin;
-    var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
-    var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100;
-    var mathcicilan15 = Math.ceil(cicilan15 / 100) * 100;
-    var mathcicilan18 = Math.ceil(cicilan18 / 100) * 100;
-    var mathcicilan24 = Math.ceil(cicilan24 / 100) * 100;
-    //toLocaleString untuk menambahkan koma disetiap 3 digit
-    var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan12asli = mathcicilan12.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan15asli = mathcicilan15.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan18asli = mathcicilan18.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan24asli = mathcicilan24.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    //Cicilan Tenor Normal
 
 
-
-    //Cicilan Tenor 6 Bulan Bunga 0%
-
-    var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
-    var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 5.5% admin
-    var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
-    var DpMentah60P = (hargaBulat60P * 10 / 100) + 200000; // mengkonversikan 10% dari harga asli
-    var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
-    var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var DpSesungguhnya60P = DpTerbaru60P - 199000;
-    var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
-    //var Bunga6099 = (hargaBulat6099 *2.69 / 100);
-    var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
-    var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
-    var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-
-
-    konten3.innerHTML = `
-    ${doc.data().nama} <br>
-    Promo DP  0 (Cukup bayar biaya admin 200rb) <br>
-    9x : ${cicilan9_0asli} <br>
-    12x : ${cicilan12_0asli} <br>
-    15x : ${cicilan15_0asli} <br>
-    18x : ${cicilan18_0asli} <br>
-    24x : ${cicilan24_0asli} <br>
-    <br>
-    Promo DP : ${DpBulatShowTime} <br>
-    9x : ${cicilan9asli} <br>
-    12x : ${cicilan12asli} <br>
-    15x : ${cicilan15asli} <br>
-    18x : ${cicilan18asli} <br>
-    24x : ${cicilan24asli} <br>
-    <br>
-    Promo Spesial Cicilan 6 Bulan <br>
-    DP : ${DpTerbaru60PShowTime} <br>
-    6x : ${cicilan60Pasli}
-  `;
-
-  } ////// Khusus Produk dibawah 4.5 juta ENDING/////////////
-  else if (hargaHCI <= 16700000 && hargaHCI >= 1500000) {
-
-    ////////////////////Cicilan Tenor Normal//////////////////////////
-    var Dp = (hargaHCI * 10 / 100) + 200000; // mengkonversikan 10% dari harga asli ditambah biaya adm 200rb
-    var DpBulat = Math.ceil(Dp / 50000) * 50000; //membulatkan kelipatan 50rb
-    var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var DpSesungguhnya = DpBulat - 199000;
-    var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
-    var BungaNormal = (HargaSesungguhnya * bunga1224 / 100); // Seharusnya harga asli
-    var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100); // Seharusnya harga asli
-    var Admin = 5000;
-    var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
-    var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
-    var cicilan15 = (HargaSesungguhnya / 15) + BungaNormal + Admin;
-    var cicilan18 = (HargaSesungguhnya / 18) + BungaNormal + Admin;
-    var cicilan24 = (HargaSesungguhnya / 24) + BungaNormal + Admin;
-    var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
-    var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100;
-    var mathcicilan15 = Math.ceil(cicilan15 / 100) * 100;
-    var mathcicilan18 = Math.ceil(cicilan18 / 100) * 100;
-    var mathcicilan24 = Math.ceil(cicilan24 / 100) * 100;
-    //toLocaleString untuk menambahkan koma disetiap 3 digit
-    var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan12asli = mathcicilan12.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan15asli = mathcicilan15.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan18asli = mathcicilan18.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan24asli = mathcicilan24.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    ////////////////////Cicilan Tenor Normal ENDING//////////////////////////
-
-    //Cicilan Tenor 6 Bulan Bunga 0%
-    var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
-    var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
-    // Problem dikolom ini
-    var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 100 perak
-    var hargaBulat60PShowTime = hargaBulat60P.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var hargaTerbaru60PP = hargaBulat60P; //untuk mengecek bahwa setelah ditambah 5.5% apakah masih dibawah 15jt jika diatas 15jt maka berjalan rumus IF dibawah
-
-    if (hargaTerbaru60PP > 16700000) {
-      DpMentah60P = (hargaTerbaru60PP - 15000000) + 200000;
-    } else {
-      DpMentah60P = (hargaBulat60P * 10 / 100) + 200000;
-    }
-
-    var DpTerbaru60P = Math.ceil(DpMentah60P / 50000) * 50000; //membulatkan kelipatan 50rb
-
-    var DpTerbaru60PShowTime = DpTerbaru60P.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var DpSesungguhnya60P = DpTerbaru60P - 199000;
-    var HargaSesungguhnya60P = hargaTerbaru60PP - DpSesungguhnya60P;
-
-    var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
-    var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
-    var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    //Cicilan Tenor 6 Bulan Bunga 0%
-    konten3.innerHTML = `
-  ${doc.data().nama} <br>
-  Promo DP : ${DpBulatShowTime} <br>
-  9x : ${cicilan9asli} <br>
-  12x : ${cicilan12asli} <br>
-  15x : ${cicilan15asli} <br>
-  18x : ${cicilan18asli} <br>
-  24x : ${cicilan24asli} <br>
-  <br>
-  Promo Spesial Cicilan 6 Bulan <br>
-  DP : ${DpTerbaru60PShowTime} <br>
-  6x : ${cicilan60Pasli}
-`;
-
-  } ////// Khusus Produk dibawah 15 juta ENDING ////////////
-
-  ////// Khusus Produk diatas 15 juta START ////////////
-  else if (hargaHCI > 16700000) {
-    //////TENOR NORMAL START/////////////
-    var hargaMentah = hargaHCI - 15000000; //15jt adalah batas maksimal kredit di HCI
-    var DpRecomend = hargaMentah + 200000; // 1.7jt ada lah 10% dari 15jt (1.5jt) + biaya admin 200rb
-    var DpBulat = Math.ceil(DpRecomend / 50000) * 50000; //membulatkan kelipatan 50rb
-    var DpBulatShowTime = DpBulat.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var DpSesungguhnya = DpBulat - 199000;
-    var HargaSesungguhnya = hargaHCI - DpSesungguhnya;
-    var BungaNormal = (HargaSesungguhnya * bunga1224 / 100);
-    var Bunga9Bulan = (HargaSesungguhnya * bunga69 / 100);
-    var Admin = 5000;
-    var cicilan9 = (HargaSesungguhnya / 9) + Bunga9Bulan + Admin;
-    var cicilan12 = (HargaSesungguhnya / 12) + BungaNormal + Admin;
-    var cicilan15 = (HargaSesungguhnya / 15) + BungaNormal + Admin;
-    var cicilan18 = (HargaSesungguhnya / 18) + BungaNormal + Admin;
-    var cicilan24 = (HargaSesungguhnya / 24) + BungaNormal + Admin;
-    var mathcicilan9 = Math.ceil(cicilan9 / 100) * 100; // Math.ceil untuk membulatkan menjadi kelipatan 100 rupiah
-    var mathcicilan12 = Math.ceil(cicilan12 / 100) * 100;
-    var mathcicilan15 = Math.ceil(cicilan15 / 100) * 100;
-    var mathcicilan18 = Math.ceil(cicilan18 / 100) * 100;
-    var mathcicilan24 = Math.ceil(cicilan24 / 100) * 100;
-    //toLocaleString untuk menambahkan koma disetiap 3 digit
-    var cicilan9asli = mathcicilan9.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan12asli = mathcicilan12.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan15asli = mathcicilan15.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan18asli = mathcicilan18.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    var cicilan24asli = mathcicilan24.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-    //////////// TENOR NORMAL ENDING ///////////////////////////////////////////////
-
-
-
-    //Cicilan Tenor 6 Bulan Bunga 0%
-    var biayaAdm60P = hargaHCI * biaya6bln / 100; // mengkonversikan 10% dari harga asli ditambah biaya adm HCI 200rb
-    var hargaTerbaru60P = hargaHCI + biayaAdm60P; //harga terbaru setelah ditambah 4% admin
-    var hargaBulat60P = Math.ceil(hargaTerbaru60P / 100) * 100; //membulatkan kelipatan 50rb
-
-    var hargaMentah60P = (hargaBulat60P - 15000000); //15jt adalah batas maksimal kredit di HCI
-    var DpRecomend60P = hargaMentah60P + 200000;
-
-    var DpBulat60P = Math.ceil(DpRecomend60P / 50000) * 50000; //membulatkan kelipatan 50rb
-    var DpBulat60PShowTime = DpBulat60P.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-
-    var DpSesungguhnya60P = DpBulat60P - 199000;
-    var HargaSesungguhnya60P = hargaBulat60P - DpSesungguhnya60P;
-    var Admin = 5000;
-    var cicilan60P = (HargaSesungguhnya60P / 6) + Admin;
-    var mathcicilan60P = Math.ceil(cicilan60P / 100) * 100;
-    var cicilan60Pasli = mathcicilan60P.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    })
-
-    //Cicilan Tenor 6 Bulan Bunga 0%
-    konten3.innerHTML = `
-  ${doc.data().nama} <br>
-  Promo DP : ${DpBulatShowTime} <br>
-  9x : ${cicilan9asli} <br>
-  12x : ${cicilan12asli} <br>
-  15x : ${cicilan15asli} <br>
-  18x : ${cicilan18asli} <br>
-  24x : ${cicilan24asli} <br>
-  <br>
-  Promo Spesial Cicilan 6 Bulan <br>
-  DP : ${DpBulat60PShowTime} <br>
-  6x : ${cicilan60Pasli}
-`;
-  } ////// Khusus Produk diatas 15 juta ENDING ////////////
-
-
-  // TOMBOL COPY CICILAN #1
-  let copyCicilan = document.querySelector('#copycicilan' + doc.id);
-  copyCicilan.addEventListener('click', function (e) {
-    var text = document.querySelector("#cicilan" + doc.id);
-    var selection = window.getSelection();
-    var range = document.createRange();
-    range.selectNodeContents(text);
-    selection.removeAllRanges();
-    selection.addRange(range);
-    //add to clipboard.
-    document.execCommand('copy');
-    var toastHTML = '<span>Berhasil di Copy</span>';
-    M.toast({html: toastHTML})
-  });
-  // TOMBOL COPY CICILAN #1 ENDING
-
-
-  // TOMBOL COPY CICILAN #1
+  // TOMBOL COPY CASH #1
   let copyCash = document.querySelector('#copycash' + doc.id);
   copyCash.addEventListener('click', function (e) {
     var text = document.querySelector(".konten2" + doc.id);
@@ -10830,30 +12734,25 @@ function renderPrinter(doc) {
   // HAPUS PRODUK DARI DATABASE (BUKAN REAL TIME)
   let del = document.querySelectorAll('.delete');
   let x;
-
   for (x = 0; x < del.length; x++) {
     del[x].addEventListener('click', (e) => {
-
-
       e.stopPropagation();
       // Mendapatkan data target dari ID yang diklik
       let id = e.target.parentElement.parentElement.getAttribute('data-id');
-
+      // UPDATE DIBAWAH INI        
       db.collection('printer').doc(id).delete().then(function () {
         window.location.reload(true);
       });;
-
     });
   } // HAPUS PRODUK DARI DATABASE (BUKAN REAL TIME)
+
 
   //  KLIK TO EDIT DI PRODUK SATUAN
   let editt = document.querySelectorAll('#helo' + doc.id);
   let t;
   for (t = 0; t < editt.length; t++) {
     editt[t].addEventListener('click', function (e) {
-
       e.preventDefault();
-
       let modal = document.querySelector('#updatemodal' + doc.id);
       var instance = M.Modal.init(modal)
       instance.open();
@@ -10861,7 +12760,7 @@ function renderPrinter(doc) {
     //  KLIK TO EDIT DI PRODUK SATUAN ENDING
 
 
-    let tombolKlik = document.querySelectorAll('#form' + doc.id );
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
     let tom;
     // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
     for (tom = 0; tom < tombolKlik.length; tom++) {
@@ -10875,10 +12774,11 @@ function renderPrinter(doc) {
         let free = document.querySelector('#update-free-bonus' + doc.id).value;
         let periode = document.querySelector('#periode-promo' + doc.id).value;
         let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
         let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
         let isibox = document.querySelector('#isibox' + doc.id).value;
         console.log(nama);
-
+        // UPDATE DIBAWAH INI         
         db.collection('printer').doc(doc.id).update({
           nama: nama,
           harga: harga,
@@ -10887,6 +12787,7 @@ function renderPrinter(doc) {
           free: free,
           periode: periode,
           keterangan: keterangan,
+          linkproduk : linkproduk,
           spesifikasi: spesifikasi,
           isibox: isibox
         }).then(() => {
@@ -10900,6 +12801,770 @@ function renderPrinter(doc) {
     } // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
   } //  KLIK TO EDIT DI PRODUK SATUAN
 }
+
+function renderUlanzi(doc) {
+  let li = document.createElement('li');
+  let la = document.createElement('div');
+  let edit = document.createElement('a');
+  edit.href = '#updatemodal' + doc.id;
+  edit.id = 'helo' + doc.id;
+
+  edit.className = "col s2 btn-small disabled edit modal-trigger";
+  edit.style.display = "none";
+  edit.textContent = 'edit';
+  li.className = 'loaded-data';
+  li.setAttribute('data-id', doc.id);
+
+  let hargaInput = doc.data().harga;
+  let numHargaInput = Number(hargaInput);
+
+
+  var free = new Object();
+  free['Free'] = doc.data().free;
+  free['Periode Promo'] = doc.data().periode;
+  free['Garansi'] = doc.data().periode;
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
+
+  // Mengambil data sebagai objek untuk keperluan CASH
+  var objek = new Object();
+  objek['Produk'] = doc.data().nama;
+  objek['Harga'] = Number(doc.data().harga);
+  objek['Cashback'] = Number(doc.data().cashback);
+  objek['Harga Spesial'] = world();
+  objek['Free'] = doc.data().free;
+  objek['Periode Promo'] = doc.data().periode;
+  objek['Garansi'] = doc.data().garansi;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
+
+  // Memunculkan Harga Spesial
+  function world() {
+    if (objek['Cashback'] !== 0) {
+      return objek['Harga'] - objek['Cashback']
+    } else if (objek['Cashback'] == 0) {
+      return objek['Harga Spesial'] = '';
+    } else {
+      return 0 // Memunculkan 0 == Tidak ditampilkan karena sudah dirumuskan dibawah
+    }
+  }
+
+  // MEMPERBAIKI HASIL DARI JIKA HARGA CASHBACK = 0 JADI TAMPILAN YANG DITAYANG CUKUP SATU YAITU Harga
+  if (objek['Harga'] === objek['Harga Spesial']) {
+    objek['Harga Spesial'] = 0
+  }
+  // MEMPERBAIKI HASIL DARI JIKA HARGA CASHBACK = 0 JADI TAMPILAN YANG DITAYANG CUKUP SATU YAITU Harga
+
+
+
+  // MEMBERI TANDA KOMA UNTUK HASIL BILANGAN YANG DI PRINT KELUAR
+  objek['Harga'] = objek['Harga'].toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  objek['Harga Spesial'] = objek['Harga Spesial'].toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  objek['Cashback'] = objek['Cashback'].toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  // MEMBERI TANDA KOMA UNTUK HASIL BILANGAN YANG DI PRINT KELUAR
+
+  let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
+  let newIsibox = doc.data().isibox.split(",").join("<br>");
+
+      // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+      let hargaNormal = Number(doc.data().harga);
+      let cashBack = Number(doc.data().cashback);
+      let hargaHCI = hitung();
+    
+      function hitung() {
+        if (cashBack !== 0 || cashBack !== '') {
+          return hargaNormal - cashBack;
+        } else {
+          hargaHCI = hargaNormal;
+        }
+      }
+    
+      let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+             </div>
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
+
+
+  la.innerHTML = `
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
+
+  elementul.appendChild(li);
+  elementul.appendChild(edit);
+  elementul.appendChild(la);
+
+  // MODAL ISI BOX DAN SPESIFIKASI
+  var elems = document.querySelectorAll('.modal');
+  var el;
+  for (el = 0; el < elems.length; el++) {
+    var instances = M.Modal.init(elems[el]);
+  }
+
+
+  // MERENDER HARGA CASH YANG BISA DI COPY PASTE
+  for (const property in objek) {
+    if (`${objek[property]}` == 0) {
+      continue;
+    }
+    // console.log(`${property}: ${objek[property]}`)
+    let idbaru = document.querySelector('.konten2' + doc.id);
+    if (typeof objek[property] == Number) {
+      return objek[property].toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+    }
+    idbaru.innerHTML += `${property} : ${objek[property]} <br>`
+  }
+  // MERENDER HARGA CASH YANG BISA DI COPY PASTE ENDING
+
+
+  // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
+  // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
+
+
+
+
+  // TOMBOL COPY CASH #1
+  let copyCash = document.querySelector('#copycash' + doc.id);
+  copyCash.addEventListener('click', function (e) {
+    var text = document.querySelector(".konten2" + doc.id);
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(text);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    //add to clipboard.
+    document.execCommand('copy');
+  });
+  // TOMBOL COPY #1 ENDING
+
+  // TOMBOL COPY SPESIFIKASI #1
+  let copySpec = document.querySelector('#copyspesifikasi' + doc.id);
+  copySpec.addEventListener('click', function (e) {
+    var text = document.querySelector(".spesifikasi" + doc.id);
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(text);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    //add to clipboard.
+    document.execCommand('copy');
+  });
+  // TOMBOL SPESIFIKASI #1 ENDING
+
+  // TOMBOL COPY SPESIFIKASI #1
+  let copyBox = document.querySelector('#copyisibox' + doc.id);
+  copyBox.addEventListener('click', function (e) {
+    var text = document.querySelector(".isibox" + doc.id);
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(text);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    //add to clipboard.
+    document.execCommand('copy');
+  });
+  // TOMBOL SPESIFIKASI #1 ENDING
+
+
+
+  // HAPUS PRODUK DARI DATABASE (BUKAN REAL TIME)
+  let del = document.querySelectorAll('.delete');
+  let x;
+  for (x = 0; x < del.length; x++) {
+    del[x].addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Mendapatkan data target dari ID yang diklik
+      let id = e.target.parentElement.parentElement.getAttribute('data-id');
+      // UPDATE DIBAWAH INI        
+      db.collection('ulanzi').doc(id).delete().then(function () {
+        window.location.reload(true);
+      });;
+    });
+  } // HAPUS PRODUK DARI DATABASE (BUKAN REAL TIME)
+
+
+  //  KLIK TO EDIT DI PRODUK SATUAN
+  let editt = document.querySelectorAll('#helo' + doc.id);
+  let t;
+  for (t = 0; t < editt.length; t++) {
+    editt[t].addEventListener('click', function (e) {
+      e.preventDefault();
+      let modal = document.querySelector('#updatemodal' + doc.id);
+      var instance = M.Modal.init(modal)
+      instance.open();
+    });
+    //  KLIK TO EDIT DI PRODUK SATUAN ENDING
+
+
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
+    let tom;
+    // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
+    for (tom = 0; tom < tombolKlik.length; tom++) {
+      tombolKlik[tom].addEventListener('submit', function (e) {
+        e.preventDefault()
+
+        let nama = document.querySelector('#update-nama-produk' + doc.id).value;
+        let harga = document.querySelector('#update-harga-produk' + doc.id).value;
+        let cashback = document.querySelector('#update-cashback' + doc.id).value;
+        let garansi = document.querySelector('#update-garansi' + doc.id).value;
+        let free = document.querySelector('#update-free-bonus' + doc.id).value;
+        let periode = document.querySelector('#periode-promo' + doc.id).value;
+        let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
+        let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
+        let isibox = document.querySelector('#isibox' + doc.id).value;
+        console.log(nama);
+        // UPDATE DIBAWAH INI         
+        db.collection('ulanzi').doc(doc.id).update({
+          nama: nama,
+          harga: harga,
+          cashback: cashback,
+          garansi: garansi,
+          free: free,
+          periode: periode,
+          keterangan: keterangan,
+          linkproduk : linkproduk,
+          spesifikasi: spesifikasi,
+          isibox: isibox
+        }).then(() => {
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
+          alert(`Update ${nama} Berhasil`);
+
+        });
+      });
+    } // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
+  } //  KLIK TO EDIT DI PRODUK SATUAN
+}
+
+function renderAccLain(doc) {
+  let li = document.createElement('li');
+  let la = document.createElement('div');
+  let edit = document.createElement('a');
+  edit.href = '#updatemodal' + doc.id;
+  edit.id = 'helo' + doc.id;
+
+  edit.className = "col s2 btn-small disabled edit modal-trigger";
+  edit.style.display = "none";
+  edit.textContent = 'edit';
+  li.className = 'loaded-data';
+  li.setAttribute('data-id', doc.id);
+
+  let hargaInput = doc.data().harga;
+  let numHargaInput = Number(hargaInput);
+
+
+  var free = new Object();
+  free['Free'] = doc.data().free;
+  free['Periode Promo'] = doc.data().periode;
+  free['Garansi'] = doc.data().periode;
+  free['Keterangan'] = doc.data().keterangan;
+  free['Info Produk'] = doc.data().linkproduk;
+
+  // Mengambil data sebagai objek untuk keperluan CASH
+  var objek = new Object();
+  objek['Produk'] = doc.data().nama;
+  objek['Harga'] = Number(doc.data().harga);
+  objek['Cashback'] = Number(doc.data().cashback);
+  objek['Harga Spesial'] = world();
+  objek['Free'] = doc.data().free;
+  objek['Periode Promo'] = doc.data().periode;
+  objek['Garansi'] = doc.data().garansi;
+  objek['Keterangan'] = doc.data().keterangan;
+  objek['Info Produk'] = doc.data().linkproduk;
+
+  // Memunculkan Harga Spesial
+  function world() {
+    if (objek['Cashback'] !== 0) {
+      return objek['Harga'] - objek['Cashback']
+    } else if (objek['Cashback'] == 0) {
+      return objek['Harga Spesial'] = '';
+    } else {
+      return 0 // Memunculkan 0 == Tidak ditampilkan karena sudah dirumuskan dibawah
+    }
+  }
+
+  // MEMPERBAIKI HASIL DARI JIKA HARGA CASHBACK = 0 JADI TAMPILAN YANG DITAYANG CUKUP SATU YAITU Harga
+  if (objek['Harga'] === objek['Harga Spesial']) {
+    objek['Harga Spesial'] = 0
+  }
+  // MEMPERBAIKI HASIL DARI JIKA HARGA CASHBACK = 0 JADI TAMPILAN YANG DITAYANG CUKUP SATU YAITU Harga
+
+
+
+  // MEMBERI TANDA KOMA UNTUK HASIL BILANGAN YANG DI PRINT KELUAR
+  objek['Harga'] = objek['Harga'].toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  objek['Harga Spesial'] = objek['Harga Spesial'].toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  objek['Cashback'] = objek['Cashback'].toLocaleString(undefined, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+  // MEMBERI TANDA KOMA UNTUK HASIL BILANGAN YANG DI PRINT KELUAR
+
+  let newSpesifikasi = doc.data().spesifikasi.split(",").join("<br>");
+  let newIsibox = doc.data().isibox.split(",").join("<br>");
+
+      // Mengambil data sebagai objek untuk merender Harga HCI (BUKAN UNTUK ANGSURAN)
+      let hargaNormal = Number(doc.data().harga);
+      let cashBack = Number(doc.data().cashback);
+      let hargaHCI = hitung();
+    
+      function hitung() {
+        if (cashBack !== 0 || cashBack !== '') {
+          return hargaNormal - cashBack;
+        } else {
+          hargaHCI = hargaNormal;
+        }
+      }
+    
+      let hargaHCIST = hargaHCI.toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+
+  if(objek['Info Produk'] == '#' || objek['Info Produk'] == 'undefined' ||objek['Info Produk'] == null ||objek['Info Produk'] == '' ){
+    li.innerHTML = `
+                 <div class="collapsible-header">
+                 <span class="left col s12 red-text darken-3">${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span></span>
+                 </div>
+                 <div class="center-align collapsible-body">
+                      
+                      <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+                      <br>
+                      <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+                      <a  class=" btn-small disabled delete" href="#" >Delete</a>
+                      <br>
+                      <br>
+          
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+                      <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+                      <!-- Modal Structure -->
+                      <div id="modal1${doc.id}" class="modal">
+                        <div class="modal-content">
+                          <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+                        </div>
+                      </div>
+                      
+                      <!-- Modal Structure -->
+                      <div id="modal2${doc.id}" class="modal">
+                      <div class="modal-content">
+                        <div class="isibox${doc.id}">${newIsibox}</div>
+                      </div>
+                      <div class="modal-footer">
+                        <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+                      </div>
+                    </div>      
+                 `;
+    }else{
+      li.innerHTML = `
+      <div class="collapsible-header">
+      <span class="left col s12">
+      ${doc.data().nama} - <span class="bold">Rp ${hargaHCIST}</span>
+     <a href="${doc.data().linkproduk}" target="_blank"><button>Link</button></a>
+    </span>
+      </div>
+      <div class="center-align collapsible-body">
+           
+           <div class="konten2${doc.id}"></div> <!-- INFO HARGA CASH YANG BISA DI COPAS -->
+           <br>
+           <a id="copycash${doc.id}"class="light-blue darken-4 waves-effect waves-light btn-small">Copy Cash</a>
+           <a  class=" btn-small disabled delete" href="#" >Delete</a>
+           <br>
+           <br>
+  
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal1${doc.id}">Spec</a>
+           <a class="light-blue darken-4 waves-effect waves-light btn modal-trigger btn-small" href="#modal2${doc.id}">Isi Box</a>
+           <!-- Modal Structure -->
+           <div id="modal1${doc.id}" class="modal">
+             <div class="modal-content">
+               <div class="spesifikasi${doc.id}">${newSpesifikasi}</div>
+             </div>
+             <div class="modal-footer">
+               <a  class="modal-close waves-effect waves-green btn-flat" id="copyspesifikasi${doc.id}">Copy</a>
+             </div>
+           </div>
+           
+           <!-- Modal Structure -->
+           <div id="modal2${doc.id}" class="modal">
+           <div class="modal-content">
+             <div class="isibox${doc.id}">${newIsibox}</div>
+           </div>
+           <div class="modal-footer">
+             <a  class="modal-close waves-effect waves-green btn-flat" id="copyisibox${doc.id}">Copy</a>
+           </div>
+         </div>      
+      `;
+    }
+  
+
+
+  la.innerHTML = `
+         <div class="modal" id="updatemodal${doc.id}">
+            <form id="form${doc.id}">
+             <label for="update-nama-produk">Nama Kamera</label>
+             <input type="text" placeholder="Nama Kamera" id="update-nama-produk${doc.id}" value="${doc.data().nama}" required>
+             <br>
+             <label for="update-harga-produk">Masukkan Harga</label>
+             <input type="text" placeholder="Masukkan Harga" id="update-harga-produk${doc.id}" value="${doc.data().harga}" required>
+             <br>
+             <label for="update-cashback">Cashback</label>
+             <input type="text" placeholder="Cashback" id="update-cashback${doc.id}" value="${doc.data().cashback}" >
+             <br>
+             <label for="update-garansi">Garansi</label>
+             <input type="text" placeholder="Garansi" id="update-garansi${doc.id}"  value="${doc.data().garansi}">
+             <br>
+             <label for="update-free-bonus">Free</label>
+             <input type="text" placeholder="Free" id="update-free-bonus${doc.id}" value="${doc.data().free}">
+             <br>
+             <label for="periode-promo">Periode Promo</label>
+             <input type="text" placeholder="Periode Promo" id="periode-promo${doc.id}" value="${doc.data().periode}">
+             <br>
+             <div class="input-field col s12">
+             <textarea id="keterangan${doc.id}" class="materialize-textarea" >${doc.data().keterangan}</textarea>
+             <label for="keterangan">Keterangan</label>
+           </div>
+           <br>
+           <div class="input-field col s12">
+           <textarea id="linkproduk${doc.id}" class="materialize-textarea" >${doc.data().linkproduk}</textarea>
+           <label for="linkproduk">Link Produk</label>
+         </div>
+           <br>
+           <div class="input-field col s12">
+             <textarea id="spesifikasi${doc.id}" class="materialize-textarea">${doc.data().spesifikasi}</textarea>
+             <label for="spesifikasi">Spesifikasi</label>
+           </div>
+           <div class="input-field col s12">
+               <textarea id="isibox${doc.id}" class="materialize-textarea" >${doc.data().isibox}</textarea>
+               <label for="isibox">Isi Box</label>
+             </div>
+              <button id="${doc.id}click" class="right light-blue darken-4 btn waves-effect waves-light" type="submit" name="action">Update
+                <i class="material-icons right">send</i>
+              </button>
+             </form>
+          </div>  
+          `;
+
+  elementul.appendChild(li);
+  elementul.appendChild(edit);
+  elementul.appendChild(la);
+
+  // MODAL ISI BOX DAN SPESIFIKASI
+  var elems = document.querySelectorAll('.modal');
+  var el;
+  for (el = 0; el < elems.length; el++) {
+    var instances = M.Modal.init(elems[el]);
+  }
+
+
+  // MERENDER HARGA CASH YANG BISA DI COPY PASTE
+  for (const property in objek) {
+    if (`${objek[property]}` == 0) {
+      continue;
+    }
+    // console.log(`${property}: ${objek[property]}`)
+    let idbaru = document.querySelector('.konten2' + doc.id);
+    if (typeof objek[property] == Number) {
+      return objek[property].toLocaleString(undefined, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      });
+    }
+    idbaru.innerHTML += `${property} : ${objek[property]} <br>`
+  }
+  // MERENDER HARGA CASH YANG BISA DI COPY PASTE ENDING
+
+
+  // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN START
+  // for (const property in free) {
+  //   if (`${free[property]}` == 0) {
+  //     continue;
+  //   }
+  //   // console.log(`${property}: ${free[property]}`)
+  //   let idbaru = document.querySelector('.konten4' + doc.id);
+  //   if (typeof free[property] == Number) {
+  //     return free[property].toLocaleString(undefined, {
+  //       minimumFractionDigits: 0,
+  //       maximumFractionDigits: 0
+  //     });
+  //   }
+  //   idbaru.innerHTML += `${property} ${objek[property]} <br>`
+  // }
+  // MERENDER FREE BONUS TEPAT DIBAWAH ANGSURAN ENDING
+
+
+
+
+  // TOMBOL COPY CASH #1
+  let copyCash = document.querySelector('#copycash' + doc.id);
+  copyCash.addEventListener('click', function (e) {
+    var text = document.querySelector(".konten2" + doc.id);
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(text);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    //add to clipboard.
+    document.execCommand('copy');
+  });
+  // TOMBOL COPY #1 ENDING
+
+  // TOMBOL COPY SPESIFIKASI #1
+  let copySpec = document.querySelector('#copyspesifikasi' + doc.id);
+  copySpec.addEventListener('click', function (e) {
+    var text = document.querySelector(".spesifikasi" + doc.id);
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(text);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    //add to clipboard.
+    document.execCommand('copy');
+  });
+  // TOMBOL SPESIFIKASI #1 ENDING
+
+  // TOMBOL COPY SPESIFIKASI #1
+  let copyBox = document.querySelector('#copyisibox' + doc.id);
+  copyBox.addEventListener('click', function (e) {
+    var text = document.querySelector(".isibox" + doc.id);
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(text);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    //add to clipboard.
+    document.execCommand('copy');
+  });
+  // TOMBOL SPESIFIKASI #1 ENDING
+
+
+
+  // HAPUS PRODUK DARI DATABASE (BUKAN REAL TIME)
+  let del = document.querySelectorAll('.delete');
+  let x;
+  for (x = 0; x < del.length; x++) {
+    del[x].addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Mendapatkan data target dari ID yang diklik
+      let id = e.target.parentElement.parentElement.getAttribute('data-id');
+      // UPDATE DIBAWAH INI        
+      db.collection('acclain').doc(id).delete().then(function () {
+        window.location.reload(true);
+      });;
+    });
+  } // HAPUS PRODUK DARI DATABASE (BUKAN REAL TIME)
+
+
+  //  KLIK TO EDIT DI PRODUK SATUAN
+  let editt = document.querySelectorAll('#helo' + doc.id);
+  let t;
+  for (t = 0; t < editt.length; t++) {
+    editt[t].addEventListener('click', function (e) {
+      e.preventDefault();
+      let modal = document.querySelector('#updatemodal' + doc.id);
+      var instance = M.Modal.init(modal)
+      instance.open();
+    });
+    //  KLIK TO EDIT DI PRODUK SATUAN ENDING
+
+
+    let tombolKlik = document.querySelectorAll('#form' + doc.id);
+    let tom;
+    // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
+    for (tom = 0; tom < tombolKlik.length; tom++) {
+      tombolKlik[tom].addEventListener('submit', function (e) {
+        e.preventDefault()
+
+        let nama = document.querySelector('#update-nama-produk' + doc.id).value;
+        let harga = document.querySelector('#update-harga-produk' + doc.id).value;
+        let cashback = document.querySelector('#update-cashback' + doc.id).value;
+        let garansi = document.querySelector('#update-garansi' + doc.id).value;
+        let free = document.querySelector('#update-free-bonus' + doc.id).value;
+        let periode = document.querySelector('#periode-promo' + doc.id).value;
+        let keterangan = document.querySelector('#keterangan' + doc.id).value;
+        let linkproduk = document.querySelector('#linkproduk' + doc.id).value;   
+        let spesifikasi = document.querySelector('#spesifikasi' + doc.id).value;
+        let isibox = document.querySelector('#isibox' + doc.id).value;
+        console.log(nama);
+        // UPDATE DIBAWAH INI         
+        db.collection('acclain').doc(doc.id).update({
+          nama: nama,
+          harga: harga,
+          cashback: cashback,
+          garansi: garansi,
+          free: free,
+          periode: periode,
+          keterangan: keterangan,
+          linkproduk : linkproduk,
+          spesifikasi: spesifikasi,
+          isibox: isibox
+        }).then(() => {
+          // let modal = document.querySelector('#updatemodal' + doc.id);
+          // var instance = M.Modal.init(modal);
+          // instance.close();
+          alert(`Update ${nama} Berhasil`);
+
+        });
+      });
+    } // UPDATE PRODUK HARGA AMBIL DATA DARI FORM MODAL TERBARU YANG POP UP
+  } //  KLIK TO EDIT DI PRODUK SATUAN
+}
+
+
 // PILIH MENU UTAMA 
 function pilihMenu() {
   let pilihKategori = document.querySelector('#pilihmenu').value;
@@ -11398,6 +14063,44 @@ function pilihMenu() {
       });
     });
     // // Real Time Penarik Data ENDING
+  }else if (pilihKategori == 'ulanzi') {
+    // Real Time Penarik Data
+
+    db.collection(pilihKategori).orderBy('nama').onSnapshot(snapshot => {
+      let changes = snapshot.docChanges();
+
+      changes.forEach(change => {
+        if (change.type == 'added') {
+
+          renderUlanzi(change.doc);
+
+        } else if (change.type == 'removed') {
+          let li = daftarHarga.querySelector('[data-id=' + change.doc.id + ']');
+          daftarHarga.removeChild(li);
+
+        }
+      });
+    });
+    // // Real Time Penarik Data ENDING
+  }else if (pilihKategori == 'acclain') {
+    // Real Time Penarik Data
+
+    db.collection(pilihKategori).orderBy('nama').onSnapshot(snapshot => {
+      let changes = snapshot.docChanges();
+
+      changes.forEach(change => {
+        if (change.type == 'added') {
+
+          renderAccLain(change.doc);
+
+        } else if (change.type == 'removed') {
+          let li = daftarHarga.querySelector('[data-id=' + change.doc.id + ']');
+          daftarHarga.removeChild(li);
+
+        }
+      });
+    });
+    // // Real Time Penarik Data ENDING
   }
 } // PILIH MENU UTAMA  ENDING
 
@@ -11431,3 +14134,4 @@ function cariProduk() {
 function refresh() {
   window.location.reload(true);
 }
+
